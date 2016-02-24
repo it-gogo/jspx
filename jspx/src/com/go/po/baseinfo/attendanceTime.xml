@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attendanceTime">
+	 <!-- 不分页查询数据 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select * from attendance_time  a  where 0=0
+	  <if test="classTimeId!=null and classTimeId!=''">
+	  	and a.classTimeId=#{classTimeId}
+	  </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select * from attendance_time a  where 0=0
+	  <if test="classTimeId!=null and classTimeId!=''">
+	  	and a.classTimeId=#{classTimeId}
+	  </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from attendance_time where 0=0
+	     <if test="classTimeId!=null and classTimeId!=''">
+	  	and classTimeId=#{classTimeId}
+	  </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into attendance_time(id,attendanceTime,classTimeId,type,createdate,creator,beforeAttendance,afterAttendance,absenteeism)
+	   values(#{id},#{attendanceTime},#{classTimeId},#{type},#{createdate},#{creator},#{beforeAttendance},#{afterAttendance},#{absenteeism})
+	</insert>
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update attendance_time set attendanceTime = #{attendanceTime},
+	                    classTimeId = #{classTimeId},
+	                    type=#{type},
+	                    beforeAttendance=#{beforeAttendance},
+	                    afterAttendance=#{afterAttendance},
+	                    absenteeism=#{absenteeism}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From attendance_time a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From attendance_time a Where 0=0  
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   attendance_time    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

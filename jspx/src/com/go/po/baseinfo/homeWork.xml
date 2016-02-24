@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="homeWork">
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into homework_manager(id,title,homeworkUrl,uploader,uploadTime,classId,endUploadTime)
+	   values(#{id},#{title},#{homeworkUrl},#{uploader},#{uploadTime},#{classId},#{endUploadTime})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update homework_manager set title = #{title},
+	                     homeworkUrl = #{homeworkUrl},
+	                     uploader=#{uploader},
+	                     uploadTime=#{uploadTime},
+	                    classId = #{classId},
+	                    endUploadTime = #{endUploadTime}
+        where  id=#{id} 
+	</update>
+	
+	<!-- 分页查询数据 -->
+	<select id="findList" resultType="map" parameterType="map" >
+	  select (select text from user_info where id=manager.uploader)as uploader,(select name from class_info where id=manager.classId)as classId,manager.* from homework_manager manager where 1=1 
+	  <if test="title!=null and title!=''">
+	  	and title like '%${title}%'
+	  </if> 
+	   <if test="classIds!=null and classIds!=''">
+		  	and classId in(#{classIds})
+		</if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*) from homework_manager where 1=1 
+	  <if test="title!=null and title!=''">
+	  	and title like '%${title}%'
+	  </if> 
+	   <if test="classIds!=null and classIds!=''">
+		  	and classId in(#{classIds})
+		</if>
+	</select>
+	
+	<select id="load" resultType="map" parameterType="map">
+		select * from homework_manager where id=#{id}
+	</select>
+	<!-- 根据ID查询列表 -->
+	<select id="findListById" resultType="map" parameterType="map">
+		select * from homework_manager where id in
+		 <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach>
+	</select>
+	<!-- 根据ID集合进行数据删除 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from homework_manager Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<!--学生用户查看下载上传作业列表 -->
+	<select id="downloadList" resultType="map" parameterType="map" >
+	  select (select text from user_info where id=manager.uploader)as uploader,(select name from class_info where id=manager.classId)as classId,manager.* from homework_manager manager where 1=1 
+	   <choose>
+	   	<when test="list!=null">
+	   			and classId in
+		  	 <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           		#{id}  
+        	</foreach> 
+	   	</when>
+	   	<otherwise>
+	   		and 1>2
+	   	</otherwise>
+	   </choose>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	
+	<select id="downloadCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*) from homework_manager where 1=1 
+	   <choose>
+	   	<when test="list!=null">
+	   			and classId in
+		  	 <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           		#{id}  
+        	</foreach> 
+	   	</when>
+	   	<otherwise>
+	   		and 1>2
+	   	</otherwise>
+	   </choose>
+	</select>
+	
+	<!-- 根据班级,学生统计作业总数与提交次数 -->
+	<select id="attented" parameterType="map" resultType="map">
+		select count(t1.id)as total,count(t2.id)as uploadcount from homework_manager t1 left join (select * from upload_log where 1=1 and userId=#{userId}) t2 
+		on t2.homeworkId=t1.id  
+		where 1=1 and  classId=#{classId}
+	</select>
+</mapper>

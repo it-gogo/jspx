@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="timeSetting">
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into time_setting(id,beforeClass,afterClass,beforeFinishClass,afterFinishClass,absenteeism,createdate,creator,isAfterClassPunch)
+	   values(#{id},#{beforeClass},#{afterClass},#{beforeFinishClass},#{afterFinishClass},#{absenteeism},#{createdate},#{creator},#{isAfterClassPunch})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update time_setting set beforeClass = #{beforeClass},
+	                    afterClass = #{afterClass},
+	                     beforeFinishClass = #{beforeFinishClass},
+	                     afterFinishClass=#{afterFinishClass},
+	                     absenteeism=#{absenteeism},
+	                    createdate = #{createdate},
+	                    creator = #{creator},
+	                    isAfterClassPunch=#{isAfterClassPunch}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From time_setting a 
+	   limit 0,1
+	</select>
+</mapper>

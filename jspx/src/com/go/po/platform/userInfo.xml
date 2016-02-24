@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userInfo">
+	<!-- 角色登陆信息 -->
+	<select id="roleUser" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   <choose>
+	   	<when test="text!=null and text!=''">
+	   		 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'1' orderSeq From  user_info a  
+	   			Where isDeleted=0 and text  like '%${text}%'   
+	   			union all 
+	   			 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'0' orderSeq From  user_info a  
+	   			Where isDeleted=0 and text not like '%${text}%'    order by orderSeq desc,checked desc;
+	   	</when>
+	   	<otherwise>
+	   		select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked From  user_info a  
+	   		Where isDeleted=0   order by checked desc;
+	   	</otherwise>
+	   </choose>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select * From  user_info 
+	   Where isDeleted=0
+	   <if test="text!=null and text!=''">
+	   	and text  like '%${text}%'  
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  user_info 
+	    Where isDeleted=0
+	    <if test="text!=null and text!=''">
+	   	and text  like '%${text}%'  
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into user_info(id,text,password,isActives,isDeleted)
+	   values(#{id},#{text},#{password},#{isActives},'0')
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update user_info set text = #{text},
+	                    password = #{password},
+	                    isActives = #{isActives}
+        where  id=#{id} 
+	</update>
+	<!-- 批量修改密码 -->
+	<update id="batchPassword" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo"  open="" separator="" close="">   
+	  	 	update user_info set password = #{vo.password}
+        	where  id=#{vo.userId} ;
+        </foreach>
+	</update>
+	<!-- 修改密码 -->
+	<update id="modifyPassword" parameterType="java.util.HashMap" >
+  	 	update user_info set password = #{password}
+       	where  id=#{id} ;
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStat"  parameterType="java.util.HashMap">
+	   update user_info set isActives = #{isActives} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From user_info  Where isDeleted=0  And  id=#{id}
+	</select>
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From user_info  Where isDeleted=0  
+	   <if test="id!=null and id!=''">
+	   	And  id=#{id}
+	   </if>
+	   <if test="text!=null and text!=''">
+	   	And  text=#{text}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   user_info set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	<!-- zhangjf 2015-08-07 根据用户名密码进行用户登陆start -->
+	<select id="login" parameterType="map" resultType="map">
+		select * from user_info where text=#{text} and password=#{password} and isDeleted=0
+	</select>
+	<!-- zhangjf 2015-08-07 根据用户名密码进行用户登陆end -->
+	
+	<!-- app端登陆 -->
+	<select id="appLogin" parameterType="map" resultType="map">
+	<!-- 	
+		select t1.name as name,idcard as cardNum,(case when sex=1 then '男' else '女' end )as sex, t2.name as school from teacher_info t1 left join unit_info  t2 
+		on t1.schoolId=t2.id
+	where t1.userId=(
+			select id from user_info where isDeleted=0  and text=#{username} and password=#{password}
+	)
+	and EXISTS(select 1 from class_info where classTeacher =t1.id )
+	 -->
+	 select t1.name as name,
+	 		idcard as cardNum,
+	 		(case when sex=1 then '男' else '女' end )as sex, 
+			t2.name as school,
+			GROUP_CONCAT(t3.name) as classroom
+				from teacher_info t1 left join unit_info  t2    
+				on t1.schoolId=t2.id  
+				right join class_info t3
+				on t1.id=t3.classTeacher
+				where t1.userId=(select id from user_info where isDeleted=0  and text=#{username} and password=#{password})
+				group by name,cardNum,sex,school 
+	</select>
+	<!-- 获取app登陆用户信息列表 start -->
+	<select id="listLoginInfo" parameterType="map" resultType="map">
+		select t1.name as name,
+			   idcard as cardNum,
+			   (case when sex=1 then '男' else '女' end )as sex, 
+			   t2.name as school,
+			   GROUP_CONCAT(t3.name) as classroom,
+			   t4.text as username,
+			   t4.password as password
+			from teacher_info t1 left join unit_info  t2    
+			on t1.schoolId=t2.id  
+			right join class_info t3
+			on t1.id=t3.classTeacher
+			left join user_info t4
+			on t1.userId=t4.id
+			where 1=1
+			group by  name,cardNum,sex,school,password 
+	</select>
+	<!-- 获取app登陆用户信息列表 end -->
+</mapper>

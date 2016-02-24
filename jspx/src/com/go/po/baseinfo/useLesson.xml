@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="useLesson">
+	<!-- 不分页查询 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,name text from use_lesson a where 0=0
+	</select>
+	 <!-- 查询选课数据 -->
+	<select id="selectLesson" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,(select name from code_data where  id = a.subjectId) subjectName,(select sum(useLesson) from use_lesson where lessonId=a.id 
+	  <if test="classTimeId!=null and classTimeId!=''">
+	  	and classTimeId != #{classTimeId}
+	  </if>
+	  ) totalLesson,
+	  (
+	  <choose>
+	  	<when test="classTimeId!=null and classTimeId!=''">
+	  		select useLesson from use_lesson where lessonId=a.id and classTimeId=#{classTimeId}
+	  	</when>
+	  	<otherwise>
+	  		0
+	  	</otherwise>
+	  </choose>
+	  ) useLesson from lesson_management  a   where 0=0
+	  <if test="classId!=null and classId!=''">
+	   	and a.courseId in (select courseId from class_info where id=#{classId})
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select * from use_lesson a  where 0=0
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from use_lesson where 0=0
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into use_lesson(id,lessonId,classTimeId,useLesson,createdate,creator)
+	   values(#{id},#{lessonId},#{classTimeId},#{useLesson},#{createdate},#{creator})
+	</insert>
+	<!-- 批量添加后台数据 -->
+	<insert id="batchAdd" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+		   insert into use_lesson(id,lessonId,classTimeId,useLesson,createdate,creator)
+		   values(#{vo.useLessonId},#{vo.lessonId},#{id},#{vo.useLesson},#{createdate},#{creator});
+		</foreach>
+	</insert>
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update use_lesson set lessonId = #{lessonId},
+	                    classTimeId = #{classTimeId},
+	                     useLesson = #{useLesson}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From use_lesson a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From use_lesson a Where 0=0  
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   use_lesson    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	<!-- 通过条件删除数据 -->
+	<delete id="deleteByMap"  parameterType = "java.util.HashMap">
+	    delete from   use_lesson    Where 1 = 1
+	    <if test="classTimeId!=null and classTimeId!=''">
+	    and classTimeId=#{classTimeId}
+	    </if>
+	</delete>
+</mapper>

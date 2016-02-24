@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="lessonManagement">
+	<!-- 不分页查询 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,name text from lesson_management a where 0=0
+	</select>
+	 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,(select name from code_data where  id = a.subjectId) subjectName from lesson_management a  where 0=0
+	  <if test="subjectName!=null and subjectName!=''">
+	  	and a.subjectId in (select id from code_data where name like '%${subjectName}%')
+	  </if>
+	  <if test="courseId!=null and courseId!=''">
+	   	and courseId =#{courseId}
+	   </if>
+	   <if test="classId!=null and classId!=''">
+	   	and courseId in (select courseId from class_info where id=#{classId})
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from lesson_management where 0=0
+	  <if test="subjectName!=null and subjectName!=''">
+	  	and a.subjectId in (select id from code_data where name like '%${subjectName}%')
+	  </if>
+	  <if test="courseId!=null and courseId!=''">
+	   	and courseId =#{courseId}
+	   </if>
+	   <if test="classId!=null and classId!=''">
+	   	and courseId in (select courseId from class_info where id=#{classId})
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into lesson_management(id,courseId,subjectId,lesson,createdate,creator,instructor)
+	   values(#{id},#{courseId},#{subjectId},#{lesson},#{createdate},#{creator},#{instructor})
+	</insert>
+	<!-- 批量添加后台数据 -->
+	<insert id="batchAdd" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+		   insert into lesson_management(id,courseId,subjectId,lesson,createdate,creator,instructor)
+		   values(#{vo.id},#{id},#{vo.subjectId},#{vo.lesson},#{createdate},#{creator},#{vo.instructor});
+		</foreach>
+	</insert>
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update lesson_management set courseId = #{courseId},
+	                    subjectId = #{subjectId},
+	                     lesson = #{lesson},
+	                     instructor=#{instructor}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,(select name from code_data where id=subjectId) subjectName From lesson_management a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From lesson_management a Where 0=0  
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   lesson_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

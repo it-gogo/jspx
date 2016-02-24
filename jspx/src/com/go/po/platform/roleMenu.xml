@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="roleMenu">
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	   		insert into role_menu(id,roleId,menuId)
+	  		 values(#{vo.id},#{vo.roleId},#{vo.menuId});
+		</foreach>
+	</insert>
+	
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   role_menu    Where 1 = 1
+	    And roleId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

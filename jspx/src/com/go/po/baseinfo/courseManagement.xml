@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="courseManagement">
+	<!-- 不分页查询 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,name text from course_management a where a.isDeleted=0
+	</select>
+	 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,(select sum(lesson) from lesson_management where courseId=a.id) lessons from course_management a  where a.isDeleted=0
+	  <if test="name!=null and name!=''">
+	  	and a.name like '%${name}%'
+	  </if>
+	  <!-- <if test="userId!=null and userId!=''">
+	   	and instructorId in (select id from teacher_info t where t.userId=#{userId})
+	   </if> -->
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from course_management where isDeleted=0
+	  <if test="name!=null and name!=''">
+	  	and name like '%${name}%'
+	  </if>
+	  <!-- <if test="userId!=null and userId!=''">
+	   	and instructorId in (select id from teacher_info t where t.userId=#{userId})
+	   </if> -->
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into course_management(id,name,instructorId,dataUrl,introduction,isDeleted,createdate,creator)
+	   values(#{id},#{name},#{instructorId},#{dataUrl},#{introduction},'0',#{createdate},#{creator})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update course_management set name = #{name},
+	                    instructorId = #{instructorId},
+	                    dataUrl =#{dataUrl},
+	                     introduction = #{introduction}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,(select name from teacher_info where id=instructorId) instructorName From course_management a  Where a.isDeleted=0  And  a.id=#{id}
+	</select>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From course_management a Where a.isDeleted=0  
+	   <!-- <if test="userId!=null and userId!=''">
+	   	and instructorId in (select id from teacher_info t where t.userId=#{userId})
+	   </if> -->
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   course_management set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

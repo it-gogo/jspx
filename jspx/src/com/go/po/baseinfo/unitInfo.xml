@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="unitInfo">
+	<!-- 查询所有 -->
+	<select id="findSchool" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From unit_info 
+	   Where isDeleted=0 and type=2
+	   <if test="flag!=null and flag!=''">
+	   	and  flag  like '${flag}%'  
+	   </if>
+	   <if test="classId!=null and classId!=''">
+		   	and  id not in (select schoolId from quota_allocation where classId =#{classId} 
+		   <if test="quotaAllcationId!=null and quotaAllcationId!=''">
+		   		and id !=#{quotaAllcationId}
+		   </if>
+		   )
+	   </if>
+	</select>
+	<!-- 查询所有 -->
+	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From unit_info 
+	   Where isDeleted=0 and type=1 
+	   <if test="notFlag!=null and notFlag!=''">
+	   	and flag not like '${notFlag}%'
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  flag  like '${flag}%'  
+	   </if>
+	   <if test="isEdb!=null and isEdb!=''">
+	   	and  isEdb=#{isEdb}
+	   </if>
+	</select>
+	<!-- 查询数据 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from unit_info u where u.id=a.pid) pname,b.text text From unit_info a left join user_info b on a.userId=b.id
+	   Where a.isDeleted=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  a.flag  like '${flag}%'  
+	   </if>
+	    <if test="pid!=null and pid!=''">
+	   	and  a.pid=#{pid}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and  a.type=#{type}
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  a.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  a.categoryId=#{categoryId}
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from unit_info u where u.id=a.pid) pname,b.text text From unit_info a left join user_info b on a.userId=b.id
+	   Where a.isDeleted=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  a.flag  like '${flag}%'  
+	   </if>
+	    <if test="pid!=null and pid!=''">
+	   	and  a.pid=#{pid}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and  a.type=#{type}
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  a.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  a.categoryId=#{categoryId}
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*) From unit_info a left join user_info b on a.userId=b.id
+	   Where a.isDeleted=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  a.flag  like '${flag}%'  
+	   </if>
+	   <if test="pid!=null and pid!=''">
+	   	and  a.pid=#{pid}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and  a.type=#{type}
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  a.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  a.categoryId=#{categoryId}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into unit_info(id,pid,name,creator,createdate,seq,isDeleted,isEdb,code,type,typeId,categoryId,flag,pflag,userId)
+	   values(#{id},#{pid},#{name},#{creator},#{createdate},#{seq},'0',#{isEdb},#{code},#{type},#{typeId},#{categoryId},#{flag},#{pflag},#{userId})
+	</insert>
+	<insert id="addAll" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo"  open="" separator="" close="">   
+	    insert into unit_info(id,pid,name,creator,createdate,seq,isDeleted,isEdb,code,type,typeId,categoryId,flag,pflag,userId)
+	   	values(#{vo.id},#{vo.pid},#{vo.name},#{vo.creator},#{vo.createdate},#{vo.seq},'0',#{vo.isEdb},#{vo.code},#{vo.type},#{vo.typeId},#{vo.categoryId},#{vo.flag},#{vo.pflag},#{vo.userId});
+		insert into user_info (id,text,password,isDeleted,isActives)
+	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1');
+	   </foreach>
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update unit_info set pid = #{pid},
+	                    name = #{name},
+	                     creator = #{creator},
+	                    createdate = #{createdate},
+	                    seq = #{seq},
+	                    isEdb = #{isEdb},
+	                    code = #{code},
+	                    type = #{type},
+	                    typeId = #{typeId},
+	                    categoryId = #{categoryId},
+	                    flag = #{flag},
+	                    pflag = #{pflag},
+	                    userId = #{userId}
+        where  id=#{id} 
+	</update>
+	
+	<!-- 更新数据状态 -->
+	<update id="changeStat"  parameterType="java.util.HashMap">
+	   update unit_info set isActives = #{isActives} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,b.id userId,b.text text From unit_info a left join user_info b  on a.userId=b.id  Where a.isDeleted=0  And  a.id=#{id}
+	</select><!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From unit_info a Where a.isDeleted=0  
+	   <if test="userId!=null and userId!=''">
+	   	and userId=#{userId}
+	   </if>
+	   <if test="name!=null and name!=''">
+	   	and name = #{name}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and type=#{type}
+	   </if>
+	   <if test="isEdb!=null and isEdb!=''">
+	   	and isEdb=#{isEdb}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   unit_info set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	<!-- 查询最大标示 -->
+	<select id="findFlag" resultType="java.lang.String" parameterType="java.util.HashMap" >
+	   select max(flag)
+	   From  unit_info
+	   Where isDeleted=0
+	   ${parameter}
+	</select> 
+	<!-- 更新数据标示 -->
+	<update id="updateFlag"  parameterType="java.util.HashMap">
+	   update unit_info set flag = concat(SUBSTRING(flag ,1,position(#{flag} in flag )-1),#{flag_new},substring(flag ,position(#{flag} in flag )+length(#{flag}))),
+	   pflag = concat(SUBSTRING(pflag ,1,position(#{flag} in pflag )-1),#{flag_new},substring(pflag ,position(#{flag} in pflag )+length(#{flag})))
+	   Where flag like '${flag}%'  and pflag  is not null
+	</update>	
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="artificialAttendance">
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select a.*,b.name studentName from artificial_attendance a left join teacher_info b on a.studentId=b.id where a.isDeleted=0
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.date >= #{beginDate}
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.date &lt;= #{endDate}
+	    </if>   
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from artificial_attendance a left join teacher_info b on a.studentId=b.id where a.isDeleted=0
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.date >= #{beginDate}
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.date &lt;= #{endDate}
+	    </if>   
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into artificial_attendance(id,attendanceId,studentId,categoryId,date,remark,isDeleted,createdate,creator)
+	   values(#{id},#{attendanceId},#{studentId},#{categoryId},#{date},#{remark},'0',#{createdate},#{creator})
+	</insert>
+	<!-- 添加多条数据 -->
+	<insert id="addAll" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+		   insert into artificial_attendance(id,attendanceId,studentId,categoryId,date,remark,isDeleted,createdate,creator)
+		   values(#{vo.id},#{vo.attendanceId},#{vo.studentId},#{vo.categoryId},#{vo.date},#{vo.remark},'0',#{vo.createdate},#{vo.creator});
+		</foreach>
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update artificial_attendance set studentId = #{studentId},
+	   					attendanceId=#{attendanceId},
+	                    categoryId = #{categoryId},
+	                     date = #{date},
+	                     remark = #{remark},
+	                    createdate = #{createdate},
+	                    creator = #{creator}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select *,b.name studentName From artificial_attendance a left join teacher_info b on a.studentId=b.id  Where a.isDeleted=0  And  a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   artificial_attendance set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+        <foreach collection="list" item="id"  open="" separator=";" close="">   
+        	delete from attendance_info where id in (select attendanceId from artificial_attendance t where t.id=#{id} )
+        </foreach> ;
+	</delete>
+</mapper>

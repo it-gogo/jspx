@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="menuInfo">
+	<!-- 角色菜单 -->
+	<select id="roleMenu" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,a.name text,(case when exists(select 1 from role_menu r where r.roleId=#{roleId} and r.menuId=a.id) then true else false end) checked From  menu_info a  
+	   Where 0=0
+	</select>
+	<!-- 查询权限 -->
+	<select id="findAuthority" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From  menu_info  a
+	   Where isDeleted=0 
+	   and id in (select menuId from role_menu where roleId in (select roleId from role_user where userId=#{userId}))
+	   union all
+	    select *,name text From  menu_info  a
+	   Where isDeleted=0
+	   and id in(
+	   		select pid From  menu_info  a
+	   Where isDeleted=0
+	   and id in (select menuId from role_menu where roleId in (select roleId from role_user where userId=#{userId}))
+	   )
+	</select>
+	<!-- 查询所有数据 -->
+	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From  menu_info 
+	   Where isDeleted=0
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select * From  menu_info 
+	   Where isDeleted=0
+	   <if test="code!=null and code!=''">
+	   		and code  like '${code}%'  
+	   </if>
+	    <if test="name!=null and name!=''">
+	   	and  name like  '%${name}%'  
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  menu_info 
+	    Where isDeleted=0
+	   <if test="code!=null and code!=''">
+	   		and code  like '${code}%'  
+	   </if>
+	   <if test="name!=null and name!=''">
+	   	and  name like  '%${name}%'  
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into menu_info(id,pid,code,pcode,name,urls,series,seq,isActives,isDeleted)
+	   values(#{id},#{pid},#{code},#{pcode},#{name},#{urls},#{series},#{seq},#{isActives},'0')
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update menu_info set pid = #{pid},
+	                    code = #{code},
+	                     pcode = #{pcode},
+	                    name = #{name},
+	                    urls = #{urls},
+	                     series = #{series},
+	                    seq = #{seq},
+	                    isActives = #{isActives}
+        where  id=#{id} 
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStat"  parameterType="java.util.HashMap">
+	   update menu_info set isActives = #{isActives} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select *,(select name from menu_info b where b.id=a.id) pname From menu_info a  Where isDeleted=0  And  id=#{id}
+	</select>
+	<!-- 最大排序 -->
+	<select id="findMaxSeq"  parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	   Select max(seq) From menu_info  Where isDeleted=0 
+	</select>
+	<select id="findCode" resultType="java.lang.String" parameterType="java.util.HashMap" >
+	   select max(code)
+	   From  menu_info
+	   Where isDeleted=0
+	   ${parameter}
+	</select> 
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   menu_info set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

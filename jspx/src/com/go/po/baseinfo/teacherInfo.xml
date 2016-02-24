@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="teacherInfo">
+	 <!-- 查询数据 -->
+	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.id id,a.schoolId pid,a.name text,1 teacher from teacher_info a   left join unit_info c on c.id=a.schoolId
+	   Where a.isDeleted=0
+	   <if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select (select name from code_data cd where cd.id = a.zkxdId) zkxdName,(select name from code_data cd where cd.id = a.fkxdId) fkxdName,(select name from code_data cd where cd.id = a.zkxkId) zkxkName,(select name from code_data cd where cd.id = a.fkxkId) fkxkName,a.*,b.text text,c.name schoolName From teacher_info a left join user_info b on a.userId=b.id left join unit_info c on c.id=a.schoolId
+	   Where a.isDeleted=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  c.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  c.categoryId=#{categoryId}
+	   </if>
+	   <if test="schoolId!=null and schoolId!=''">
+	   	and  a.schoolId=#{schoolId}
+	   </if>
+	   <if test="xkIds!=null and xkIds!=''">
+	   		and (a.zkxkId in (${xkIds})
+	   		or a.fkxkId in (${xkIds}))
+	   </if>
+	   <if test="xdIds!=null and xdIds!=''">
+	   	and (a.zkxdId in (${xdIds})
+	   	or a.fkxdId in (${xdIds}))
+	   </if>
+	   <!-- 申请学生不显示已选择的学生 -->
+	   <if test="notApplicationClassId!=null and notApplicationClassId!=''">
+	   	and  a.id not in (select studentId from application_class_student where classId=#{notApplicationClassId}
+	   		union all 
+	   		select studentId from class_student where classId =#{notApplicationClassId}<!-- 不显示已成功添加的学生 -->
+	   	)
+	   </if>
+	   <!-- 在选择学员的时候如果学员已选择过就不显示 -->
+	   <if test="classId!=null and classId!=''">
+	   	and a.id not in(select studentId from class_student where classId=#{classId})
+	   </if>
+	   <if test="isStudent!=null and isStudent!=''">
+	   		and  exists(select 1 from class_student where studentId=a.id)
+	   </if>
+	   <if test="classIdStr!=null and classIdStr!=''">
+	   		and  a.id in (select studentId from class_student where classId=#{classIdStr})
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*) From teacher_info a left join user_info b on a.userId=b.id left join unit_info c on c.id=a.schoolId
+	   Where a.isDeleted=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  c.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  c.categoryId=#{categoryId}
+	   </if>
+	   <if test="classId!=null and classId!=''">
+	   	and a.id not in(select studentId from class_student where classId=#{classId})
+	   </if>
+	   <if test="isStudent!=null and isStudent!=''">
+	   		and  exists(select 1 from class_student where studentId=a.id)
+	   </if>
+	   <if test="classIdStr!=null and classIdStr!=''">
+	   		and  a.id in (select studentId from class_student where classId=#{classIdStr})
+	   </if>
+	   <if test="schoolId!=null and schoolId!=''">
+	   	and  a.schoolId=#{schoolId}
+	   </if>
+	   <if test="notApplicationClassId!=null and notApplicationClassId!=''">
+	   	and  a.id not in (select studentId from application_class_student where classId=#{notApplicationClassId}
+	   		union all 
+	   		select studentId from class_student where classId =#{notApplicationClassId}<!-- 不显示已成功添加的学生 -->
+	   	)
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into teacher_info(id,card,userId,schoolId,name,sex,raceId,partisanId,isDeleted,idcard,telephone,address,qq,wechat,zkxdId,zkxkId,fkxdId,fkxkId,createdate,creator)
+	   values(#{id},#{card},#{userId},#{schoolId},#{name},#{sex},#{raceId},#{partisanId},'0',#{idcard},#{telephone},#{address},#{qq},#{wechat},#{zkxdId},#{zkxkId},#{fkxdId},#{fkxkId},#{createdate},#{creator})
+	</insert>
+	<insert id="addAll" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo"  open="" separator="" close="">   
+	   	insert into teacher_info(id,card,userId,schoolId,name,sex,raceId,partisanId,isDeleted,idcard,telephone,address,qq,wechat,zkxdId,zkxkId,fkxdId,fkxkId,createdate,creator)
+	   	values(#{vo.id},#{vo.card},#{vo.userId},#{vo.schoolId},#{vo.name},#{vo.sex},#{vo.raceId},#{vo.partisanId},'0',#{vo.idcard},#{vo.telephone},#{vo.address},#{vo.qq},#{vo.wechat},#{vo.zkxdId},#{vo.zkxkId},#{vo.fkxdId},#{vo.fkxkId},#{vo.createdate},#{vo.creator});
+	   	insert into user_info (id,text,password,isDeleted,isActives)
+	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1');
+	   </foreach>
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update teacher_info set userId = #{userId},
+	   					card=#{card},
+	                    schoolId = #{schoolId},
+	                     name = #{name},
+	                    sex = #{sex},
+	                    raceId = #{raceId},
+	                    partisanId = #{partisanId},
+	                    idcard = #{idcard},
+	                    telephone = #{telephone},
+	                    address = #{address},
+	                    qq = #{qq},
+	                    wechat = #{wechat},
+	                    zkxdId = #{zkxdId},
+	                    zkxkId = #{zkxkId},
+	                    fkxdId = #{fkxdId},
+	                    fkxkId = #{fkxkId},
+	                    createdate = #{createdate},
+	                    creator = #{creator}
+        where  id=#{id} 
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStat"  parameterType="java.util.HashMap">
+	   update teacher_info set isActives = #{isActives} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,b.id userId,b.text text From teacher_info a left join user_info b  on a.userId=b.id  Where a.isDeleted=0  And  a.id=#{id}
+	</select><!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From teacher_info a Where a.isDeleted=0  
+	   <if test="userId!=null and userId!=''">
+	   	and userId=#{userId}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   teacher_info set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+        update user_info set isDeleted=1 where 1=1 
+         And id in (select userId from teacher_info where id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> );
+	</delete>
+	<!-- 获得学校数量 -->
+	<select id="getSchoolNum"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select schoolId,count(id) num From teacher_info a  Where a.isDeleted=0 
+	    And  a.id in
+	   <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach>
+        group by schoolId
+	</select>
+	
+	<!-- 根据班级ID获取班级学生列表 -->
+	<select id="listByParams" parameterType="map" resultType="map">
+		select name,idcard as cardNum from teacher_info where id in(select studentId from class_student where classId in(#{ids}))
+	</select>
+	<!-- zhangjf 2015-10-14 根据身份证号加载老师信息start -->
+	<select id="loadByIdCard" parameterType="map" resultType="map">
+		select * from teacher_info where 1=1
+		<choose>
+			<when test="idcard!=null and idcard!=''">
+				and idcard=#{idcard}
+			</when>
+			<otherwise>
+				and 1>2
+			</otherwise>
+		</choose>
+		 limit 0,1
+	</select>
+	<!-- zhangjf 2015-10-14 根据身份证号加载老师信息end -->
+	<!-- zhangjf 2015-10-14 app同步学生数据start -->
+	<select id="synStudents" parameterType="map" resultType="map">
+		select t1.name as classroom,
+			   t3.name as name,
+			   t3.idcard as cardNum,
+			   (select idcard from teacher_info where id=t1.classTeacher)as tCardNum 
+			   from class_info t1  left join  class_student t2 
+			   on  t1.id=t2.classId
+			   left join teacher_info t3 
+			   on t2.studentId=t3.id
+	</select>
+	<!-- zhangjf 2015-10-14 app同步学生数据end -->
+</mapper>

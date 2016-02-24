@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="classTime">
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select a.*,a.classId pid,classDate text from class_time a left join class_info b on a.classId=b.id  where a.isDeleted=0
+	  <if test="classId!=null and classId!=''">
+	  	and a.classId=#{classId}
+	  </if>
+	  <if test="userId!=null and userId!=''">
+	   	and b.classTeacher in (select id from teacher_info t where t.userId=#{userId})
+	   </if>
+	</select>
+	<select id="findTimeByClass" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,case when classDate is null then '' else date_format(date_sub(concat(classDate,' ',beginTime,':00'),interval (select beforeClass from time_setting) minute),'%Y/%m/%d %H:%i:%s') end beginDate,
+	  case when classDate is null then '' else date_format(date_add(concat(classDate,' ',endTime,':59'),interval (select afterFinishClass from time_setting) minute),'%Y/%m/%d %H:%i:%s') end endDate  
+	  from class_time a  where a.isDeleted=0 and a.classId=#{classId}
+	  <if test="classTimeId!=null and classTimeId!=''">
+	  	and a.id=#{classTimeId}
+	  </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select a.*,b.name className from class_time a left join class_info b on a.classId=b.id where a.isDeleted=0
+	  <if test="className!=null and className!=''">
+	  	and b.name like '%${className}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.classDate >= #{beginDate}
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.classDate &lt;= #{endDate}
+	    </if>   
+	    <if test="classId!=null and classId!=''">
+		  	and a.classId =#{classId}
+		  </if>
+		  <if test="bzrUserId!=null and bzrUserId!=''">
+		  	and a.classId in (select id from class_info t1 where t1.classTeacher in (select id from teacher_info t where t.userId=#{bzrUserId}))
+		  </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*) from class_time a left join class_info b on a.classId=b.id where a.isDeleted=0
+	  <if test="className!=null and className!=''">
+	  	and b.name like '%${className}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.classDate >= #{beginDate}
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.classDate &lt;= #{endDate}
+	    </if>   
+	    <if test="classId!=null and classId!=''">
+		  	and a.classId =#{classId}
+		  </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into class_time(id,classId,classDate,beginTime,endTime,address,content,isDeleted,createdate,creator)
+	   values(#{id},#{classId},#{classDate},#{beginTime},#{endTime},#{address},#{content},'0',#{createdate},#{creator})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update class_time set classId = #{classId},
+	                    classDate = #{classDate},
+	                     beginTime = #{beginTime},
+	                     endTime = #{endTime},
+	                    address = #{address},
+	                     content = #{content},
+	                    createdate = #{createdate},
+	                    creator = #{creator}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From class_time a  Where a.isDeleted=0  And  a.id=#{id}
+	</select><!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,b.name className From class_time a left join class_info b on a.classId=b.id Where a.isDeleted=0  
+	   <if test="classId!=null and classId!=''">
+	   	and b.id=#{classId}
+	   </if>
+	   <if test="classTimeId!=null and classTimeId!=''">
+	   	and a.id=#{classTimeId}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   class_time set isDeleted=1   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

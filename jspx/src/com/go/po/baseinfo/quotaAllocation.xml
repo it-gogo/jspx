@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="quotaAllocation">
+	<!-- 不分页查询 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,(select name from unit_info u where u.id=a.schoolId) schoolName From  quota_allocation a  
+	   Where 0=0
+	   <if test="classId!=null and classId!=''">
+	   	and  a.classId=#{classId}  
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,b.name schoolName From  quota_allocation a left join unit_info b on a.schoolId=b.id
+	   Where 0=0
+	   <if test="classId!=null and classId!=''">
+	   	and  a.classId=#{classId}  
+	   </if>
+	   <if test="schoolName!=null and schoolName!=''">
+	   	and  b.name like '%${schoolName}%'  
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  quota_allocation  a left join unit_info b on a.schoolId=b.id
+	    Where 0=0
+	  <if test="classId!=null and classId!=''">
+	   	and  a.classId=#{classId}  
+	   </if>
+	   <if test="schoolName!=null and schoolName!=''">
+	   	and  b.name like '%${schoolName}%'  
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into quota_allocation(id,classId,schoolId,creator,createdate,number)
+	   values(#{id},#{classId},#{schoolId},#{creator},#{createdate},#{number})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update quota_allocation set classId = #{classId},
+	                    schoolId = #{schoolId},
+	                     creator = #{creator},
+	                    createdate = #{createdate},
+	                    number = #{number}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From quota_allocation  Where 0=0  And  id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   quota_allocation    Where 1 = 1
+	    And  id in
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>
+ 

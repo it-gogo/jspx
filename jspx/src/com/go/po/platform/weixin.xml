@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="weixin">
+	<!-- 添加微信绑定数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into weixin_bind_info(id,weixin_code,id_card_no,bind_time,update_time)
+	   values(#{id},#{weixin_code},#{id_card_no},#{bind_time},#{update_time})
+	</insert>
+	
+	<!-- 修改微信绑定数据数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update weixin_bind_info set weixin_code = #{weixin_code},
+	                    id_card_no = #{id_card_no},
+	                     bind_time = #{bind_time},
+	                    update_time = #{update_time}
+        where  id=#{id} 
+	</update>
+	<!-- 根据微信号查询绑定信息 -->
+	<select id="load" parameterType="map" resultType="map">
+		select * from weixin_bind_info where weixin_code=#{weixin_code}
+	</select>
+</mapper>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attendanceInfo">
+	<select id="statisticsDetail" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		
+	</select>
+	<!-- 自定义统计 -->
+	<select id="statisticsZDY" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		select a.sex sex, a.name studentName,(select name from unit_info u where u.id=a.schoolId) schoolName,a.idcard idcard ,#{total} total,
+		<foreach collection="timeList" item="time" open="(" separator="+" close=")">
+			<choose>
+				<when test="time.type==1">
+					case when exists (select 1 from attendance_info where idcard=a.idcard and attendanceDate 
+					between date_format(date_sub(#{time.time},interval #{time.beforeAttendance} minute),'%Y/%m/%d %H:%i:%s')
+					and  date_format(date_add(#{time.time},interval #{time.afterAttendance} minute),'%Y/%m/%d %H:%i:%s')) then 1 else 0 end 
+				</when>
+				<otherwise>
+					0
+				</otherwise>
+			</choose>
+		</foreach>
+		 zhundao,
+		
+		<foreach collection="timeList" item="time" open="(" separator="+" close=")">
+			<choose>
+				<when test="time.type==1">
+					case when exists (select 1 from attendance_info where idcard=a.idcard and attendanceDate 
+					> date_format(date_add(#{time.time},interval #{time.afterAttendance} minute),'%Y/%m/%d %H:%i:%s')
+					and attendanceDate &lt; date_format(date_add(#{time.time},interval #{time.absenteeism} minute),'%Y/%m/%d %H:%i:%s')) then 1 else 0 end 
+				</when>
+				<otherwise>
+					0
+				</otherwise>
+			</choose>
+		</foreach>
+		 chidao,
+		 
+		 <foreach collection="timeList" item="time" open="(" separator="+" close=")">
+			<choose>
+				<when test="time.type==2">
+					case when exists (select 1 from attendance_info where idcard=a.idcard and attendanceDate 
+					between date_format(date_sub(#{time.time},interval #{time.beforeAttendance} minute),'%Y/%m/%d %H:%i:%s')
+					and  date_format(date_add(#{time.time},interval #{time.afterAttendance} minute),'%Y/%m/%d %H:%i:%s')) then 1 else 0 end 
+				</when>
+				<otherwise>
+					0
+				</otherwise>
+			</choose>
+		</foreach>
+		 zhuntui,
+		 
+		 <foreach collection="timeList" item="time" open="(" separator="+" close=")">
+			<choose>
+				<when test="time.type==2">
+					case when exists (select 1 from attendance_info where idcard=a.idcard and attendanceDate 
+					> date_format(date_sub(#{time.time},interval #{time.absenteeism} minute),'%Y/%m/%d %H:%i:%s')
+					and attendanceDate &lt; date_format(date_sub(#{time.time},interval #{time.beforeAttendance} minute),'%Y/%m/%d %H:%i:%s')) then 1 else 0 end 
+				</when>
+				<otherwise>
+					0
+				</otherwise>
+			</choose>
+		</foreach>
+		 zaotui,
+		0 kuangke 
+		from teacher_info a where 1=1 
+		<if test="classId!=null and classId!=''">
+	  		and a.id in (select studentId from class_student t where t.classId=#{classId})
+	  	</if>
+	  	<if test="studentId!=null and studentId!=''">
+	  		and a.id =#{studentId}
+	  	</if>
+	</select>
+	<!-- 统计 -->
+	<select id="statistics" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select #{date.beginDate} beginDate,#{date.endDate} endDate,b.sex sex, b.name studentName,
+	  (select name from unit_info u where u.id=b.schoolId) schoolName,b.idcard idcard,
+	  a.attendanceDate attendanceDate
+	  <!-- (select a.attendanceDate from attendance_info a where a.idcard=b.idcard 
+	  	 <if test="beginDate!=null and beginDate!=''">
+	    	And a.attendanceDate >= #{beginDate}
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.attendanceDate &lt;= #{endDate}
+	    </if> 
+	     <if test="classId!=null and classId!=''">
+		  	<if test="classDateList!=null and classDateList.size()>0">
+		  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+			  		a.attendanceDate between #{date.beginDate} and #{date.endDate} or a.id is null
+		  		</foreach>
+		  	</if>
+	  	</if>
+	  ) attendanceDate -->
+	  from teacher_info b left join  (
+	  	select * from attendance_info t where 1=1 
+	  	 <if test="beginDate!=null and beginDate!=''">
+	    	And t.attendanceDate >= #{beginDate} 
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And t.attendanceDate &lt;= #{endDate} 
+	    </if> 
+	    <if test="classId!=null and classId!=''">
+		  	<if test="classDateList!=null and classDateList.size()>0">
+		  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+					  t.attendanceDate between #{date.beginDate} and #{date.endDate} 
+		  		</foreach>
+		  	</if>
+	  	</if>
+	  ) a on a.idcard=b.idcard  where 0=0
+	  <if test="idcard!=null and idcard!=''">
+	  	and a.idcard like '%${idcard}%'
+	  </if>
+	    <if test="classId!=null and classId!=''">
+	  		and b.id in (select studentId from class_student t where t.classId=#{classId})
+		  	<!-- <if test="classDateList!=null and classDateList.size()>0">
+		  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+			  		<if test="classDateList!=null and classDateList.size()>0">
+				  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+					  		a.attendanceDate between #{date.beginDate} and #{date.endDate} or a.id is null
+				  		</foreach>
+				  	</if>
+		  		</foreach>
+		  	</if> -->
+	  	</if>
+	  	order by a.attendanceDate asc
+	</select>
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select a.*,b.name studentName from attendance_info a left join  teacher_info b on a.idcard=b.idcard  where 0=0
+	  <if test="idcard!=null and idcard!=''">
+	  	and a.idcard like '%${idcard}%'
+	  </if>
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.attendanceDate >= date_format(#{beginDate} ,'%Y/%m/%d %H:%i:%s')
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.attendanceDate &lt;= date_format(#{endDate} ,'%Y/%m/%d %H:%i:%s')
+	    </if>  
+	    <if test="classId!=null and classId!=''">
+	  		and b.id in (select studentId from class_student t where t.classId=#{classId})
+		  	<if test="classDateList!=null and classDateList.size()>0">
+		  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+			  		a.attendanceDate like '${date.classDate1}%' 
+		  		</foreach>
+		  	</if>
+	  	</if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from attendance_info a left join  teacher_info b on a.idcard=b.idcard  where 0=0
+	  <if test="idcard!=null and idcard!=''">
+	  	and a.idcard like '%${idcard}%'
+	  </if>
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="beginDate!=null and beginDate!=''">
+	    	And a.attendanceDate >= date_format(#{beginDate} ,'%Y/%m/%d %H:%i:%s')
+	    </if>
+	    <if test="endDate!=null and endDate!=''">
+	    	And a.attendanceDate &lt;= date_format(#{endDate} ,'%Y/%m/%d %H:%i:%s')
+	    </if>    
+	    <if test="classId!=null and classId!=''">
+	  		and b.id in (select studentId from class_student t where t.classId=#{classId})
+		  	<if test="classDateList!=null and classDateList.size()>0">
+		  		<foreach collection="classDateList" item="date"  open="and (" separator="or" close=")">
+			  		<!-- a.attendanceDate between #{date.beginDate} and #{date.endDate} -->
+			  		a.attendanceDate like '${date.classDate1}%' 
+		  		</foreach>
+		  	</if>
+	  	</if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap"  >
+		<selectKey resultType="int" order="AFTER" keyProperty="id"> 
+	        SELECT LAST_INSERT_ID() 
+	    </selectKey>
+	   insert into attendance_info(idcard,attendanceDate,ip,createdate)
+	   select (select idcard from teacher_info where id=#{studentId}),#{attendanceDate},#{ip},#{createdate}
+	</insert>
+	<!-- 添加多条数据 -->
+	<insert id="addAll" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+		   insert into attendance_info(idcard,attendanceDate,ip,createdate)
+	   	values(#{vo.idcard},#{vo.attendanceDate},#{vo.ip},#{vo.createdate});
+		</foreach>
+	</insert>
+	<!-- 通过人工考勤添加 -->
+	<insert id="addByArtificial" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+		   insert into attendance_info(idcard,attendanceDate,ip,createdate)
+	   		select (select idcard from teacher_info where id=#{vo.studentId}),#{vo.attendanceDate},#{vo.ip},#{vo.createdate};
+		</foreach>
+	</insert>
+	
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   attendance_info    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

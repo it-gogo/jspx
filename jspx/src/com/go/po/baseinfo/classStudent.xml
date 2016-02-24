@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="classStudent">
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select a.*,b.name studentName,c.name schoolName,b.sex sex,b.userId as userId,(select name from class_info where id=a.classId) className 
+	  from class_student a left join teacher_info b on a.studentId=b.id left join unit_info c on b.schoolId=c.id where 0=0
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="schoolName!=null and schoolName!=''">
+	  	and c.name like '%${schoolName}%'
+	  </if>
+	  <if test="classId!=null and classId!=''">
+	  	and a.classId =#{classId}
+	  </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	     select count(*)  from class_student a left join teacher_info b on a.studentId=b.id left join unit_info c on b.schoolId=c.id where 0=0
+	  <if test="studentName!=null and studentName!=''">
+	  	and b.name like '%${studentName}%'
+	  </if>
+	  <if test="schoolName!=null and schoolName!=''">
+	  	and c.name like '%${schoolName}%'
+	  </if>
+	  <if test="classId!=null and classId!=''">
+	  	and a.classId =#{classId}
+	  </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   	insert into class_student(id,classId,studentId)
+		values(#{id},#{classId},#{studentId})
+	</insert>
+	<!-- 批量添加 -->
+	<insert id="batchAdd" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	   		insert into class_student(id,classId,studentId)
+		 	values(#{vo.id},#{vo.classId},#{vo.studentId});
+		</foreach>
+	</insert>
+	<!-- 审批添加 -->
+	<insert id="acceptedAdd" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	   		insert into class_student(id,classId,studentId)
+		 	select #{vo.id},(select classId from application_class_student where id=#{vo.acs}),(select studentId from application_class_student where id=#{vo.acs});
+		</foreach>
+	</insert>
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update class_student set classId = #{classId},
+	                    studentId = #{studentId}
+        where  id=#{id} 
+	</update>
+	<!-- 添加后台数据 -->
+	<update id="updatePass" parameterType="java.util.HashMap" >
+	   update class_student set isPass = #{isPass}
+        where  id=#{id} 
+	</update>
+	<!-- 填写分数 -->
+	<update id="scores" parameterType="java.util.HashMap" >
+	   update class_student set scores = #{scores}
+        where  id=#{id} 
+	</update>
+	<update id="batchScores" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	   update class_student set scores = #{vo.scores}
+        where  id=#{vo.id} ;
+        </foreach>
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From class_student a  Where 0=0  And  a.id=#{id}
+	</select>
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From class_student a join teacher_info b on a.studentId=b.id join class_info c on a.classId=c.id Where 0=0  
+	   <if test="classId!=null and classId!=''">
+	   	and a.classId=#{classId}
+	   </if>
+	   <if test="userId!=null and userId!=''">
+	   	and b.userId =#{userId}
+	   </if>
+	   <if test="studentName!=null and studentName!=''">
+	   	and b.name=#{studentName}
+	   </if>
+	   <if test="schoolName!=null and schoolName!=''">
+	   	and b.schoolId in (select id from unit_info where name =#{schoolName})
+	   </if>
+	   <if test="className!=null and className!=''">
+	   	and c.name = #{className}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   class_student   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<select id="findNum"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select b.schoolId schoolId,count(schoolId) num From class_student a left join teacher_info b on a.studentId = b.id  Where 1=1 
+	   	and a.classId=#{classId} 
+	    And b.schoolId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> 
+	    group by b.schoolId
+	</select>
+	
+	<!-- zhangjf 2015-09-24 添加根据老师的ID查找对应的班级ID start -->
+	<select id="findClasses" parameterType="map" resultType="map">
+		select * from class_student where 1=1
+		<if test="studentId!=null and studentId!=''">
+			and studentId=#{studentId}
+		</if>
+	</select>
+	<!-- zhangjf 2015-09-24 添加根据老师的ID查找对应的班级ID end -->
+</mapper>
