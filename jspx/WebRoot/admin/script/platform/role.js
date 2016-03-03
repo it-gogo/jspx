@@ -30,25 +30,7 @@ function  loadF(row){
 	parent.$.createDialog(loadOpt);
 	parent.$.createDialog.open_grid = dataGrid;
 }
-/**
- * 操作信息
- * @param value
- * @param row
- * @param index
- * @returns {String}
- */
-function  handlerstr(value,row,index){
-	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='bindMenu("+json+")';>[绑定模块]</a> " +
-     							"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='bindUser("+json+")';>[绑定用户]</a> "+
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='loadF("+json+")';>[修 改]</a> ";
-     if(row.status=="启用"){
-  	   handstr += "<a href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-edit' plain='true' onclick='changeStatus("+json+");'>[禁 用]</a>&nbsp;&nbsp;";
-    }else{
-  	   handstr += "<a href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-edit' plain='true' onclick='changeStatus("+json+");'>[启 用]</a>&nbsp;&nbsp;";
-    }
-     return  handstr;
-}
+
 /**
  * 绑定模块
  * @param row

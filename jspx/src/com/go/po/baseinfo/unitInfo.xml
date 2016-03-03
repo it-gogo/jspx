@@ -109,8 +109,8 @@
 		<foreach collection="list" item="vo"  open="" separator="" close="">   
 	    insert into unit_info(id,pid,name,creator,createdate,seq,isDeleted,isEdb,code,type,typeId,categoryId,flag,pflag,userId)
 	   	values(#{vo.id},#{vo.pid},#{vo.name},#{vo.creator},#{vo.createdate},#{vo.seq},'0',#{vo.isEdb},#{vo.code},#{vo.type},#{vo.typeId},#{vo.categoryId},#{vo.flag},#{vo.pflag},#{vo.userId});
-		insert into user_info (id,text,password,isDeleted,isActives)
-	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1');
+		insert into user_info (id,text,password,isDeleted,isActives,type)
+	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1','单位账号');
 	   </foreach>
 	</insert>
 	

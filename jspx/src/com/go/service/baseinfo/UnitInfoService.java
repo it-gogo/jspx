@@ -178,6 +178,7 @@ public class UnitInfoService extends BaseService {
 	 * @throws Exception 
 	 */
 	public String addAll(List<String[]> list,String pid,Object creator) throws Exception{
+		int flag=0;
 		StringBuffer sb=new StringBuffer();
 		List<Map<String,Object>> res=new ArrayList<Map<String,Object>>();
 		String[]  header = new String[]{
@@ -299,7 +300,14 @@ public class UnitInfoService extends BaseService {
 				}else{
 					map.put("pflag", null);
 				}
-				Map<String,Object>  n_parameter = this.setInsertParameter(map);
+				Map<String,Object>  n_parameter=new HashMap<String, Object>(map);
+				if(flag==0){
+					n_parameter = this.setInsertParameter(map);
+					flag=Integer.parseInt(n_parameter.get("flag").toString());
+				}else{
+					flag+=1;
+					n_parameter.put("flag", flag);
+				}
 				res.add(n_parameter);
 			}
 		}

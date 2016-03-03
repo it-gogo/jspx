@@ -18,7 +18,7 @@ $(document).ready(function(){
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='lookF("+json+")';>[查 看]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-search' plain='true' onclick='lookF("+json+")';>查 看</a> ";
      return  handstr;
 }
 /**

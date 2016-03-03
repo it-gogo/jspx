@@ -11,10 +11,21 @@
 	
 	<!-- 删除数据 -->
 	<delete id="delete"  parameterType = "java.util.List">
-	    delete from   role_user    Where 1 = 1
+	    delete from   role_user     Where 1 = 1
 	    And roleId in 
 	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
            #{id}  
-        </foreach> ;
+        </foreach>  ;
+	</delete>
+	<delete id="delete1"  parameterType = "java.util.Map">
+	    delete from   role_user      Where 1 = 1
+	    And roleId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> 
+        <if test="flag!=null and flag!=''">
+        	and userId in (select id from view_user t1 where t1.flag like '${flag}%')
+        </if>
+        ;
 	</delete>
 </mapper>

@@ -5,15 +5,26 @@
 	<select id="roleUser" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   <choose>
 	   	<when test="text!=null and text!=''">
-	   		 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'1' orderSeq From  user_info a  
+	   		 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'1' orderSeq From  view_user a  
 	   			Where isDeleted=0 and text  like '%${text}%'   
+	   			<if test="flag!=null and flag!=''">
+	   				and a.flag like '${flag}%'
+	   			</if>
 	   			union all 
-	   			 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'0' orderSeq From  user_info a  
-	   			Where isDeleted=0 and text not like '%${text}%'    order by orderSeq desc,checked desc;
+	   			 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'0' orderSeq From  view_user a  
+	   			Where isDeleted=0 and text not like '%${text}%'    
+	   			<if test="flag!=null and flag!=''">
+	   				and a.flag like '${flag}%'
+	   			</if>
+	   			order by orderSeq desc,checked desc;
 	   	</when>
 	   	<otherwise>
-	   		select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked From  user_info a  
-	   		Where isDeleted=0   order by checked desc;
+	   		select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked From  view_user a  
+	   		Where isDeleted=0   
+	   		<if test="flag!=null and flag!=''">
+   				and a.flag like '${flag}%'
+   			</if>
+	   		order by checked desc;
 	   	</otherwise>
 	   </choose>
 	</select> 
@@ -36,8 +47,8 @@
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
-	   insert into user_info(id,text,password,isActives,isDeleted)
-	   values(#{id},#{text},#{password},#{isActives},'0')
+	   insert into user_info(id,text,password,isActives,isDeleted,type)
+	   values(#{id},#{text},#{password},#{isActives},'0',#{type})
 	</insert>
 	
 	<!-- 添加后台数据 -->
@@ -88,7 +99,8 @@
 	</delete>
 	<!-- zhangjf 2015-08-07 根据用户名密码进行用户登陆start -->
 	<select id="login" parameterType="map" resultType="map">
-		select * from user_info where text=#{text} and password=#{password} and isDeleted=0
+		<!-- select * from user_info where text=#{text} and password=#{password} and isDeleted=0 -->
+		 select * from view_user where text=#{text} and password=#{password} and isDeleted=0
 	</select>
 	<!-- zhangjf 2015-08-07 根据用户名密码进行用户登陆end -->
 	

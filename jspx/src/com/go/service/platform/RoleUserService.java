@@ -29,4 +29,11 @@ public class RoleUserService extends BaseService {
 	public  void  delete(List<String> parameter){
 		this.getBaseDao().delete("roleUser.delete", parameter);
 	}
+	/**
+	 * 删除数据
+	 * @param parameter
+	 */
+	public  void  delete(Map<String,Object> parameter){
+		this.getBaseDao().delete("roleUser.delete1", parameter);
+	}
 }

@@ -28,7 +28,9 @@ function downloadData(id,dataUrl){
 	});
 }
 function enterClassIndex(classId,className){
-	parent.bxunTabs.addTab(className+"首页","../main/classIndex.do?classId="+classId);
+	var url="admin/css/icons/陈铭轩.png";
+	url="<%=request.getContextPath()%>/"+url;
+	parent.bxunTabs.addTab("",className+"首页","../main/classIndex.do?classId="+classId,url);
 }
 </script>
 <style type="text/css">

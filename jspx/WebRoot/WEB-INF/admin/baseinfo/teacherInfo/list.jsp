@@ -39,7 +39,11 @@
 			        dataType: "text",
 			        success: function (data) { 
 			        	var json=eval("("+data+")");
-			        	parent.$.messager.alert("提示窗口",json.message);
+			        	if(json.message){
+				        	parent.$.messager.alert("提示窗口",json.message);
+			        	}else{
+			        		parent.$.messager.alert("提示窗口",json.error);
+			        	}
 			        	$("#grid").datagrid("reload");
 			        }, error: function (data) {  
 			            alert(data);  

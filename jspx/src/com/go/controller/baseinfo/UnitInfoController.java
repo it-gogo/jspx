@@ -319,7 +319,7 @@ public class UnitInfoController extends BaseController {
 				  password="123456";
 			  }
 			  user.put("password", Util.Encryption(password.toString()));
-//			  user.put("unitId", n_parameter.get("id"));
+			  user.put("type", "单位账号");
 			  this.userInfoService.add(user);//添加用户
 			  n_parameter.put("userId", userId);
 			  user.put("isActives", "1");
@@ -338,6 +338,7 @@ public class UnitInfoController extends BaseController {
 				  }
 				  user.put("password", Util.Encryption(password.toString()));
 				  user.put("isActives", "1");
+				  user.put("type", "单位账号");
 				  this.userInfoService.add(user);//添加用户
 			  }else{
 				  Map<String,Object> user=new HashMap<String, Object>();
@@ -380,6 +381,7 @@ public class UnitInfoController extends BaseController {
 			  }
 			  user.put("password", Util.Encryption(password.toString()));
 			  user.put("isActives", "1");
+			  user.put("type", "单位账号");
 			  this.userInfoService.add(user);//添加用户
 			  this.unitInfoService.add(n_parameter);
 			  this.ajaxMessage(response, Syscontants.MESSAGE,"添加成功");
@@ -396,6 +398,7 @@ public class UnitInfoController extends BaseController {
 				  }
 				  user.put("password", Util.Encryption(password.toString()));
 				  user.put("isActives", "1");
+				  user.put("type", "单位账号");
 				  this.userInfoService.add(user);//添加用户
 			  }else{
 				  Map<String,Object> user=new HashMap<String, Object>();

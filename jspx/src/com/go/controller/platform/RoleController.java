@@ -88,10 +88,18 @@ public class RoleController extends BaseController {
 	   * @param request
 	   * @param response
 	   * @param model
+	 * @throws Exception 
 	   */
 	  @RequestMapping("menuTree.do")
-	  public  void menuTree(HttpServletRequest request,HttpServletResponse response,Model  model){
+	  public  void menuTree(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+		  Object isSuperadmin=user.get("isSuperadmin");
+		  if("超级管理员".equals(isSuperadmin)){
+			  
+		  }else{
+			  parameter.put("userId", user.get("id"));
+		  }
 		  List<Map<String,Object>> list=menuInfoService.roleMenu(parameter);
 		  this.ajaxData(response, JSONUtil.listToArrayStr(list));
 	  }
@@ -151,6 +159,8 @@ public class RoleController extends BaseController {
 	  @RequestMapping("userList.do")
 	  public  void userList(HttpServletRequest request,HttpServletResponse response,Model  model){
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+		  parameter.put("flag", user.get("flag"));
 		  List<Map<String,Object>> list=userInfoService.roleUser(parameter);
 		  JSONObject obj=new JSONObject();
 		  obj.put("rows", list);
@@ -169,9 +179,13 @@ public class RoleController extends BaseController {
 	  public  void saveLogin(HttpServletRequest request, HttpServletResponse response,String[] userId) throws Exception{
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> userMap=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
 		  List<String> list=new ArrayList<String>();
 		  list.add(parameter.get("roleId").toString());
-		  roleUserService.delete(list);//删除之前绑定的
+		  Map<String,Object> parame=new HashMap<String, Object>();
+		  parame.put("list", list);
+		  parame.put("flag", userMap.get("flag"));
+		  roleUserService.delete(parame);//删除之前绑定的
 		  
 		  if(userId==null || userId.length==0){
 			  this.ajaxMessage(response, Syscontants.ERROE,"保存失败，至少选择一个用户信息。");
@@ -217,6 +231,8 @@ public class RoleController extends BaseController {
 		  if(isIDNull){
 			  parameter.put("createTime", ExtendDate.getYMD_h_m_s(new Date()));
 			  parameter.put("updateTime", ExtendDate.getYMD_h_m_s(new Date()));
+			  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+			  parameter.put("creator", user.get("id"));
 			  //设置ID
 			  Map<String,Object> n_parameter = sqlUtil.setTableID(parameter);
 			  parameter.put("id", n_parameter.get("id"));
@@ -238,6 +254,7 @@ public class RoleController extends BaseController {
 	  public  void  findList(HttpServletRequest request, HttpServletResponse response,Model  model){
 		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
 		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
+		  parameter.put("creator", user.get("id"));
 		  JSONObject jsonObj = this.roleService.findPageBean(parameter);
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }

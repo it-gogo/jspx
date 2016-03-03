@@ -111,6 +111,7 @@ public class UserInfoController extends BaseController {
 			  //设置ID
 			  Map<String,Object> n_parameter = sqlUtil.setTableID(parameter);
 			  parameter.put("id", n_parameter.get("id"));
+			  n_parameter.put("type", "管理员账号");
 			  //添加菜单
 			  this.userInfoService.add(n_parameter);
 			  this.ajaxMessage(response, Syscontants.MESSAGE,"添加成功");

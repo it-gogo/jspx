@@ -46,9 +46,10 @@ public class LoginController extends BaseController {
 	   * @param request
 	   * @param response
 	   * @param model
+	 * @throws Exception 
 	   */
 	  @RequestMapping("tree.do")
-	  public  void tree(HttpServletRequest request,HttpServletResponse response,Model  model){
+	  public  void tree(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
 		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
 		  if(user!=null){

@@ -20,12 +20,15 @@
 		 $(cbutton).bind('click',function(){
 			parent.dialogMap["d3"].dialog('close');
 		 });
+		 //设置图片的URL
+		 var dataUrl = $("#picUrl").val();
+		 $("#picFile").filebox('setValue',dataUrl);
 	});
 </script>
   </head>
   <body layout="easyui-layout">
          <div data-options="region:'center'">
-         <form id="dform" method="post" >
+         <form id="dform" method="post"  enctype="multipart/form-data">
             <input name="id" type="hidden"  value="${vo.id }">
 			<input name="pid" type="hidden"  value="${vo.pid }">
 			<input name="code" type="hidden"   value="${vo.code }">
@@ -48,12 +51,21 @@
 					<th>排序</th>
 					<td><input name="seq" type="text"   class="easyui-numberbox textbox" style="width:350px;"  value="${vo.seq }"></td>
 				</tr>
-				<!-- <tr>
-					<th>菜单图标</th>
+				<c:if test="${!empty vo.picUrl}">
+					<tr>
+					<th>图片</th>
 					<td>
-						<input class="easyui-filebox" name="img" data-options="buttonText:'选择图片'" style="width:350px">
+						<img src="<%=request.getContextPath() %>/${vo.picUrl }"/>
 					</td>
-				</tr> -->
+				</tr>
+				</c:if>
+				<tr>
+					<th>标题图片</th>
+					<td>
+						<input class="easyui-filebox" name="picFile" id="picFile" data-options="prompt:'选择图片',buttonText:'选择文件'" style="width:350px">
+						<input id="picUrl" name="picUrl" type="hidden" value="${vo.picUrl }" />
+					</td>
+				</tr>
 				<tr>
 					<th>启用禁用</th>
 					<td >

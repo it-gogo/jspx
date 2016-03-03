@@ -61,7 +61,7 @@
 			 */
 			function  handlerstr(value,row,index){
 				  var json = $.toJSON(row);
-			     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='selectClassTeacher("+json+")';>[选择]</a> ";
+			     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='selectClassTeacher("+json+")';>选择</a> ";
 			     return  handstr;
 			}
 			/**

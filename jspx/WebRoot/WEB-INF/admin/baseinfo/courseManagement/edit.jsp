@@ -98,8 +98,8 @@ function  loadLesson(row,index){
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='loadLesson("+json+","+index+")';>[修 改]</a> "+
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='deleteLesson("+json+","+index+")';>[删 除]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='loadLesson("+json+","+index+")';>修 改</a> "+
+     						"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteLesson("+json+","+index+")';>删 除</a> ";
      return  handstr;
 }
 

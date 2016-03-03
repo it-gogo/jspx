@@ -99,8 +99,8 @@
 		<foreach collection="list" item="vo"  open="" separator="" close="">   
 	   	insert into teacher_info(id,card,userId,schoolId,name,sex,raceId,partisanId,isDeleted,idcard,telephone,address,qq,wechat,zkxdId,zkxkId,fkxdId,fkxkId,createdate,creator)
 	   	values(#{vo.id},#{vo.card},#{vo.userId},#{vo.schoolId},#{vo.name},#{vo.sex},#{vo.raceId},#{vo.partisanId},'0',#{vo.idcard},#{vo.telephone},#{vo.address},#{vo.qq},#{vo.wechat},#{vo.zkxdId},#{vo.zkxkId},#{vo.fkxdId},#{vo.fkxkId},#{vo.createdate},#{vo.creator});
-	   	insert into user_info (id,text,password,isDeleted,isActives)
-	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1');
+	   	insert into user_info (id,text,password,isDeleted,isActives,type)
+	   	values(#{vo.userId},#{vo.text},#{vo.password},'0','1','老师账号');
 	   </foreach>
 	</insert>
 	

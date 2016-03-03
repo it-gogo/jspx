@@ -28,7 +28,7 @@ $(document).ready(function(){
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='lookF("+json+")';>[查 看]</a> ";
+     var  handstr = "<a class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-search' plain='true' onclick='lookF("+json+")';>查 看</a> ";
      return  handstr;
 }
 /**
@@ -36,8 +36,8 @@ function  handlerstr(value,row,index){
 **/
 function homeworkHandler(value,row,index){
 	var json=$.toJSON(row);
-	var handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='download_("+json+");'>[下载]</a>&nbsp;|&nbsp;"+
-					"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='upload("+json+");'>[上传]</a>";
+	var handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-filter' plain='true' onclick='download_("+json+");'>下载</a>&nbsp;|&nbsp;"+
+					"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-ok' plain='true' onclick='upload("+json+");'>上传</a>";
 					return handstr;
 }
 /**
@@ -45,7 +45,7 @@ function homeworkHandler(value,row,index){
 */
 function courseDataHandler(value,row,index){
 	var json=$.toJSON(row);
-	var handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='downloadData("+json+");'>[下载]</a>";
+	var handstr = "<a class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-filter' plain='true' onclick='downloadData("+json+");'>下载</a>";
 					return handstr;
 }
 /**
@@ -106,8 +106,8 @@ function upload(row){
 */
 function  accreditationHandler(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='attendance("+json+")';>[出勤情况]</a> "+
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='homework("+json+")';>[作业列表]</a> ";
+     var  handstr = "<a class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-search' plain='true' onclick='attendance("+json+")';>出勤情况</a> "+
+     						"<a class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-search' plain='true' onclick='homework("+json+")';>作业列表</a> ";
     var isPass=row.isPass;
     /*  if(typeof(isPass)=="undefined" || isPass==""){
      	handstr+="<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='pass("+json+")';>[通过]</a> <a href='javascript:void(0)'  iconCls='icon-edit'  onclick='unpass("+json+")';>[未通过]</a>";

@@ -33,13 +33,13 @@ function  treeClick(node){
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='attendance("+json+")';>[出勤情况]</a> "+
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='homework("+json+")';>[作业列表]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-filter' plain='true'  onclick='attendance("+json+")';>出勤情况</a> "+
+     						"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-sum' plain='true' onclick='homework("+json+")';>作业列表</a> ";
     var isPass=row.isPass;
      if(typeof(isPass)=="undefined" || isPass==""){
-     	handstr+="<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='pass("+json+")';>[通过]</a> <a href='javascript:void(0)'  iconCls='icon-edit'  onclick='unpass("+json+")';>[未通过]</a>";
+     	handstr+="<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-redo' plain='true' onclick='pass("+json+")';>通过</a> <a class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-undo' plain='true' onclick='unpass("+json+")';>未通过</a>";
      }else if(isPass=="1"){
-     	handstr+="<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='print("+json+")';>[打印证书]</a>";
+     	handstr+="<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-print' plain='true' onclick='print("+json+")';>打印证书</a>";
      }
      return  handstr;
 }

@@ -23,7 +23,7 @@
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='scores("+json+")';>[考试分数]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='scores("+json+")';>考试分数</a> ";
      return  handstr;
 }
 /**

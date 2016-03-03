@@ -8,6 +8,9 @@
 	   <if test="name!=null and name!=''">
 	   	and name  like '%${name}%'  
 	   </if>
+	   <if test="creator!=null and creator!=''">
+	   	and (creator=#{creator} or type='公开' )
+	   </if>
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select> 
 	<!-- 查询记录数 -->
@@ -17,18 +20,22 @@
 	    <if test="name!=null and name!=''">
 	   	and name  like '%${name}%'  
 	   </if>
+	   <if test="creator!=null and creator!=''">
+	   	and creator=#{creator}
+	   </if>
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
-	   insert into role(id,name,status,createTime,updateTime)
-	   values(#{id},#{name},#{status},#{createTime},#{updateTime})
+	   insert into role(id,name,status,createTime,updateTime,creator,type)
+	   values(#{id},#{name},#{status},#{createTime},#{updateTime},#{creator},#{type})
 	</insert>
 	
 	<!-- 添加后台数据 -->
 	<update id="update" parameterType="java.util.HashMap" >
 	   update role set name = #{name},
 	                    status = #{status},
-	                    updateTime = #{updateTime}
+	                    updateTime = #{updateTime},
+	                    type=#{type}
         where  id=#{id} 
 	</update>
 	<!-- 更新数据状态 -->

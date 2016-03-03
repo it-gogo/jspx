@@ -1,6 +1,8 @@
 var tabsIndex=0;
 var bxunTabs = {
-   addTab:function(title,url){
+   addTab:function(id,title,url,picUrl){
+	   var iconImg="<img id='"+id+"' src='"+picUrl+"' style='position: relative;top:20%;right:5px;border:0px;' width='18px;' height='18px;'>";
+	   title=iconImg+title;
 		if ($('#main').tabs('exists', title)){
 			$('#main').tabs('select', title);
 			 var currTab = $('#main').tabs('getTab', title),  
@@ -8,13 +10,6 @@ var bxunTabs = {
              content = '<iframe scrolling="auto" frameborder="0"  src="' + iframe.attr('src') + '" style="width:100%;height:100%;"></iframe>';  
 			 $('#main').tabs('updateIframeTab', {tab: currTab, options: {content: content, closable: true},which:title}); 
 		} else {
-			/*var content = '<iframe  scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;" onload="bxunTabs.addTab(\''+title+'\',\''+url+'\')"></iframe>';
-			$('#main').tabs('add',{
-				title:title,
-				content:content,
-				border:false,
-				closable:true
-			});*/
 			$("#main").tabs('addIframeTab',{
 				tab:{
 					id:"tabs_"+tabsIndex,

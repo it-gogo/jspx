@@ -1,13 +1,17 @@
 package com.go.service.platform;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.go.common.util.SqlUtil;
 import com.go.common.util.TreeUtil;
+import com.go.common.util.Util;
 import com.go.service.base.BaseService;
 /**
  * 用户Service
@@ -17,16 +21,41 @@ import com.go.service.base.BaseService;
 @Service
 public class MenuInfoService extends BaseService {
 
-	public List<Map<String,Object>> roleMenu(Map<String,Object> parameter){
+	public List<Map<String,Object>> roleMenu(Map<String,Object> parameter) throws Exception{
+//		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.roleMenu", parameter);
+//		return TreeUtil.createTree(list);
+		
+		parameter=SqlUtil.setPowId(parameter);//通过key控制权限
 		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.roleMenu", parameter);
+		Map<Object,Object> idMap=new HashMap<Object, Object>();
+		for(Map<String,Object> map:list){
+			idMap.put(map.get("id"), map);
+		}
+		Set<Object> parentIdSet = new HashSet<Object>();
+		for(Map<String,Object> map:list){
+			Object parentId=map.get("pid");
+			if(parentId!=null){
+				if(idMap.get(parentId)==null){
+					parentIdSet.add(parentId);
+				}
+			}
+		}
+		if(parentIdSet.size()>0){
+			parameter.put("list", parentIdSet);
+			List<Map<String,Object>> plist=this.getBaseDao().findList("menuInfo.findByListId", parameter);
+			list.addAll(plist);
+		}
+		
 		return TreeUtil.createTree(list);
 	}
 	/**
 	 * 分页查找数据
 	 * @param parameter
 	 * @return
+	 * @throws Exception 
 	 */
-	public  JSONObject  findPageBean(Map<String,Object> parameter){
+	public  JSONObject  findPageBean(Map<String,Object> parameter) throws Exception{
+		parameter=SqlUtil.setPowId(parameter);//通过key控制权限
 		return this.getBaseDao().findListPage("menuInfo.findCount", "menuInfo.findList", parameter);
 	}
 	/**
@@ -35,8 +64,10 @@ public class MenuInfoService extends BaseService {
 	 * @create_time {date} 上午10:56:47
 	 * @param parameter
 	 * @return
+	 * @throws Exception 
 	 */
-	public List<Map<String,Object>> findTree(Map<String,Object> parameter){
+	public List<Map<String,Object>> findTree(Map<String,Object> parameter) throws Exception{
+		parameter=SqlUtil.setPowId(parameter);//通过key控制权限
 		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.findTree", parameter);
 		return TreeUtil.createTree(list);
 	}
@@ -46,10 +77,35 @@ public class MenuInfoService extends BaseService {
 	 * @create_time {date} 上午10:56:47
 	 * @param parameter
 	 * @return
+	 * @throws Exception 
 	 */
-	public List<Map<String,Object>> findAuthority(Map<String,Object> parameter){
+	public List<Map<String,Object>> findAuthority(Map<String,Object> parameter) throws Exception{
+//		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.findAuthority", parameter);
+//		return TreeUtil.createTree(list);
+		
+		parameter=SqlUtil.setPowId(parameter);//通过key控制权限
 		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.findAuthority", parameter);
-		return TreeUtil.createTree(list);
+		Map<Object,Object> idMap=new HashMap<Object, Object>();
+		for(Map<String,Object> map:list){
+			idMap.put(map.get("id"), map);
+		}
+		Set<Object> parentIdSet = new HashSet<Object>();
+		for(Map<String,Object> map:list){
+			Object parentId=map.get("pid");
+			if(parentId!=null){
+				if(idMap.get(parentId)==null){
+					parentIdSet.add(parentId);
+				}
+			}
+		}
+		if(parentIdSet.size()>0){
+			parameter.put("list", parentIdSet);
+			List<Map<String,Object>> plist=this.getBaseDao().findList("menuInfo.findByListId", parameter);
+			list.addAll(plist);
+		}
+		list= TreeUtil.createTree(list);
+		Util.sortListByseq(list, "seq");
+		return list;
 	}
 	/**
 	 * 加载信息

@@ -19,7 +19,7 @@
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);/* <a href='javascript:void(0)'  iconCls='icon-edit'  onclick='scores("+json+")';>[考试分数]</a>  */
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='deleteF("+json+")';>[删 除]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteF("+json+")';>删 除</a> ";
      return  handstr;
 }
 /**

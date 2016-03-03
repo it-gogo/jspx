@@ -14,7 +14,10 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import jxl.Workbook;
 import jxl.write.Label;
@@ -245,5 +248,23 @@ public class Util {
 				}
 			}
 		}
-	  
+		/**
+		 * 通过seq排序
+		 * @author chenhb
+		 * @create_time  2016-3-3 下午2:03:12
+		 * @param list
+		 * @param field
+		 */
+		public static void sortListByseq(List<Map<String,Object>> list,final String field){
+			 Collections.sort(list, new Comparator<Object>() {
+			     @Override
+			      public int compare(Object o1, Object o2) {
+			    	  Map<String,Object> m1=(Map<String, Object>) o1;
+			    	  Map<String,Object> m2=(Map<String, Object>) o2;
+			    	  int seq1=Integer.parseInt(m1.get(field)==null ?"-1":m1.get(field).toString());
+			    	  int seq2=Integer.parseInt(m2.get(field)==null ?"-1":m2.get(field).toString());
+			        return seq1-seq2;
+			      }
+			    });
+		}
 }

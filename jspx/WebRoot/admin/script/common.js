@@ -156,12 +156,12 @@ function  addF(){
  */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='loadF("+json+")';>[修 改]</a> "+
-     							"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='deleteF("+json+")';>[删 除]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='loadF("+json+")';>修 改</a> "+
+     							"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteF("+json+")';>删 除</a> ";
      if(row.isActives==1){
-    	   handstr += "<a href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-edit' plain='true' onclick='changestat("+json+");'>[禁 用]</a>&nbsp;&nbsp;";
+    	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-clear'  plain='true' onclick='changestat("+json+");'>禁 用</a>&nbsp;&nbsp;";
       }else{
-    	   handstr += "<a href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-edit' plain='true' onclick='changestat("+json+");'>[启 用]</a>&nbsp;&nbsp;";
+    	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-ok' plain='true' onclick='changestat("+json+");'>启 用</a>&nbsp;&nbsp;";
       }
      return  handstr;
 }

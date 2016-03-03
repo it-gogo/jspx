@@ -24,10 +24,15 @@ $.initBasicGrid=function(options){
 				        		 window.top.location.href="../../common/loginPage.do";
 				        		 return {total:0,rows:[]};
 			             }else{
-			               //alert($.toJSON(data))
 			               return  data;
 			             }
-			         }
+			         },
+			         onLoadSuccess:function(data){  
+	 					if(typeof(loadSuccess)=="function"){
+	 						loadSuccess(data);
+	 					}
+			             $('.grid_button').linkbutton();  
+			         } 
 			        	 
 			        	
 			        

@@ -161,6 +161,7 @@ public class TeacherInfoController extends BaseController {
 				  password="123456";
 			  }
 			  user.put("password", Util.Encryption(password.toString()));
+			  user.put("type", "老师账号");
 			  this.userInfoService.add(user);//添加用户
 			  n_parameter.put("userId", userId);
 			  this.teacherInfoService.add(n_parameter);//添加
@@ -177,6 +178,7 @@ public class TeacherInfoController extends BaseController {
 					  password="123456";
 				  }
 				  user.put("password", Util.Encryption(password.toString()));
+				  user.put("type", "老师账号");
 				  this.userInfoService.add(user);//添加用户
 			  }else{
 				  Map<String,Object> user=new HashMap<String, Object>();

@@ -14,6 +14,34 @@
 			  	var gridoption = {url:"list.do",id:"grid",pagination:true};
 			  	dataGrid = $.initBasicGrid(gridoption); 
 		 	});
+		 
+
+/**
+ * 操作信息
+ * @param value
+ * @param row
+ * @param index
+ * @returns {String}
+ */
+function  handlerstr(value,row,index){
+	  var json = $.toJSON(row);
+	  var creator=row.creator;
+	  var userId="${user.id}";
+	  var  handstr="";
+	  if(creator==userId){
+	      handstr += "<a  class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-lock'  plain='true' onclick='bindMenu("+json+")';>绑定模块</a> ";
+	     handstr +="<a  class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-man'  plain='true' onclick='bindUser("+json+")';>绑定用户</a> ";
+	     handstr +="<a  class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-edit'  plain='true' onclick='loadF("+json+")';>修 改</a> ";
+	     if(row.status=="启用"){
+	  	   handstr += "<a  class=\"grid_button\"  href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-clear' plain='true' onclick='changeStatus("+json+");'>禁 用</a>&nbsp;&nbsp;";
+	    }else{
+	  	   handstr += "<a  class=\"grid_button\"  href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-ok' plain='true' onclick='changeStatus("+json+");'>启 用</a>&nbsp;&nbsp;";
+	    }
+	  }else{
+	  	handstr +="<a  class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-man'  plain='true' onclick='bindUser("+json+")';>绑定用户</a> ";
+	  }
+     return  handstr;
+}
 		</script>
 		
 	</head>

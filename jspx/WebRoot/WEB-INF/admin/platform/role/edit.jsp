@@ -34,6 +34,15 @@
 					<td><input name="name" type="text" class="easyui-validatebox textbox" value="${vo.name }" data-options="required:true"   >&nbsp;<span>*</span></td>
 				</tr>
 				<tr>
+			        <th>类别</th>
+					<td>
+						<select name="type" class="easyui-combobox" style="width: 300px;" data-options="editable:false">
+							<option value="私有" <c:if test="${vo.type=='私有' }">selected="selected"</c:if>>私有</option>
+							<option value="公开" <c:if test="${vo.type=='公开' }">selected="selected"</c:if>>公开</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
 				 <th>
 				    是否启用
 				 </th>

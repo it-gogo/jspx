@@ -43,7 +43,7 @@ function  handlerstr(value,row,index){
 	  
      var  handstr = "" ;
      if(row.status==1){
-      handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='deleteF("+json+")';>[删除]</a> "
+      handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true'  onclick='deleteF("+json+")';>删除</a> "
      }
      return  handstr;
 }

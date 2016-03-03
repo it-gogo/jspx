@@ -19,8 +19,8 @@
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='downhomework("+json+")';>[下载]</a>&nbsp;|&nbsp;"
-     				+"<a href='javascript:void(0)'  iconCls='icon-save'  onclick='assess("+json+")';>[评分]</a>";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-filter' plain='true' onclick='downhomework("+json+")';>下载</a>&nbsp;|&nbsp;"
+     				+"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-save' plain='true' onclick='assess("+json+")';>评分</a>";
      return  handstr;
 }
 

@@ -19,8 +19,8 @@
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='application("+json+")';>[申请学生]</a> " +
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='lookStudent("+json+")';>[查看学生]</a> " ;
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='application("+json+")';>申请学生</a> " +
+     						"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-search' plain='true' onclick='lookStudent("+json+")';>查看学生</a> " ;
      return  handstr;
 }
 

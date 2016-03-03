@@ -19,7 +19,7 @@
 */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='lookStudent("+json+")';>[查看学生]</a> " ;
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)' plain='true' iconCls='icon-search'  onclick='lookStudent("+json+")';>查看学生</a> " ;
      return  handstr;
 }
 

@@ -10,7 +10,7 @@ var dbuttons = [{
 /**
  * 打开添加数据窗口参数
  */
-var options = {id:"d3",urls:"../baseinfo/unitInfo/add.do",title:"单位组织编辑",width:"600px;",height:"500px;",buttons:dbuttons};
+var options = {id:"d3",width:"600px;",height:"500px;",buttons:dbuttons};
 /**
  * 打开修改数据窗口参数
  */
@@ -31,6 +31,9 @@ function  addF(){
 			parent.$.messager.alert("提示窗口","添加学校必须选择子节点。");
 			return false;
 		}
+	}else{
+		options["urls"]="../baseinfo/unitInfo/add.do";
+		options["title"]="单位组织编辑";
 	}
 	parent.$.createDialog.open_grid = dataGrid;
 	parent.$.createDialog(options);
@@ -55,8 +58,8 @@ function  loadF(row){
  */
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
-     var  handstr = "<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='modifyPassword("+json+")';>[密码重置]</a> " +
-     						"<a href='javascript:void(0)'  iconCls='icon-edit'  onclick='loadF("+json+")';>[修 改]</a> ";
+     var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-reload'  plain='true' onclick='modifyPassword("+json+")';>密码重置</a> " +
+     						"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='loadF("+json+")';>修 改</a> ";
      return  handstr;
 }
 
