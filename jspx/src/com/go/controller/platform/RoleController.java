@@ -188,7 +188,8 @@ public class RoleController extends BaseController {
 		  roleUserService.delete(parame);//删除之前绑定的
 		  
 		  if(userId==null || userId.length==0){
-			  this.ajaxMessage(response, Syscontants.ERROE,"保存失败，至少选择一个用户信息。");
+//			  this.ajaxMessage(response, Syscontants.ERROE,"保存失败，至少选择一个用户信息。");
+			  this.ajaxMessage(response, Syscontants.MESSAGE,"保存成功");
 			  return;
 		  }
 		  List<Map<String,Object>> res=new ArrayList<Map<String,Object>>();

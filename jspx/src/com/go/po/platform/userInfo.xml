@@ -6,13 +6,15 @@
 	   <choose>
 	   	<when test="text!=null and text!=''">
 	   		 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'1' orderSeq From  view_user a  
-	   			Where isDeleted=0 and text  like '%${text}%'   
+	   			Where isDeleted=0 and isSuperadmin!='超级管理员' 
+	   			and text  like '%${text}%'   
 	   			<if test="flag!=null and flag!=''">
 	   				and a.flag like '${flag}%'
 	   			</if>
 	   			union all 
 	   			 select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked,'0' orderSeq From  view_user a  
-	   			Where isDeleted=0 and text not like '%${text}%'    
+	   			Where isDeleted=0  and isSuperadmin!='超级管理员' 
+	   			and text not like '%${text}%'    
 	   			<if test="flag!=null and flag!=''">
 	   				and a.flag like '${flag}%'
 	   			</if>
@@ -20,7 +22,7 @@
 	   	</when>
 	   	<otherwise>
 	   		select a.id,a.text,(case when exists(select 1 from role_user r where r.roleId=#{roleId} and r.userId=a.id) then true else false end) checked From  view_user a  
-	   		Where isDeleted=0   
+	   		Where isDeleted=0    and isSuperadmin!='超级管理员' 
 	   		<if test="flag!=null and flag!=''">
    				and a.flag like '${flag}%'
    			</if>

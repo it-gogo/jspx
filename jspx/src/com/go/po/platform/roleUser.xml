@@ -15,7 +15,8 @@
 	    And roleId in 
 	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
            #{id}  
-        </foreach>  ;
+        </foreach>  
+        and userId not in (select id from user_info where isSuperadmin ='超级管理员' );
 	</delete>
 	<delete id="delete1"  parameterType = "java.util.Map">
 	    delete from   role_user      Where 1 = 1
@@ -26,6 +27,7 @@
         <if test="flag!=null and flag!=''">
         	and userId in (select id from view_user t1 where t1.flag like '${flag}%')
         </if>
+        and userId not in (select id from user_info where isSuperadmin ='超级管理员' )
         ;
 	</delete>
 </mapper>

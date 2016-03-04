@@ -30,10 +30,10 @@
 			$(sbutton).bind('click',function() {
 				var id = [];
 				id.push(getCheckeds1("grid","id"));
-				if (id == "") {
+				/* if (id == "") {
 					parent.$.messager.alert('提示', "至少选择一个登陆信息！",'info');
 					return;
-				} 
+				}  */
 				parent.$.messager.progress({
 					title : '提示',
 					text : '数据处理中，请稍后....'
