@@ -51,6 +51,13 @@
 	   values(#{id},#{pid},#{code},#{parentCode},#{name},#{remark},#{type},#{seq},'启用',#{createdate},#{creator},#{bindingTime})
 	</insert>
 	
+	<insert id="addAll" parameterType="java.util.HashMap" >
+	  <foreach collection="list" item="vo">
+	   		insert into project(id,pid,code,parentCode,name,remark,type,seq,status,createdate,creator,bindingTime)
+	  		 values(#{vo.id},#{vo.pid},#{vo.code},#{vo.parentCode},#{vo.name},#{vo.remark},#{vo.type},#{vo.seq},'启用',#{vo.createdate},#{vo.creator},#{vo.bindingTime});
+		</foreach>
+	</insert>
+	
 	<!-- 添加后台数据 -->
 	<update id="update" parameterType="java.util.HashMap" >
 	   update project set pid = #{pid},
@@ -99,4 +106,18 @@
 	    Select a.* From  project a
 	    Where a.status='启用' and a.bindingTime is null  
 	</select>
+	
+	<!-- zhangjf 2016-03-07 根据督导ID查询督导相关项目数据start -->
+	<select id="listBySuperviseId" parameterType="map" resultType="map">
+		select  t1.id projectId,
+				t1.name projectName,
+				(case when t1.remark is null then '' else t1.remark end) remark,
+				t1.*  from  project t1 join supervise_project t2 on t1.id=t2.projectId 
+		<if test="superviseId!=null and superviseId!=''">
+			and t2.superviseId=#{superviseId}
+		</if>
+		where 1=1
+	</select>	
+	<!-- zhangjf 2016-03-07 根据督导ID查询督导相关项目数据end -->
+	
 </mapper>

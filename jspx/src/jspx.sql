@@ -2982,7 +2982,7 @@ CREATE TABLE project(
     seq              int,
     createdate     VARCHAR(23),
     creator        VARCHAR(100),
-    bindingTime    VARCHAR(23)     NOT NULL,
+    bindingTime    VARCHAR(23)     ,
     PRIMARY KEY (id)
 )
 ;
