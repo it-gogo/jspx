@@ -10,6 +10,9 @@
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select a.* From  supervise a 
 	   Where 0=0
+	     <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
 	   <if test="name!=null and name!=''">
 	   	and  a.name like '%${name}%'  
 	   </if>
@@ -19,6 +22,9 @@
 	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
 	    Select count(1) From  supervise a 
 	   Where 0=0
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
 	   <if test="name!=null and name!=''">
 	   	and  a.name like '%${name}%'  
 	   </if>
