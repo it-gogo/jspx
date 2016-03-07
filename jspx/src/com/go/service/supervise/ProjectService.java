@@ -50,6 +50,19 @@ public class ProjectService extends BaseService {
 	public  Map<String,Object>  load(Map<String,Object> parameter){
 		return this.getBaseDao().loadEntity("project.load", parameter);
 	}
+	
+	/**
+	 * 根据督导ID加载督导项目
+	 * @author zhangjf
+	 * @create_time 2016-3-7 下午5:10:38
+	 * @param parameter
+	 * @return
+	 */
+	public List<Map<String,Object>>listBySuperviseId(Map<String,Object> parameter){
+		return this.getBaseDao().findList("project.listBySuperviseId", parameter);
+	}
+	
+	
 	/**
 	 * 添加数据
 	 * @param parameter

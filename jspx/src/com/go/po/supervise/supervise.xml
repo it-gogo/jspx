@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="supervise">
+	<!-- 查询树 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	    select a.*,a.name text  From  supervise a 
+	   Where status='启用'
+	</select>
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  supervise a 
+	   Where 0=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  supervise a 
+	   Where 0=0
+	   <if test="name!=null and name!=''">
+	   	and  a.name like '%${name}%'  
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into supervise(id,superviseDate,name,type,creator,createdate,status)
+	   values(#{id},#{superviseDate},#{name},#{type},#{creator},#{createdate},'禁用');
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update supervise set  name = #{name},superviseDate=#{superviseDate}
+        where  id=#{id} 
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStatus"  parameterType="java.util.HashMap">
+	   update supervise set status = #{status} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From supervise a  Where   a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   supervise   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+        delete from supervise_project where 1=1
+        and superviseId in
+        <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+        delete from supervise_unit where 1=1
+        and superviseId in
+        <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

@@ -7,6 +7,9 @@
 	   <if test="inspectorId!=null and inspectorId!=''">
 	   ,(case when exists(select 1 from inspector_unit r where r.inspectorId=#{inspectorId} and r.unitId=a.id) then true else false end) checked
 	   </if> 
+	    <if test="superviseId!=null and superviseId!=''">
+	   ,(case when exists(select 1 from supervise_unit r where r.superviseId=#{superviseId} and r.unitId=a.id) then true else false end) checked
+	   </if> 
 	   From unit_info a
 	   Where isDeleted=0 and type=2
 	   <if test="flag!=null and flag!=''">
