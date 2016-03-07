@@ -43,6 +43,18 @@ public class ProjectService extends BaseService {
 		return TreeUtil.createTree(list);
 	}
 	/**
+	 * 查询未绑定记录
+	 * @author chenhb
+	 * @create_time  2016-3-7 下午5:09:26
+	 * @param parameter
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Map<String,Object>> findUnbinding(Map<String,Object> parameter) throws Exception{
+		List<Map<String,Object>> list=this.getBaseDao().findList("project.findUnbinding", parameter);
+		return list;
+	}
+	/**
 	 * 加载信息
 	 * @param parameter
 	 * @return

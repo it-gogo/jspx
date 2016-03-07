@@ -60,13 +60,30 @@ public class ProjectController extends BaseController {
 		  this.ajaxData(response, JSONUtil.listToArrayStr(list));
 	  }
 	  /**
+	   * 查询未绑定数据
+	   * @author chenhb
+	   * @create_time  2016-3-7 下午5:18:55
+	   * @param request
+	   * @param response
+	   * @param model
+	   * @throws Exception
+	   */
+	  @RequestMapping("findUnbinding.do")
+	  public  void findUnbinding(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
+		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  List<Map<String,Object>> unbindingList=projectService.findUnbinding(parameter);
+		  this.ajaxData(response, JSONUtil.listToArrayStr(unbindingList));
+	  }
+	  /**
 	   * 初始化
 	   * @author chenhb
 	   * @create_time {date} 下午5:17:53
 	   * @return
+	 * @throws Exception 
 	   */
 	  @RequestMapping("redirect.do")
-	  public String redirect(){
+	  public String redirect(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
+		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
 		  return  "admin/supervise/project/list";
 	  }
 	  

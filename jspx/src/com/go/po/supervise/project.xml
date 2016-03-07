@@ -94,4 +94,9 @@
            #{id}  
         </foreach> ;
 	</delete>
+	<!-- 查询未绑定记录 -->
+	<select id="findUnbinding" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	    Select a.* From  project a
+	    Where a.status='启用' and a.bindingTime is null  
+	</select>
 </mapper>

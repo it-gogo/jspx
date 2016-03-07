@@ -11,6 +11,37 @@
 		<script type="text/javascript">
 			var dataGrid;
 		 	$(document).ready(function(){
+			  	$.ajax({
+		  			url:"findUnbinding.do",
+		  			success:function(data){
+		  				var index_binding=0;
+		  				var json=eval("("+data+")");
+		  				var html="<table style=\"\">";
+		  				for(var i=0,j=json.length;i<j;i++){
+		  					var obj=json[i];
+		  					html+="<tr><td>"+obj.name+"</td>"+
+		  					"<td><a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='binding(\""+obj.id+"\");';>绑 定</a>"+
+		  					"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteF("+json+")';>已 读</a></td></tr>";
+		  				}
+		  				html+="</table>"
+		  				$("#binding").tooltip({
+							position : "bottom",
+							content : html,
+							onShow : function() {
+								var t = $(this);
+                    			t.tooltip("tip").unbind().bind("mouseenter", function(){
+                        			t.tooltip("show");
+                    			}).bind("mouseleave", function(){
+                        			t.tooltip("hide");
+                    			});
+                    			if(index_binding==0){
+                    				index_binding=1;
+									$(".grid_button").linkbutton();  
+                    			}
+							}
+						});
+		  			}
+		  		});
 			  	var gridoption = {url:"list.do",id:"grid",pagination:true};
 			  	dataGrid = $.initBasicGrid(gridoption); 
 			  	var treeoptions = {id:"treeID",url:"tree.do",onClick:treeClick};
@@ -23,6 +54,17 @@
 				$("#code","#qform").val(code);
 				dataGrid.datagrid('load',parameter);
 			}
+
+/**
+ * 导出数据
+ * @param row
+ */
+function  binding(id){
+	var urls = "../supervise/project/load.do?id="+id;
+	options.urls = urls;
+	parent.$.createDialog(options);
+	parent.$.createDialog.open_grid = dataGrid;
+}
 		</script>
 		
 	</head>
@@ -40,15 +82,16 @@
 							<form id="qform">
 								<table>
 									<tr>
-										<td>菜单名称:</td>
+										<td>名称:</td>
 										<td>
 											<input type="text" class="easyui-validatebox" id="name"   value=""> 
 											<input type="hidden" class="easyui-validatebox" id="code"   value=""></td>
 										<td>
-											<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryF('qform');">查 询</a> &nbsp;&nbsp; 
-											<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryAllF('qform');">全 部</a> &nbsp;&nbsp;&nbsp; 
-											<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addF();">新 增</a> &nbsp;&nbsp; 
-											<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="deleteAllF();">删 除</a>
+											<a  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryF('qform');">查 询</a> &nbsp;&nbsp; 
+											<a  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryAllF('qform');">全 部</a> &nbsp;&nbsp;&nbsp; 
+											<a  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addF();">新 增</a> &nbsp;&nbsp; 
+											<a  href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="deleteAllF();">删 除</a>&nbsp;&nbsp; 
+											<a id="binding" href="#" class="easyui-linkbutton easyui-tooltip"  data-options="iconCls:'icon-search'" onclick="deleteAllF();">绑 定</a>
 										</td>
 									</tr>
 								</table>
