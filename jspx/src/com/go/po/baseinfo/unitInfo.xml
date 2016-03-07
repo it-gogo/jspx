@@ -3,13 +3,17 @@
 <mapper namespace="unitInfo">
 	<!-- 查询所有 -->
 	<select id="findSchool" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select *,name text From unit_info 
+	   select *,name text
+	   <if test="inspectorId!=null and inspectorId!=''">
+	   ,(case when exists(select 1 from inspector_unit r where r.inspectorId=#{inspectorId} and r.unitId=a.id) then true else false end) checked
+	   </if> 
+	   From unit_info a
 	   Where isDeleted=0 and type=2
 	   <if test="flag!=null and flag!=''">
-	   	and  flag  like '${flag}%'  
+	   	and  a.flag  like '${flag}%'  
 	   </if>
 	   <if test="classId!=null and classId!=''">
-		   	and  id not in (select schoolId from quota_allocation where classId =#{classId} 
+		   	and  a.id not in (select schoolId from quota_allocation where classId =#{classId} 
 		   <if test="quotaAllcationId!=null and quotaAllcationId!=''">
 		   		and id !=#{quotaAllcationId}
 		   </if>

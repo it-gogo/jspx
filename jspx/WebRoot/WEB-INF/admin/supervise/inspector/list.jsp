@@ -14,6 +14,30 @@
 			  	var gridoption = {url:"list.do",id:"grid",pagination:true};
 			  	dataGrid = $.initBasicGrid(gridoption); 
 		 	});
+	
+
+function  handlerstatus(value,row,index){
+	  var json = $.toJSON(row);
+   var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='loadF("+json+")';>修 改</a> "+
+   							"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteF("+json+")';>删 除</a> ";
+   if(row.status=="启用"){
+  	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-clear'  plain='true' onclick='changestatus("+json+");'>禁 用</a>&nbsp;&nbsp;";
+    }else{
+  	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-ok' plain='true' onclick='changestatus("+json+");'>启 用</a>&nbsp;&nbsp;";
+    }
+    handstr +="<a  class=\"grid_button\"  href='javascript:void(0)'  iconCls='icon-man'  plain='true' onclick='bindSchool("+json+")';>绑定学校</a> ";
+   return  handstr;
+}
+
+/**
+ * 绑定学校
+ * @param row
+ */
+function bindSchool(row){
+	var option = {id:"d3",urls:"../supervise/inspector/bindSchool.do?inspectorId="+row.id,title:"绑定学校管理",width:"500px;",height:"600px;",buttons:dbuttons};
+	parent.$.createDialog.open_grid = dataGrid;
+	parent.$.createDialog(option);
+}
 		</script>
 		
 	</head>
@@ -36,7 +60,7 @@
 		              &nbsp;&nbsp;
 		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addF();">新  增</a>
 		               &nbsp;&nbsp;
-		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="deleteAllF();">删 除</a>
+		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="deleteAllF();">删 除</a>
 		            </td>
 		          </tr>
 		          </table>
@@ -49,9 +73,9 @@
             <tr>
             	<th data-options="field:'id'" width="10" checkbox=true ></th>
                 <th data-options="field:'name'" width="80">名称</th>
-                <th data-options="field:'code'" width="80">编码</th>
-                <th data-options="field:'isActives'" width="50" formatter="handlerisactives">状态</th>
-                <th data-options="field:'handler'" width="70" formatter="handlerstr" align="center">操作</th>
+                <th data-options="field:'text'" width="80">账号</th>
+                <th data-options="field:'status'" width="50" >状态</th>
+                <th data-options="field:'handler'" width="70" formatter="handlerstatus" align="center">操作</th>
             </tr>
         </thead>
     </table>

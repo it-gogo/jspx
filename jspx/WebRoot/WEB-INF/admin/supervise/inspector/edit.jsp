@@ -25,12 +25,12 @@
 *账号检验
 */
 $.extend($.fn.validatebox.defaults.rules, {
-	checkCode: { validator: function(value, param){
-		var id=$("#id").val();
+	checkText: { validator: function(value, param){
+		var userId=$("#userId").val();
 		var ok=true;
 		$.ajax({
-			url:"checkCode.do",
-			data:"code="+value+"&id="+id,
+			url:"../../platform/userInfo/checkText.do",
+			data:"text="+value+"&id="+userId,
 			async: false,
 			success:function(data){
 				var json=eval("("+data+")");
@@ -43,7 +43,20 @@ $.extend($.fn.validatebox.defaults.rules, {
 		});
 		return ok;
 	},
-	message: "编码已存在，请重新输入."
+	message: "账号已存在，请重新输入."
+	},
+	checkPassword: { validator: function(value, param){
+		var password=$("#password").val();//第一次密码
+		var rpw=$("#rpw").val();//确认密码
+		if(password=="" || rpw==""){
+			return true;
+		}
+		if(password==rpw){
+			return true
+		}
+		return false;
+	},
+	message: "两次密码不一样."
 	}
 });
 	</script>
@@ -52,24 +65,26 @@ $.extend($.fn.validatebox.defaults.rules, {
          <div data-options="region:'center'">
          <form id="dform" method="post" >
             <input name="id"  type="hidden"  id="id"    value="${vo.id }">
+            <input name="userId" type="hidden" id="userId"  value="${vo.userId }">
 			<table width="100%" class="table table-hover table-condensed">
 				<tr>
-			        <th>名称</th>
-					<td><input name="name" type="text" class="easyui-validatebox textbox" value="${vo.name }" data-options="required:true" placeholder="请输入名称"  value="">&nbsp;<span>*</span></td>
+			        <th width="60px;">名称</th>
+					<td><input name="name" type="text" class="easyui-validatebox textbox" value="${vo.name }" data-options="required:true" placeholder="请输入名称" style="width:300px;">&nbsp;<span>*</span></td>
 				</tr>
 				<tr>
-			        <th>编码</th>
-					<td><input name="code" type="text" class="easyui-validatebox textbox" value="${vo.code }" data-options="required:true,validType:'checkCode'" placeholder="请输入唯一编码"  value="">&nbsp;<span>*</span></td>
+					<th>账号</th>
+					<td><input name="text" type="text" class="easyui-validatebox textbox"  data-options="required:true,validType:'checkText'" placeholder="请输入管理账号"  style="width:300px;" value="${vo.text }"></td>
+				</tr>
+				<c:if test="${vo.id==null }">
+				<tr>
+					<th>密码</th>
+					<td><input name="password" id="password" type="password" class="easyui-validatebox textbox" data-options="required:true,validType:'checkPassword'" placeholder="请输入管理密码"  style="width:300px;" value="${vo.password }"></td>
 				</tr>
 				<tr>
-				 <th>
-				    是否启用
-				 </th>
-				 <td>
-					<input type="radio" name="isActives"    checked="checked" value="1"/>启用
-	              	<input type="radio" name="isActives"   <c:if test="${vo.isActives==0 }">checked</c:if>   value="0" />禁用
-				</td>
+					<th>确认密码</th>
+					<td><input  type="password" id="rpw" class="easyui-validatebox textbox" data-options="required:true,validType:'checkPassword'"  style="width:300px;" ></td>
 				</tr>
+				</c:if>
 			</table>
 		</form>
      </div>

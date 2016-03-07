@@ -2933,3 +2933,123 @@ INSERT INTO `use_lesson` VALUES ('f2e0e08dea304bdcaf4c042d0c6a81ec', 'b7012c0f29
 -- ----------------------------
 DROP VIEW IF EXISTS `view_user`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_user` AS select `a`.`isSuperadmin` AS `isSuperadmin`,`a`.`id` AS `id`,`a`.`text` AS `text`,`a`.`password` AS `password`,`a`.`isActives` AS `isActives`,`a`.`isDeleted` AS `isDeleted`,`a`.`type` AS `type`,(case when (`a`.`type` = _utf8'单位账号') then `b`.`flag` when (`a`.`type` = _utf8'老师账号') then (select `t1`.`flag` AS `flag` from `unit_info` `t1` where (`t1`.`id` = `c`.`schoolId`)) else NULL end) AS `flag`,(case when (`a`.`type` = _utf8'单位账号') then `b`.`name` when (`a`.`type` = _utf8'老师账号') then `c`.`name` else `a`.`text` end) AS `name` from ((`user_info` `a` left join `unit_info` `b` on((`a`.`id` = `b`.`userId`))) left join `teacher_info` `c` on((`a`.`id` = `c`.`userId`)));
+
+
+
+--
+-- 挂牌督导
+-- 
+CREATE TABLE inspector(
+    id            VARCHAR(100)    NOT NULL,
+    name          VARCHAR(100),
+    userId        VARCHAR(100),
+    status        VARCHAR(10),
+    createdate    VARCHAR(23),
+    creator       VARCHAR(100),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: inspector_unit 
+--
+
+CREATE TABLE inspector_unit(
+    id             VARCHAR(100)    NOT NULL,
+    inspectorId    VARCHAR(100),
+    unitId         VARCHAR(100),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: project 
+--
+
+CREATE TABLE project(
+    id             VARCHAR(100)    NOT NULL,
+    pid            VARCHAR(100),
+    code           VARCHAR(100),
+    parentCode     VARCHAR(100),
+    name           VARCHAR(100),
+    remark         TEXT,
+    type           VARCHAR(10),
+    status         VARCHAR(10),
+    seq              int,
+    createdate     VARCHAR(23),
+    creator        VARCHAR(100),
+    bindingTime    VARCHAR(23)     NOT NULL,
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: school_material 
+--
+
+CREATE TABLE school_material(
+    id                VARCHAR(100)    NOT NULL,
+    superviseId       VARCHAR(100),
+    unitId            VARCHAR(100),
+    projectId         VARCHAR(100),
+    schoolMaterial    VARCHAR(200),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: supervise 
+--
+
+CREATE TABLE supervise(
+    id               VARCHAR(100)    NOT NULL,
+    name             VARCHAR(100),
+    superviseDate    VARCHAR(10),
+    type             VARCHAR(10),
+    status           VARCHAR(10),
+    createdate       VARCHAR(23),
+    creator          VARCHAR(100),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: supervise_project 
+--
+
+CREATE TABLE supervise_project(
+    id             VARCHAR(100)    NOT NULL,
+    superviseId    VARCHAR(100),
+    projectId      VARCHAR(100),
+    status         VARCHAR(10),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: supervise_unit 
+--
+
+CREATE TABLE supervise_unit(
+    id                VARCHAR(100)    NOT NULL,
+    superviseId       VARCHAR(100),
+    unitId            VARCHAR(100),
+    step              INT,
+    checkMaterial     VARCHAR(200),
+    modifyMaterial    VARCHAR(200),
+    status            VARCHAR(10),
+    PRIMARY KEY (id)
+)
+;

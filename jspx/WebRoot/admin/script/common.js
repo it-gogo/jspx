@@ -165,6 +165,17 @@ function  handlerstr(value,row,index){
       }
      return  handstr;
 }
+function  handlerstatus(value,row,index){
+	  var json = $.toJSON(row);
+   var  handstr = "<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-edit' plain='true' onclick='loadF("+json+")';>修 改</a> "+
+   							"<a  class=\"grid_button\" href='javascript:void(0)'  iconCls='icon-cancel' plain='true' onclick='deleteF("+json+")';>删 除</a> ";
+   if(row.status=="启用"){
+  	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-clear'  plain='true' onclick='changestatus("+json+");'>禁 用</a>&nbsp;&nbsp;";
+    }else{
+  	   handstr += "<a  class=\"grid_button\" href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-ok' plain='true' onclick='changestatus("+json+");'>启 用</a>&nbsp;&nbsp;";
+    }
+   return  handstr;
+}
 /**
  * 操作状态
  * @param value
@@ -244,6 +255,19 @@ function deleteAllF(){
 function changestat(row){
 	  $.post('changestat.do', {
 			id : row.id,isActives : row.isActives
+		}, function(result) {
+			if (result.message) {
+				parent.$.messager.alert('提示', result.message, 'info');
+				dataGrid.datagrid('reload');
+			}else if(result.other){
+				//做其他回调函数
+			}
+			parent.$.messager.progress('close');
+		}, 'JSON');
+}
+function changestatus(row){
+	  $.post('changestatus.do', {
+			id : row.id,status : row.status
 		}, function(result) {
 			if (result.message) {
 				parent.$.messager.alert('提示', result.message, 'info');

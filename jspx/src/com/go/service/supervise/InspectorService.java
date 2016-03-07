@@ -39,6 +39,7 @@ public class InspectorService extends BaseService {
 	 * @return
 	 */
 	public  void  add(Map<String,Object> parameter){
+		 this.getBaseDao().insert("userInfo.add", parameter.get("userMap"));
 	    this.getBaseDao().insert("inspector.add", parameter);
 	}
 	
@@ -47,6 +48,11 @@ public class InspectorService extends BaseService {
 	 * @param parameter
 	 */
 	public  void  update(Map<String,Object> parameter){
+		if(parameter.containsKey("addUser")){//添加登陆信息
+			this.getBaseDao().insert("userInfo.add", parameter.get("addUser"));
+		}else if(parameter.containsKey("updateUser")){//修改登陆信息
+			this.getBaseDao().update("userInfo.update", parameter.get("updateUser"));
+		}
 		this.getBaseDao().update("inspector.update", parameter);
 	}
 	

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project">
+	<!-- 查询所有数据 -->
+	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From  project a
+	   Where status='启用'
+	   <if test="notCode!=null and notCode!=''">
+	   	and code not like '${notCode}%'
+	   </if>
+	   <if test="code!=null and code!=''">
+	   	and  code  like '${code}%'  
+	   </if>
+	   <if test="type!=null and type!=''">
+	   		and a.type =#{type}
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,(select name from project t1 where t1.id=a.pid) parentName From  project a
+	   Where status='启用'
+	   <if test="code!=null and code!=''">
+	   		and a.code  like '${code}%'  
+	   </if>
+	   <if test="type!=null and type!=''">
+	   		and a.type =#{type}
+	   </if>
+	    <if test="name!=null and name!=''">
+	   	and  a.name like  '%${name}%'  
+	   </if>
+	   order by a.seq asc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  project a
+	    Where status='启用'
+	   <if test="code!=null and code!=''">
+	   		and a.code  like '${code}%'  
+	   </if>
+	   <if test="type!=null and type!=''">
+	   		and a.type =#{type}
+	   </if>
+	   <if test="name!=null and name!=''">
+	   	and  a.name like  '%${name}%'  
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into project(id,pid,code,parentCode,name,remark,type,seq,status,createdate,creator,bindingTime)
+	   values(#{id},#{pid},#{code},#{parentCode},#{name},#{remark},#{type},#{seq},'启用',#{createdate},#{creator},#{bindingTime})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update project set pid = #{pid},
+	                    code = #{code},
+	                     parentCode = #{parentCode},
+	                    name = #{name},
+	                    remark = #{remark},
+	                    seq = #{seq}
+        where  id=#{id} 
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStat"  parameterType="java.util.HashMap">
+	   update project set status = #{status} 
+	   Where id=#{id} 
+	</update>	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select *,(select name from project b where b.id=a.id) pname From project a  Where   id=#{id}
+	</select>
+	<!-- 最大排序 -->
+	<select id="findMaxSeq"  parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	   Select max(seq) From project  Where 1=1
+	</select>
+	<select id="findCode" resultType="java.lang.String" parameterType="java.util.HashMap" >
+	   select max(code)
+	   From  project
+	   Where 1=1
+	   ${parameter}
+	</select> 
+	<!-- 更新数据标示 -->
+	<update id="updateCode"  parameterType="java.util.HashMap">
+	   update project set code = concat(SUBSTRING(code ,1,position(#{code} in code )-1),#{code_new},substring(code ,position(#{code} in code )+length(#{code}))),
+	   parentCode = concat(SUBSTRING(parentCode ,1,position(#{code} in parentCode )-1),#{code_new},substring(parentCode ,position(#{code} in code )+length(#{code})))
+	   Where code like '${code}%'  and parentCode  is not null
+	</update>	
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    update   project set status='删除'   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

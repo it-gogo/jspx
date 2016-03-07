@@ -8,27 +8,25 @@
 	</select>
     <!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select * From  inspector 
+	   select a.*,b.text text From  inspector a join user_info b on a.userId=b.id
 	   Where 0=0
 	   <if test="name!=null and name!=''">
-	   	and  name like '%${name}%'  
+	   	and  a.name like '%${name}%'  
 	   </if>
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select> 
 	<!-- 查询记录数 -->
 	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
-	    Select count(1) From  inspector 
-	    Where 0=0
+	    Select count(1) From  inspector a join user_info b on a.userId=b.id
+	   Where 0=0
 	   <if test="name!=null and name!=''">
-	   	and  name like '%${name}%'  
+	   	and  a.name like '%${name}%'  
 	   </if>
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
 	   insert into inspector(id,userId,name,creator,createdate,status)
 	   values(#{id},#{userId},#{name},#{creator},#{createdate},'启用');
-	   insert into user_info(id,text,password,isActives,isDeleted,type)
-	   values(#{userId},#{text},#{password},'1','0','督学账号');
 	</insert>
 	
 	<!-- 添加后台数据 -->
@@ -43,10 +41,16 @@
 	</update>	
 	<!-- 导出数据 -->
 	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
-	   Select * From inspector  Where   id=#{id}
+	   Select a.*,b.text text From inspector a join user_info b on a.userId=b.id Where   a.id=#{id}
 	</select>
 	<!-- 删除数据 -->
 	<delete id="delete"  parameterType = "java.util.List">
+	     delete from   user_info   Where 1 = 1
+	    And id in (select userId from inspector t1 where t1.id in 
+		    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+	           #{id}  
+	        </foreach>
+	    ) ;
 	    delete from   inspector   Where 1 = 1
 	    And id in 
 	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
