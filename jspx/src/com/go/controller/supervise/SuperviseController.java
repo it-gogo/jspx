@@ -128,10 +128,11 @@ public class SuperviseController extends BaseController {
 			 this.ajaxMessage(response, Syscontants.ERROE,"系统繁忙,稍后重试！");
 		}
 	  }
+	  
 	  /**
-	   * 查询列表
-	   * @author chenhb
-	   * @create_time  2016-3-3 上午11:18:04
+	   * 查询统一设置项目数据列表
+	   * @author zhangjf
+	   * @create_time 2016-3-7 下午5:58:08
 	   * @param request
 	   * @param response
 	   * @param model
@@ -139,7 +140,8 @@ public class SuperviseController extends BaseController {
 	  @RequestMapping("list.do")
 	  public  void  findList(HttpServletRequest request, HttpServletResponse response,Model  model){
 		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
-		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
+		  parameter.put("type", "统一");
+		 // Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
 		  JSONObject jsonObj = this.superviseService.findPageBean(parameter);
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }
