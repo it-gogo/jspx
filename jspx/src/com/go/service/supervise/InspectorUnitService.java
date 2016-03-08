@@ -16,6 +16,10 @@ import com.go.service.base.BaseService;
 @Service
 public class InspectorUnitService extends BaseService {
 
+	public List<Map<String, Object>> findAll(List<String> parameter){
+		List<Map<String, Object>> list= this.getBaseDao().findList("inspectorUnit.findAll", parameter);
+		return list;
+	}
 	/**
 	 * 添加数据
 	 * @param parameter

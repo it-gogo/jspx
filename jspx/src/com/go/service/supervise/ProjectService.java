@@ -209,4 +209,13 @@ public class ProjectService extends BaseService {
 	public  void  delete(List<String> parameter){
 		this.getBaseDao().delete("project.delete", parameter);
 	}
+	/**
+	 * 设置已读
+	 * @author chenhb
+	 * @create_time  2016-3-7 下午6:01:38
+	 * @param parameter
+	 */
+	public  void  readF(Map<String,Object> parameter){
+		this.getBaseDao().delete("project.readF", parameter);
+	}
 }

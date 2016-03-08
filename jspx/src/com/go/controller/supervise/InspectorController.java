@@ -76,6 +76,12 @@ public class InspectorController extends BaseController {
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
 		  List<String> list=new ArrayList<String>();
 		  list.add(parameter.get("inspectorId").toString());
+		  List<Map<String,Object>> inspectorUnitList=inspectorUnitService.findAll(list);
+		  Map<String,Object> unitIdMap=new HashMap<String, Object>();//学校Id集合
+		  List<Map<String,Object>> addLogsList=new ArrayList<Map<String,Object>>();//
+		  for(Map<String,Object> map:inspectorUnitList){
+			  unitIdMap.put(map.get("unitId").toString(), map);
+		  }
 		  inspectorUnitService.delete(list);//删除之前绑定的
 		  
 		  if(unitId==null || unitId.length==0){
