@@ -16,6 +16,12 @@
 	   <if test="name!=null and name!=''">
 	   	and  a.name like '%${name}%'  
 	   </if>
+	   <if test="startDate!=null and startDate!=''">
+	   	 and a.superviseDate>=#{startDate}
+	   </if>
+	    <if test="endDate!=null and endDate!=''">
+	   	 and a.superviseDate&lt;=#{endDate}
+	   </if>
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select> 
 	<!-- 查询记录数 -->
@@ -27,6 +33,12 @@
 	   </if>
 	   <if test="name!=null and name!=''">
 	   	and  a.name like '%${name}%'  
+	   </if>
+	   <if test="startDate!=null and startDate!=''">
+	   	 and a.superviseDate>=#{startDate}
+	   </if>
+	    <if test="endDate!=null and endDate!=''">
+	   	 and a.superviseDate&lt;=#{endDate}
 	   </if>
 	</select>
 	<!-- 添加后台数据 -->

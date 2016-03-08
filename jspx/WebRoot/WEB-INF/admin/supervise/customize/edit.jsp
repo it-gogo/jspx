@@ -168,17 +168,17 @@ function beforeSubmit(){
   <body >
   	<div id="layout_" class="easyui-layout" data-options="fit:'true',border:false" >
   	<form id="dform" method="post" >
-		<div  data-options="region:'west',split:true,title:'项目库列表',collapsible:true,collapsed:true" style="width:200px;">
+		<div  data-options="region:'west',split:true,title:'项目库列表',collapsible:false,collapsed:true" style="width:200px;">
 			<%@include file="/WEB-INF/admin/common/tree.jsp"%>
 		</div>
-		<div  data-options="region:'east',split:true,title:'学校列表',collapsible:true,collapsed:true" style="width:300px;">
+		<div  data-options="region:'east',split:true,title:'学校列表',collapsible:false,collapsed:true" style="width:300px;">
 			<%@include file="/WEB-INF/admin/common/tree_.jsp"%>
 		</div>
          <div data-options="region:'north'"  style="height:135px;">
          
             <input name="id"  type="hidden"  id="id"    value="${vo.id }">
             <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
-            <input name="type"  type="hidden"  id="type"    value="统一">
+            <input name="type"  type="hidden"  id="type"    value="自定义">
 			<table width="100%" class="table table-hover table-condensed">
 				<tr>
 					<th width="100px">名称</th>

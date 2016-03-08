@@ -109,7 +109,6 @@ public class SuperviseService extends BaseService {
 			if(projectId==null||projectName==null){
 				return "请至少选择一个督导项目";	
 			}
-			parameter.put("type", "统一");
 			this.add(parameter);
 			
 			/**
