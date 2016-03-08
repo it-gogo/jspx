@@ -3047,6 +3047,7 @@ CREATE TABLE supervise_unit(
     superviseId       VARCHAR(100),
     unitId            VARCHAR(100),
     step              INT,
+    flowStatus	varchar(20),
     checkMaterial     VARCHAR(200),
     modifyMaterial    VARCHAR(200),
     status            VARCHAR(10),

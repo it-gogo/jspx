@@ -66,6 +66,12 @@
 	                    name = #{name},
 	                    remark = #{remark},
 	                    seq = #{seq}
+	                    <if test="type!=null and type!=''">
+	                    	,type=#{type}
+	                    </if>
+	                    <if test="bindingTime!=null and bindingTime!=''">
+	                    	,bindingTime=#{bindingTime}
+	                    </if>
         where  id=#{id} 
 	</update>
 	<!-- 更新数据状态 -->
@@ -106,6 +112,11 @@
 	    Select a.* From  project a
 	    Where a.status='启用' and a.bindingTime is null  
 	</select>
+	<!-- 设置已读 -->
+	<delete id="readF"  parameterType = "java.util.List">
+	    update   project set bindingTime=#{bindingTime}   Where 1 = 1
+	    And id =#{id};
+	</delete>
 	
 	<!-- zhangjf 2016-03-07 根据督导ID查询督导相关项目数据start -->
 	<select id="listBySuperviseId" parameterType="map" resultType="map">

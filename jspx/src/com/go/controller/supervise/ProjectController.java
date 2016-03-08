@@ -163,22 +163,58 @@ public class ProjectController extends BaseController {
 		  this.projectService.delete(parameter);
 		  this.ajaxMessage(response, Syscontants.MESSAGE, "删除成功");
 	  }
-  /**
-	 *更新数据状态
+	  /**
+	   * 更新数据状态
+	   * @author chenhb
+	   * @create_time  2016-3-3 上午11:18:18
+	   * @param request
+	   * @param response
+	   */
+		@RequestMapping("changestatus")
+		public void changestatus(HttpServletRequest request,HttpServletResponse response){
+			Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+			Object obj=parameter.get("status");
+			if("禁用".equals(obj)){
+				 this.ajaxMessage(response, Syscontants.MESSAGE,"启用成功");
+				 parameter.put("status", "启用");
+			}else{
+				 parameter.put("status", "禁用");
+				this.ajaxMessage(response, Syscontants.MESSAGE,"禁用成功");
+			}
+			this.projectService.updatestat(parameter);
+		}
+	/**
+	 * 设置已读
+	 * @author chenhb
+	 * @create_time  2016-3-7 下午6:00:17
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping("changestat")
-	public void changestat(HttpServletRequest request,HttpServletResponse response){
+	@RequestMapping("readF.do")
+	  public  void  readF(HttpServletRequest request, HttpServletResponse response){
 		Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		Object obj=parameter.get("isActives");
-		if("1".equals(obj)){
-			 this.ajaxMessage(response, Syscontants.MESSAGE,"启用成功");
-			 parameter.put("isActives", "0");
-		}else{
-			 parameter.put("isActives", "1");
-			this.ajaxMessage(response, Syscontants.MESSAGE,"禁用成功");
-		}
-		this.projectService.updatestat(parameter);
-	}
+		  String time=ExtendDate.getYMD_h_m_s(new Date());
+		  parameter.put("bindingTime", time);
+		  this.projectService.readF(parameter);
+		  this.ajaxMessage(response, Syscontants.MESSAGE, "设置成功");
+	  }
+	/**
+	 * 绑定项目
+	 * @author chenhb
+	 * @create_time  2016-3-8 上午9:36:07
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("binding.do")
+	  public  String binding(HttpServletRequest request, HttpServletResponse response,Model  model){
+		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object>  res = this.projectService.load(parameter);
+		  String time=ExtendDate.getYMD_h_m_s(new Date());
+		  res.put("bindingTime", time);
+		  res.put("type", "绑定");
+		  model.addAttribute("vo", res);
+		  return  "admin/supervise/project/binding";
+	  }
 }
