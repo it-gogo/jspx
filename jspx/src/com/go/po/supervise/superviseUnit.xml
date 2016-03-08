@@ -5,8 +5,8 @@
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
 		<foreach collection="list" item="vo">
-	   		insert into supervise_unit(id,superviseId,unitId,status,step,checkMaterial,modifyMaterial)
-	  		 values(#{vo.id},#{vo.superviseId},#{vo.unitId},'启用',#{vo.step},#{vo.checkMaterial},#{vo.modifyMaterial});
+	   		insert into supervise_unit(id,superviseId,unitId,status,step,checkMaterial,modifyMaterial,flowStatus)
+	  		 values(#{vo.id},#{vo.superviseId},#{vo.unitId},'启用',#{vo.step},#{vo.checkMaterial},#{vo.modifyMaterial},#{vo.flowStatus});
 		</foreach>
 	</insert>
 	<!-- 删除数据 -->
