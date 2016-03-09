@@ -122,7 +122,7 @@ function  treeClick(node){
 			url="admin/css/icons/陈铭轩.png";
 		}
 		url="<%=request.getContextPath()%>/"+url;
-	 	bxunTabs.addTab(node.id,node.text,node.url,url);
+	 	bxunTabs.addTab(node.id,node.text,node.urls,url);
 	}else{
 		if(node.state=="closed"){
 			var tree=$(".menuTree");

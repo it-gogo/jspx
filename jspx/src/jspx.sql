@@ -3054,3 +3054,16 @@ CREATE TABLE supervise_unit(
     PRIMARY KEY (id)
 )
 ;
+
+
+CREATE TABLE material(
+    id             VARCHAR(100)    NOT NULL,
+    superviseId    VARCHAR(100),
+    unitId         VARCHAR(100),
+    projectId      VARCHAR(100),
+    name           VARCHAR(100),
+    url            VARCHAR(200),
+    type           VARCHAR(10),
+    status			varchar(50),
+    PRIMARY KEY (id)
+);

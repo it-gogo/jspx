@@ -1,7 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="superviseUnit">
-	
+	<!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,b.name superviseName,b.type superviseType,b.superviseDate superviseDate From  supervise_unit a join supervise b on a.superviseId=b.id join unit_info c on a.unitId=c.id
+	   Where 0=0
+	     <if test="beginDate!=null and beginDate!=''">
+	   	and b.superviseDate >= #{beginDate}
+	   </if>
+	    <if test="endDate!=null and endDate!=''">
+	   	and b.superviseDate &lt;= #{endDate}
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and c.flag=#{flag}
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  supervise_unit a join supervise b on a.superviseId=b.id join unit_info c on a.unitId=c.id
+	   Where 0=0
+	   <if test="beginDate!=null and beginDate!=''">
+	   	and b.superviseDate >= #{beginDate}
+	   </if>
+	    <if test="endDate!=null and endDate!=''">
+	   	and b.superviseDate &lt;= #{endDate}
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and c.flag=#{flag}
+	   </if>
+	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
 		<foreach collection="list" item="vo">
@@ -17,4 +45,20 @@
            #{id}  
         </foreach> ;
 	</delete>
+	<!-- 更新流程步骤 -->
+	<update id="updateFlow" parameterType="java.util.HashMap">
+		update supervise_unit set step=#{step},flowStatus=#{flowStatus}
+		where superviseId=#{superviseId} and unitId=#{unitId}
+	</update>
+	
+	<select id="findOne" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  supervise_unit a 
+	   Where 0=0
+	     <if test="superviseId!=null and superviseId!=''">
+	   	and a.superviseId = #{superviseId}
+	   </if>
+	    <if test="unitId!=null and unitId!=''">
+	   	and a.unitId = #{unitId}
+	   </if>
+	</select> 
 </mapper>

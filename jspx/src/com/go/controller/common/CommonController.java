@@ -60,6 +60,7 @@ public class CommonController extends BaseController {
 			  this.ajaxMessage(response, Syscontants.ERROE,"文件不存在");
 		  }
 	  }
+	  
 	  /**
 	   * 下载资料
 	   * @author chenhb

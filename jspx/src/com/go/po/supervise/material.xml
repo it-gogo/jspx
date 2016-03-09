@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="material">
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*  From  material a   Where 0=0
+	   <if test="superviseId!=null and superviseId!=''">
+			and a.superviseId=#{superviseId}
+		</if>
+		<if test="unitId!=null and unitId!=''">
+			and a.unitId=#{unitId}
+		</if>
+		<if test="projectId!=null and projectId!=''">
+			and a.projectId=#{projectId}
+		</if>
+		<if test="type!=null and type!=''">
+			and a.type=#{type}
+		</if>
+	</select> 
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+   		insert into material(id,name,url,type,superviseId,unitId,projectId,status)
+  		 values(#{id},#{name},#{url},#{type},#{superviseId},#{unitId},#{projectId},#{status});
+	</insert>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.HashMap">
+        delete from   material   Where 1 = 1
+	    And id =#{id} 
+	</delete>
+	
+	<select id="findMaxName" resultType="object" parameterType="java.util.HashMap" >
+		select max(name) from material a   Where a.name like '${name}%'
+		<if test="superviseId!=null and superviseId!=''">
+			and a.superviseId=#{superviseId}
+		</if>
+		<if test="unitId!=null and unitId!=''">
+			and a.unitId=#{unitId}
+		</if>
+		<if test="projectId!=null and projectId!=''">
+			and a.projectId=#{projectId}
+		</if>
+	</select>
+	<!-- 审批材料 -->
+	<update id="approval"   parameterType="java.util.HashMap" >
+		update material set status=#{status}
+		where id=#{id}
+	</update>
+	
+	<select id="load" parameterType="map" resultType="map">
+		select * from material where 1=1 
+		<if test="id!=null and id!=''">
+			and id=#{id}
+		</if>
+	</select>
+	<!-- 查询状态数量 -->
+	<select id="findNumber" parameterType="map" resultType="map">
+		select count(1) total,sum(case when status='通过' then 1 else 0 end) passNum,sum(case when status='不通过' then 1 else 0 end) unpassNum from material a where 1=1 
+		<if test="id!=null and id!=''">
+			and a.id=#{id}
+		</if>
+		<if test="superviseId!=null and superviseId!=''">
+			and a.superviseId=#{superviseId}
+		</if>
+		<if test="unitId!=null and unitId!=''">
+			and a.unitId=#{unitId}
+		</if>
+		<if test="projectId!=null and projectId!=''">
+			and a.projectId=#{projectId}
+		</if>
+	</select>
+</mapper>
