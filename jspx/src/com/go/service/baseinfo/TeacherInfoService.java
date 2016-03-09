@@ -310,4 +310,33 @@ public class TeacherInfoService extends BaseService {
 	public  void  delete(List<String> parameter){
 		this.getBaseDao().delete("teacherInfo.delete", parameter);
 	}
+	
+	
+	/**
+	 * 微信绑定操作
+	 * @author zhangjf
+	 * @create_time 2016-3-9 上午11:35:42
+	 * @param parameter
+	 * @return
+	 * @throws Exception 
+	 */
+	public synchronized String bindWeChat(Map<String,Object> parameter) throws Exception{
+		
+		try {
+			Map<String,Object> teacherInfo=this.loadByIdCard(parameter);
+			if(teacherInfo==null||teacherInfo.isEmpty()){
+				return "未找到对应的用户信息";
+			}else{
+				//进行绑定操作
+				this.getBaseDao().update("teacherInfo.bindWeChat", parameter);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return "";
+	}
+	
+	
 }

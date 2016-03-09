@@ -60,6 +60,20 @@
       <taglib-location>/WEB-INF/tld/fmt.tld</taglib-location>
     </taglib>
   </jsp-config>
+  
+   <!-- zhangjf 2016-03-09 初始化获取微信token定时任务 start -->
+  <servlet>  
+        <servlet-name>initServlet</servlet-name>  
+        <servlet-class>  
+           com.go.controller.weixin.InitServlet  
+        </servlet-class>  
+        <init-param>  
+            <param-name>model</param-name>  
+            <param-value>debug</param-value>  
+        </init-param>  
+        <load-on-startup>0</load-on-startup>  
+    </servlet> 
+   <!-- zhangjf 2016-03-09 初始化获取微信token定时任务 end -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
