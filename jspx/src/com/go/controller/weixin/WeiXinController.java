@@ -1,8 +1,10 @@
 package com.go.controller.weixin;
+import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
@@ -11,14 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.go.common.util.ExtendDate;
 import com.go.common.util.WeiXin_ConfigUtil;
 import com.go.common.util.WeiXin_SignUtil;
 import com.go.common.util.WeiXin_Util;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
-import com.go.service.weixin.WeiXin_MessageService;
+import com.go.service.baseinfo.TeacherInfoService;
+import com.go.service.weixin.WeiXinService;
 /**
  * 微信客户端控制器类
  * @author zhangjf
@@ -29,7 +30,10 @@ import com.go.service.weixin.WeiXin_MessageService;
 public class WeiXinController extends BaseController {
 
 	@Autowired
-	private WeiXin_MessageService weixin_messageService;
+	private WeiXinService weixinService;
+	@Autowired
+	private TeacherInfoService teacherInfoService;
+	
 	/**
 	 * 确认请求来自微信服务器 
 	 * @author zhangjf
@@ -48,13 +52,13 @@ public class WeiXinController extends BaseController {
 				//获取随机字符串
 				String echostr=request.getParameter("echostr");
 				if(null==echostr||echostr.isEmpty()){  
-					weixin_messageService.responseMsg(request,response);  
+					weixinService.responseMsg(request,response);  
 		        }else{
 		        	//通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
 					if(WeiXin_SignUtil.checkSignature(signature, timestamp, nonce)){
-						weixin_messageService.print(echostr, request, response);
+						weixinService.print(echostr, request, response);
 					}else{
-						weixin_messageService.print("error", request, response);
+						weixinService.print("error", request, response);
 					}
 		        }
 	}
@@ -91,86 +95,97 @@ public class WeiXinController extends BaseController {
 	 * @param response
 	 */
 	@RequestMapping("getOpenId.do")
-	public String  getOpenId(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+	public void  getOpenId(HttpServletRequest request,HttpServletResponse response){
 		String code=request.getParameter("code");
 		if(StringUtils.isNotBlank(code)){
 			String getOpenIdUrl="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+WeiXin_ConfigUtil.getInstance().getAppId()+"&secret="+WeiXin_ConfigUtil.getInstance().getAppsecret()+"&code="+code+"&grant_type=authorization_code";
 			JSONObject json=WeiXin_Util.httpRequest(getOpenIdUrl, "GET", null);
 			if(json.containsKey("openid")){
-				model.addAttribute("openid", json.getString("openid"));
-				return "weixin/bind";
+				String url="http://"+request.getServerName()+request.getContextPath();
+				String rendUrl=url+"/weixin/main.do?openid="+json.getString("openid");
+				try {
+					response.sendRedirect(rendUrl);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			
 			}
 		}
-		return "admin/login";
 	}
-			
+	
 	/**
-	 * 绑定数据保存
+	 * 微网站首页
 	 * @author zhangjf
-	 * @create_time 2015-8-8 上午10:26:35
+	 * @create_time 2015-10-8 上午10:22:54
 	 * @param request
 	 * @param response
-	 * @param info
+	 * @param model
 	 * @return
 	 */
-	@RequestMapping("save.do")
-	public void save(HttpServletRequest request,HttpServletResponse response){
-		//获取请求参数
-		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  if(parameter.containsKey("weixin_code")&&parameter.containsKey("id_card_no")){
-			  String weixin_code=parameter.get("weixin_code").toString();
-			  if(StringUtils.isBlank(weixin_code)){
-				  this.ajaxMessage(response, Syscontants.MESSAGE,"绑定失败");
-			  } 
-			  String id_card_no=parameter.get("id_card_no").toString();
-			  if(StringUtils.isBlank(id_card_no)){
-				  this.ajaxMessage(response, Syscontants.MESSAGE,"身份证号不能为空");
-				  return ;
-			  }
-			  String validate_msg=WeiXin_SignUtil.IDCardValidate(id_card_no);
-			  if(StringUtils.isNotBlank(validate_msg)){
-				  this.ajaxMessage(response, Syscontants.MESSAGE,validate_msg);
-				  return;
-			  }
-			  /**
-			   * 根据身份证号查询是否存在
-			   */
-			  Map<String,Object> params=new HashMap<String, Object>();
-			  params.put("weixin_code", weixin_code);
-			  Map<String,Object> bind_info=weixin_messageService.load(parameter);
-			  if(bind_info!=null&&!bind_info.isEmpty()){//修改操作
-				  String old_id_no=bind_info.get("id_card_no").toString();
-				if(!id_card_no.equals(old_id_no)){
-					bind_info.put("id_card_no", id_card_no);
-					weixin_messageService.update(bind_info);
-					this.ajaxMessage(response, Syscontants.MESSAGE, "修改成功");
-					return;
-				}
-			  }else{
-				  Map<String,Object> n_parameter = sqlUtil.setTableID(parameter);
-				  String current_time=ExtendDate.getYMD_h_m_s(new Date());
-				  n_parameter.put("bind_time", current_time);
-				  n_parameter.put("update_time", current_time);
-				  weixin_messageService.add(n_parameter);
-				  this.ajaxMessage(response, Syscontants.MESSAGE,"绑定成功");
-				  return;
-			  }
-			 
-		  }else{
-			  this.ajaxMessage(response, Syscontants.MESSAGE,"绑定失败,绑定信息不完整");
-			  return;
-		  }
-		//  boolean  isIDNull = sqlUtil.isIDNull(parameter,"id");
-		  /*if(isIDNull){
-			  //设置ID
-			  Map<String,Object> n_parameter = sqlUtil.setTableID(parameter);
-			  //添加菜单
-			  weixin_messageService.add(n_parameter);
-			  this.ajaxMessage(response, Syscontants.MESSAGE,"绑定成功");
-		  }else{
-			  this.ajaxMessage(response, Syscontants.MESSAGE,"绑定失败");
-		  }*/
-		 
+	@RequestMapping("main.do")
+	public String main(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		String openid=request.getParameter("openid");
+		if(StringUtils.isNotBlank(openid)){
+			model.addAttribute("openid", openid);
+			return "weixin/main";
+		}else{
+			model.addAttribute("msg", "哎哟喂！非法操作！");
+			return "error";
+		}
+	}
+	
+	/**
+	 * 微信端绑定操作页面
+	 * @author zhangjf
+	 * @create_time 2016-3-9 上午11:25:15
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("bindPage.do")
+	public String bindPage(HttpServletRequest request,HttpServletResponse response,ModelMap model){
+		String openid=request.getParameter("openid");//获取操作的微信号
+		model.addAttribute("openid", openid);
+		if(StringUtils.isBlank(openid)){
+			model.addAttribute("msg", "哎哟喂！非法操作！");
+			return "error";
+		}
+		String url="http://"+request.getServerName()+request.getContextPath();
+		String rendUrl=url+"/weixin/main.do?openid="+openid;
+		model.put("rendUrl", rendUrl);
+		return "weixin/bind_info";
+	}
+	
+	
+	/**
+	 * 保存绑定信息
+	 * @author zhangjf
+	 * @create_time 2016-3-9 上午11:28:02
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping("addBindInfo.do")
+	public void addBindInfo(HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);//获取提交过来的参数
+		String idcard=parameter.containsKey("idcard")?parameter.get("idcard").toString():"";
+		String openid=parameter.containsKey("openid")?parameter.get("openid").toString():"";
+		if(StringUtils.isBlank(idcard)||StringUtils.isBlank(openid)){
+			this.ajaxMessage(response, Syscontants.ERROE,"哎哟喂！非法操作！");
+			return;
+		}
+		 try {
+			 String msg=teacherInfoService.bindWeChat(parameter);
+			if(StringUtils.isBlank(msg)){
+				 this.ajaxMessage(response, Syscontants.MESSAGE,"绑定成功");
+			}else{
+				this.ajaxMessage(response, Syscontants.ERROE,msg);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.ajaxMessage(response, Syscontants.ERROE,"绑定失败,稍后重试");
+		}	
 	}
 	
 }

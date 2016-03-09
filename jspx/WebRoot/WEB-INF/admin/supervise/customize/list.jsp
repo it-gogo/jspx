@@ -7,7 +7,7 @@
 <html lang="zh-Cn">
 	<head>
 		<%@include file="/WEB-INF/admin/common/head.jsp" %>
-		<script type="text/javascript" src="<%=request.getContextPath() %>/admin/script/supervise/supervise.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath() %>/admin/script/supervise/customize.js"></script>
 		<script type="text/javascript">
 			var dataGrid;
 		 	$(document).ready(function(){
@@ -41,7 +41,7 @@ function  handlerstatus(value,row,index){
 		          <tr>
 		            <td>名称:</td>
 		            <td>
-		            	<input type="text" class="easyui-validatebox" name="name" id="name" >&nbsp;&nbsp;
+		            			            	<input type="text" class="easyui-validatebox" name="name" id="name" >&nbsp;&nbsp;
 		            	开始时间:<input name="startDate" id="startDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  >
 		            	&nbsp;&nbsp;
 		            	开始时间:<input name="endDate" id="endDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  >
@@ -62,7 +62,7 @@ function  handlerstatus(value,row,index){
 		    <table id="grid">
         <thead>
             <tr>
-            	<!-- <th data-options="field:'id',align:'center'" width="10" checkbox=true ></th> -->
+            	<!-- <th data-options="field:'id'" width="10" checkbox=true ></th> -->
                 <th data-options="field:'name',align:'center'" width="25">督导项目名称</th>
                 <th data-options="field:'superviseDate',align:'center'" width="30">时间</th>
                 <th data-options="field:'type',align:'center'" width="30" >类型</th>

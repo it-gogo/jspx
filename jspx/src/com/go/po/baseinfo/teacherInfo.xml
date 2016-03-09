@@ -174,7 +174,7 @@
 		select * from teacher_info where 1=1
 		<choose>
 			<when test="idcard!=null and idcard!=''">
-				and idcard=#{idcard}
+				and lOWER(idcard)=lOWER(#{idcard})
 			</when>
 			<otherwise>
 				and 1>2
@@ -195,4 +195,14 @@
 			   on t2.studentId=t3.id
 	</select>
 	<!-- zhangjf 2015-10-14 app同步学生数据end -->
+	
+	<!-- zhangjf 2016-03-09 绑定微信号信息操作start -->
+	<update id="bindWeChat" parameterType="map">
+		update teacher_info set  wechat = #{openid}
+		where 1=1
+		<if test="idcard!=null and idcard!=''">
+			and lOWER(idcard)=lOWER(#{idcard})
+		</if>
+	</update>
+	<!-- zhangjf 2016-03-09 绑定微信号信息操作end -->
 </mapper>

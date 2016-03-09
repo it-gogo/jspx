@@ -109,7 +109,6 @@ public class SuperviseService extends BaseService {
 			if(projectId==null||projectName==null){
 				return "请至少选择一个督导项目";	
 			}
-			parameter.put("type", "统一");
 			this.add(parameter);
 			
 			/**
@@ -176,6 +175,7 @@ public class SuperviseService extends BaseService {
 					superviseUnit.put("superviseId", superviseId);
 					superviseUnit.put("unitId", school.get("id"));
 					superviseUnit.put("step", "2");
+					superviseUnit.put("flowStatus", "待学校上传材料");
 					superviseUnitList.add(superviseUnit);
 				}
 			}else{
@@ -188,6 +188,7 @@ public class SuperviseService extends BaseService {
 					superviseUnit.put("superviseId", superviseId);
 					superviseUnit.put("unitId", unitId[j]);
 					superviseUnit.put("step", "2");
+					superviseUnit.put("flowStatus", "待学校上传材料");
 					superviseUnitList.add(superviseUnit);
 				}
 			}
@@ -309,6 +310,7 @@ public class SuperviseService extends BaseService {
 					superviseUnit.put("superviseId", superviseId);
 					superviseUnit.put("unitId", school.get("id"));
 					superviseUnit.put("step", "2");
+					superviseUnit.put("flowStatus", "待学校上传材料");
 					superviseUnitList.add(superviseUnit);
 				}
 			}else{
@@ -321,6 +323,7 @@ public class SuperviseService extends BaseService {
 					superviseUnit.put("superviseId", superviseId);
 					superviseUnit.put("unitId", unitId[j]);
 					superviseUnit.put("step", "2");
+					superviseUnit.put("flowStatus", "待学校上传材料");
 					superviseUnitList.add(superviseUnit);
 				}
 			}

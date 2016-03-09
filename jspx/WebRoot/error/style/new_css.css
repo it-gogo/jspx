@@ -1,0 +1,22 @@
+body{
+	background-color:#fdf7e1;
+}
+.bj{
+	background:url("../images/bj_tp.png") no-repeat center;
+	height: 500px;
+}
+div#da-error-wrapper{
+	width:100%;
+	padding: 50px 0;
+}
+
+.fanhui{
+	text-align: center;
+    padding-top: 340px;
+    font-size: 16px;
+}
+.fanhui a{
+	text-decoration: none;
+    color: #815a3b;
+    font-weight: bold;	
+}
