@@ -57,6 +57,17 @@ public class WeiXin_ConfigUtil {
 	}
 	
 	/**
+	 * 根据key获取value
+	 * @author zhangjf
+	 * @create_time 2016-3-9 下午1:57:22
+	 * @param key
+	 * @return
+	 */
+	public String getParameter(String key){
+		return config.getProperty(key);
+	}
+	
+	/**
 	 * 获取微信号秘钥
 	 * @author zhangjf
 	 * @create_time 2015-8-7 下午5:02:08

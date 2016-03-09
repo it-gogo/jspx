@@ -30,6 +30,7 @@ import com.go.po.model.TextMessage;
 import com.go.po.model.ViewButton;
 import com.go.po.model.WxTemplate;
 import com.go.service.base.BaseService;
+import com.go.thread.TokenThread;
 
 /**
  * 处理微信相关的逻辑层实现类
@@ -166,7 +167,54 @@ public class WeiXinService extends BaseService {
 	        }  
 	  
 	        return respMessage;  
-	    }  
+	    }
+	 
+	 
+	 /**
+	  * 消息发送方法
+	  * @author zhangjf
+	  * @create_time 2016-3-9 下午1:55:11
+	  * @param userName
+	  * @param content
+	  * @param url
+	  * @param weixinCode
+	  */
+	 public void sendMessage(String userName,String content,String url,String weixinCode){
+		 if(StringUtils.isBlank(weixinCode)){
+				return;
+		 } 
+		 String currentDate=DateUtil.getCurrentDate();
+		 WxTemplate template = new WxTemplate();
+		 template.setUrl(url);  
+		 template.setTouser(weixinCode);//消息接受者微信号
+		 template.setTopcolor("#459ae9");
+		 template.setTemplate_id(WeiXin_ConfigUtil.getInstance().getParameter("messageTmpId"));
+		 Map<String,TemplateData> tempMap = new HashMap<String,TemplateData>();//构建内容
+		 
+		 TemplateData keyword1Data = new TemplateData();
+		 keyword1Data.setColor("#459ae8");
+		 keyword1Data.setValue(WeiXin_ConfigUtil.getInstance().getParameter("sendSchoolName"));
+		 tempMap.put("keyword1",keyword1Data);
+		 
+		 TemplateData keyword2Data = new TemplateData();
+		 keyword2Data.setColor("#459ae8");
+		 keyword2Data.setValue(userName);
+		 tempMap.put("keyword2", keyword2Data);
+		 
+		 TemplateData keyword3Data = new TemplateData();
+		 keyword3Data.setColor("#459ae8");
+		 keyword3Data.setValue(currentDate);
+		 tempMap.put("keyword3", keyword3Data);
+		 
+		 TemplateData keyword4Data = new TemplateData();
+		 keyword4Data.setColor("#459ae8");
+		 keyword4Data.setValue(content);
+		 tempMap.put("keyword4", keyword4Data);
+		 
+		 template.setData(tempMap);
+		 //进行消息推送
+		 WeiXin_Util.sendNotify(template,TokenThread.accessToken.getToken());
+	 }
 	 
 	
 }
