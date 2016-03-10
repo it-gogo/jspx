@@ -196,13 +196,34 @@
 	</select>
 	<!-- zhangjf 2015-10-14 app同步学生数据end -->
 	
+	
+	<!-- zhangjf 2016-03-10 根据微信号加载老师用户和督导用户信息 start -->
+	<select id="loadInfoByIdCard" parameterType="map" resultType="map">
+		select id,name,wechat,'teacher' as type  from teacher_info where lOWER(idcard)=lOWER(#{idcard})
+		union all
+		select id,name, wechat,'inspector' as type from inspector where lOWER(idcard)=lOWER(#{idcard})
+	</select>
+	<!-- zhangjf 2016-03-10 根据微信号加载老师用户和督导用户信息 end -->
+	
 	<!-- zhangjf 2016-03-09 绑定微信号信息操作start -->
 	<update id="bindWeChat" parameterType="map">
-		update teacher_info set  wechat = #{openid}
+	 <choose>
+	 	<when test="type=='teacher'">
+	 		update teacher_info set  wechat = #{openid}
 		where 1=1
 		<if test="idcard!=null and idcard!=''">
 			and lOWER(idcard)=lOWER(#{idcard})
 		</if>
+	 	</when>
+	 	<when test="type=='inspector'">
+	 		update inspector set  wechat = #{openid}
+		where 1=1
+		<if test="idcard!=null and idcard!=''">
+			and lOWER(idcard)=lOWER(#{idcard})
+		</if>
+	 	</when>
+	 </choose>
+		
 	</update>
 	<!-- zhangjf 2016-03-09 绑定微信号信息操作end -->
 </mapper>

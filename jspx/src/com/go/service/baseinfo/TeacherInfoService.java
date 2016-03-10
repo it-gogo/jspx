@@ -92,6 +92,17 @@ public class TeacherInfoService extends BaseService {
 	}
 	
 	/**
+	 * 根据身份证号加载老师/督学信息
+	 * @author zhangjf
+	 * @create_time 2016-3-10 下午5:36:53
+	 * @param parameter
+	 * @return
+	 */
+	public List<Map<String,Object>>loadInfoByIdCard(Map<String,Object> parameter){
+		return this.getBaseDao().findList("teacherInfo.loadInfoByIdCard", parameter);
+	}
+	
+	/**
 	 * 通过条件获得一个数据
 	 * @author chenhb
 	 * @create_time {date} 上午11:55:59
@@ -322,7 +333,7 @@ public class TeacherInfoService extends BaseService {
 	 */
 	public synchronized String bindWeChat(Map<String,Object> parameter) throws Exception{
 		
-		try {
+	/*	try {
 			Map<String,Object> teacherInfo=this.loadByIdCard(parameter);
 			if(teacherInfo==null||teacherInfo.isEmpty()){
 				return "未找到对应的用户信息";
@@ -333,6 +344,20 @@ public class TeacherInfoService extends BaseService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
+		}*/
+		
+		List<Map<String,Object>> infos=this.loadInfoByIdCard(parameter);
+		if(infos==null||infos.isEmpty()){
+			return "未找到对应的用户信息";
+		}else{
+			Map<String,Object> params=null;
+			for (Map<String, Object> info : infos) {
+				params=new HashMap<String, Object>();
+				params.put("openid", parameter.get("openid"));
+				params.put("idcard", parameter.get("idcard"));
+				params.put("type", info.get("type"));
+				this.getBaseDao().update("teacherInfo.bindWeChat", params);
+			}
 		}
 		
 		return "";
