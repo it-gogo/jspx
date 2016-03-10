@@ -79,4 +79,25 @@
            #{id}  
         </foreach> ;
 	</delete>
+	<!-- 查询督学记录 -->
+	<select id="findInspectorApprovalList" parameterType="map" resultType="map">
+		select a.*,c.name schoolName,b.flowStatus,b.unitId unitId,b.step step 
+		from supervise a 
+		join supervise_unit b on a.id=b.superviseId 
+		join unit_info c on c.id=b.unitId
+		<if test="userId!=null and userId!=''">
+			join inspector_unit d on d.unitId=c.id 
+			join inspector e on e.id=d.inspectorId and e.userId=#{userId}
+		</if>
+	</select>
+	<select id="findInspectorApprovalCount" parameterType="map" resultType="object">
+		select count(1) 
+		from supervise a 
+		join supervise_unit b on a.id=b.superviseId 
+		join unit_info c on c.id=b.unitId
+		<if test="userId!=null and userId!=''">
+			join inspector_unit d on d.unitId=c.id 
+			join inspector e on e.id=d.inspectorId and e.userId=#{userId}
+		</if>
+	</select>
 </mapper>

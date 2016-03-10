@@ -38,7 +38,7 @@ function ajaxFileUpload(){
 	var unitId=$("#unitId").val();
 	var superviseId=$("#id").val();
 	$.ajaxFileUpload({  
-        url:"saveMaterial.do?unitId="+unitId+"&superviseId="+superviseId+"&projectId="+projectId+"&type="+type,  
+        url:"../schoolSupervise/saveMaterial.do?unitId="+unitId+"&superviseId="+superviseId+"&projectId="+projectId+"&type="+type,  
         secureuri:false,  
         fileElementId:"fileId",  
         dataType: "text",
@@ -90,7 +90,7 @@ function deleteFile(fileUrl,id){
 		return;
 	}
 	$.ajax({
-		url:"deleteMaterial.do",
+		url:"../schoolSupervise/deleteMaterial.do",
 		data:"fileUrl="+fileUrl+"&id="+id,
 		success:function(data){
 			var json=eval("("+data+")");
@@ -103,19 +103,6 @@ function deleteFile(fileUrl,id){
 		}
 	});
 }
-function modifyFile(projectId,type,fileUrl,id){
-	if(fileUrl==""){
-		parent.$.messager.alert("提示窗口","没有上传资料。");
-		return;
-	}
-	$.ajax({
-		url:"deleteMaterial.do",
-		data:"fileUrl="+fileUrl+"&id="+id,
-		success:function(data){
-		}
-	});
-	importFile(projectId,type);
-}
 /**
 *审批
 */
@@ -124,8 +111,8 @@ function approvalFile(id,status){
 	$.messager.confirm("询问", "您确定"+status+"该材料吗？", function(r){
 		if (r){
 			$.ajax({
-				url:"approvalMaterial.do",
-				data:"id="+id+"&status=校长"+status+"&step="+step,
+				url:"../schoolSupervise/approvalMaterial.do",
+				data:"id="+id+"&status=督学"+status+"&step="+step,
 				success:function(data){
 					var json=eval("("+data+")");
 					if(json.message){
@@ -168,23 +155,11 @@ function approvalFile(id,status){
 					<td>${project.name }</td>
 					<td>${project.remark }</td>
 					<td>
-						<%-- <c:choose>
-							<c:when test="${empty  project.schoolMaterials}"></c:when>
-							<c:otherwise>
-							</c:otherwise>
-						</c:choose> --%>
-						<c:if test="${user.type=='老师账号' && (superviseUnit.step==2 || superviseUnit.step==3)}">
-							<div><a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a></div>
-						</c:if>
 						<c:forEach items="${project.schoolMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='老师账号' && (superviseUnit.step==2 || superviseUnit.step==3)}">
-									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','学校材料','${material.url}','${material.id}')">修改</a>
-									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
-								</c:if>
 								<c:choose>
-									<c:when test="${user.type=='单位账号' && superviseUnit.step==3 && material.status=='待审批'}">
+									<c:when test="${user.type=='督学账号' && superviseUnit.step==4 && material.status=='校长通过'}">
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
 									</c:when>
@@ -195,34 +170,33 @@ function approvalFile(id,status){
 					</td>
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >
+							<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==5 || superviseUnit.step==6)}">
+								<div><a href="javascript:void(0);" onclick="importFile('','检查材料')">上传</a></div>
+							</c:if>
 							<c:forEach items="${vo.checkMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+								<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==5 || superviseUnit.step==6)}">
+									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
+								</c:if>
 							</div>
 						</c:forEach>
 						</td>
 					</c:if>
 					<c:if test="${i.index==0 }">
-						<td rowspan="${projectList.size() }" >${project.modifyMaterials }
-							<c:if test="${user.type=='老师账号' && (superviseUnit.step==6 || superviseUnit.step==7)}">
-								<div><a href="javascript:void(0);" onclick="importFile('','整改材料')">上传</a></div>
-							</c:if>
-						<c:forEach items="${vo.modifyMaterials}" var="material">
-							<div>
-								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='老师账号' && (superviseUnit.step==6 || superviseUnit.step==7)}">
-									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','整改材料','${material.url}','${material.id}')">修改</a>
-									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
-								</c:if>
-								<c:choose>
-									<c:when test="${user.type=='单位账号' && superviseUnit.step==7 && material.status=='待审批'}">
-										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
-										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
-									</c:when>
-									<c:otherwise>${material.status }</c:otherwise>
-								</c:choose>
-							</div>
-						</c:forEach>
+						<td rowspan="${projectList.size() }" >
+							<c:forEach items="${vo.modifyMaterials}" var="material">
+								<div>
+									<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+									<c:choose>
+										<c:when test="${user.type=='督学账号' && superviseUnit.step==8 && material.status=='校长通过'}">
+											<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
+											<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
+										</c:when>
+										<c:otherwise>${material.status }</c:otherwise>
+									</c:choose>
+								</div>
+							</c:forEach>
 						</td>
 					</c:if>
 				</tr>

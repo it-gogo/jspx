@@ -53,7 +53,7 @@
 	</select>
 	<!-- 查询状态数量 -->
 	<select id="findNumber" parameterType="map" resultType="map">
-		select count(1) total,sum(case when status='通过' then 1 else 0 end) passNum,sum(case when status='不通过' then 1 else 0 end) unpassNum from material a where 1=1 
+		select count(1) total,sum(case when status = #{status} then 1 else 0 end) passNum,sum(case when status in ('校长不通过','督学不通过') then 1 else 0 end) unpassNum from material a where 1=1 
 		<if test="id!=null and id!=''">
 			and a.id=#{id}
 		</if>
@@ -65,6 +65,9 @@
 		</if>
 		<if test="projectId!=null and projectId!=''">
 			and a.projectId=#{projectId}
+		</if>
+		<if test="type!=null and type!=''">
+			and a.type=#{type}
 		</if>
 	</select>
 </mapper>
