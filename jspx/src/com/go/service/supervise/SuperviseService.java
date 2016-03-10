@@ -135,7 +135,7 @@ public class SuperviseService extends BaseService {
 				params=new HashMap<String, Object>();
 				params.put("noticeTeacherId", SqlUtil.uuid());
 				params.put("teacherId", noticeTeacher.get("teacherId"));
-				notices.add(noticeMap);
+				notices.add(params);
 				/**
 				 * 微端消息发送start
 				 */
