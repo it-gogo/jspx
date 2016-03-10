@@ -5,13 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.go.common.util.DateUtil;
 import com.go.common.util.ExtendDate;
 import com.go.common.util.SqlUtil;
+import com.go.common.util.SysUtil;
+import com.go.common.util.SystemConfigUtil;
 import com.go.common.util.TreeUtil;
 import com.go.service.base.BaseService;
+import com.go.service.weixin.WeiXinService;
 /**
  * 督导统一项目设置逻辑层
  * @author zhangjf
@@ -20,6 +27,8 @@ import com.go.service.base.BaseService;
 @Service
 public class SuperviseService extends BaseService {
 
+	@Autowired
+	private WeiXinService weixinService;
 	/**
 	 * 分页查找数据
 	 * @param parameter
@@ -71,11 +80,92 @@ public class SuperviseService extends BaseService {
 	/**
 	 * 更新数据状态
 	 * @param parameter
+	 * @throws Exception 
 	 */
-	public void changeStatus(Map<String,Object> parameter){
-		this.getBaseDao().update("supervise.changeStatus", parameter);
+	public void changeStatus(Map<String,Object> parameter,Map<String,Object> userMap) throws Exception{
+		Object status=parameter.get("status");
+		Object superviseId=parameter.get("id");
+		try {
+			if("启用".equals(status)){
+				//进行提交材料消息发送
+				Map<String,Object> params=new HashMap<String, Object>();
+				params.put("superviseId", superviseId);
+				params.put("roleType", "督学助手");
+				params.put("content", "您有一个督导项目需要进行资料上传");
+				sendMsg(params,userMap);
+			}
+			this.getBaseDao().update("supervise.changeStatus", parameter);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
+	/**
+	 * 发送提交材料信息(对象为督学助手)
+	 * @author zhangjf
+	 * @create_time 2016-3-10 下午2:00:16
+	 * @param superviseId
+	 * @throws Exception 
+	 */
+	public void sendMsg(Map<String,Object> parameter,Map<String,Object> userMap) throws Exception {
+	
+		if(parameter==null||parameter.isEmpty()){
+			return;
+		}
+		try {
+			List<Map<String,Object>> noticeTeacherList=this.getBaseDao().findList("supervise.listInspectorById", parameter);//查询通知对象
+			List<Map<String,Object>> notices=new ArrayList<Map<String,Object>>();//保存消息老师关系集合
+			String content="您有一个督导项目需要资料上传,请及时处理！";
+			//构建消息推送内容
+			Map<String,Object> noticeMap=new HashMap<String, Object>();
+			String noticeId=SqlUtil.uuid();
+			noticeMap.put("id", noticeId);
+			noticeMap.put("isInStation", "站内短信");
+			noticeMap.put("title", "提交材料消息");
+			noticeMap.put("content", content);
+			noticeMap.put("creator", userMap.get("id"));
+			noticeMap.put("createdate", DateUtil.getCurrentTime());
+			this.getBaseDao().insert("noticeManagement.add", noticeMap);//保存消息
+			/**
+			 * 遍历通知老师发送消息start
+			 */
+			Map<String,Object> params=null;
+			for(Map<String, Object> noticeTeacher : noticeTeacherList) {
+				params=new HashMap<String, Object>();
+				params.put("noticeTeacherId", SqlUtil.uuid());
+				params.put("teacherId", noticeTeacher.get("teacherId"));
+				notices.add(noticeMap);
+				/**
+				 * 微端消息发送start
+				 */
+				if("true".equals(SystemConfigUtil.getInstance().getValByKey("sendMsg"))){
+					Object wechat=noticeTeacher.get("wechat");
+					if(wechat!=null){
+						weixinService.sendMessage(noticeTeacher.get("teacherName")+"", content, "", wechat.toString());
+					}
+				}
+				/**
+				 * 微端消息发送end
+				 */
+			}
+			/**
+			 * 遍历通知老师发送消息end
+			 */
+			
+			if(notices!=null&&!notices.isEmpty()){
+				params=new HashMap<String, Object>();
+				params.put("id", noticeId);
+				params.put("list", notices);
+				this.getBaseDao().insert("noticeTeacher.batchAdd", params);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
+
 	/**
 	 * 删除数据
 	 * @param parameter

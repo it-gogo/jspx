@@ -176,7 +176,13 @@ public class SuperviseController extends BaseController {
 			 parameter.put("status", "禁用");
 			this.ajaxMessage(response, Syscontants.MESSAGE,"禁用成功");
 		}
-		this.superviseService.changeStatus(parameter);
+		Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
+		try {
+			this.superviseService.changeStatus(parameter,user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.ajaxMessage(response, Syscontants.MESSAGE,"系统繁忙,"+obj+"操作失败");
+		}
 	}
 	
 	/**

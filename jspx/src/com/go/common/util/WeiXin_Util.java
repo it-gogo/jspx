@@ -195,7 +195,7 @@ public class WeiXin_Util {
 			public static void sendNotify(WxTemplate template,String token){
 				 String send_url=SEND_MSG_URL.replace("ACCESS_TOKEN", token);//获取token方法临时,后期将token保存到数据库防止超出频率限制
 				 JSONObject json=httpRequest(send_url, "POST", JSONObject.fromObject(template).toString());
-				 System.out.println("模板消息发送:"+json.getString("errmsg"));
+				 LogUtil.error(WeiXin_Util.class, "返回消息:"+json.getString("errmsg"));
 			}
 			
 			/**

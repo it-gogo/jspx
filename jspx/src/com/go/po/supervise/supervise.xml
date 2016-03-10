@@ -79,4 +79,22 @@
            #{id}  
         </foreach> ;
 	</delete>
+	
+	<!-- zhangjf 2016-03-10 根据督学项目查询相应的督学助手列表 start -->
+	 <select id="listInspectorById" parameterType="map" resultType="map">
+	 	select  t1.*,t3.name unitName,t4.id teacherId,t4.name teacherName,t4.wechat wechat  
+	 	from supervise t1 join supervise_unit t2 on t1.id=t2.superviseId 
+	 	<if test="superviseId!=null and superviseId!=''">
+	 		and t1.id=#{superviseId}
+	 	</if>
+		join unit_info t3 on t2.unitId=t3.id and t3.type='2'
+		join teacher_info t4 on t3.id=t4.schoolId and t4.isDeleted='0'
+		join user_info t5 on t4.userId=t5.id and t5.isActives='1' and t5.isDeleted='0'
+		join role_user t6 on t6.userId=t5.id
+		join role t7 on t6.roleId=t7.id 
+		<if test="roleType!=null and roleType!=''">
+			and roleType=#{roleType}
+		</if>
+	 </select>
+	<!-- zhangjf 2016-03-10 根据督学项目查询相应的督学助手列表 end -->
 </mapper>
