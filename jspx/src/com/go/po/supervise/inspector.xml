@@ -25,13 +25,14 @@
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
-	   insert into inspector(id,userId,name,creator,createdate,status)
-	   values(#{id},#{userId},#{name},#{creator},#{createdate},'启用');
+	   insert into inspector(id,userId,name,creator,createdate,status,idcard,wechat)
+	   values(#{id},#{userId},#{name},#{creator},#{createdate},'启用',#{idcard},#{wechat});
 	</insert>
 	
 	<!-- 添加后台数据 -->
 	<update id="update" parameterType="java.util.HashMap" >
-	   update inspector set  name = #{name}
+	   update inspector set  name = #{name},
+	   idcard=#{idcard}
         where  id=#{id} 
 	</update>
 	<!-- 更新数据状态 -->

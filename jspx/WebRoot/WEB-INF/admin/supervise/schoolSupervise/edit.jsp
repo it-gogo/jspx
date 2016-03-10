@@ -173,18 +173,18 @@ function approvalFile(id,status){
 							<c:otherwise>
 							</c:otherwise>
 						</c:choose> --%>
-						<c:if test="${user.type=='老师账号' && (superviseUnit.step==2 || superviseUnit.step==3)}">
+						<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
 							<div><a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a></div>
 						</c:if>
 						<c:forEach items="${project.schoolMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='老师账号' && (superviseUnit.step==2 || superviseUnit.step==3)}">
+								<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
 									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','学校材料','${material.url}','${material.id}')">修改</a>
 									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
 								</c:if>
 								<c:choose>
-									<c:when test="${user.type=='单位账号' && superviseUnit.step==3 && material.status=='待审批'}">
+									<c:when test="${isXZS && superviseUnit.step==3 && material.status=='待审批'}">
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
 									</c:when>
@@ -204,18 +204,18 @@ function approvalFile(id,status){
 					</c:if>
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >${project.modifyMaterials }
-							<c:if test="${user.type=='老师账号' && (superviseUnit.step==6 || superviseUnit.step==7)}">
+							<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
 								<div><a href="javascript:void(0);" onclick="importFile('','整改材料')">上传</a></div>
 							</c:if>
 						<c:forEach items="${vo.modifyMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='老师账号' && (superviseUnit.step==6 || superviseUnit.step==7)}">
+								<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
 									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','整改材料','${material.url}','${material.id}')">修改</a>
 									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
 								</c:if>
 								<c:choose>
-									<c:when test="${user.type=='单位账号' && superviseUnit.step==7 && material.status=='待审批'}">
+									<c:when test="${isXZS && superviseUnit.step==7 && material.status=='待审批'}">
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
 										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
 									</c:when>

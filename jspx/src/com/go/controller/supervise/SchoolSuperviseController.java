@@ -109,6 +109,11 @@ public class SchoolSuperviseController extends BaseController {
 	   */
 	  @RequestMapping("load.do")
 	  public  String load(HttpServletRequest request, HttpServletResponse response,Model  model){
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
+		  user.put("userId", user.get("id"));
+		  model.addAttribute("isDXZS", schoolSuperviseService.isDXZS(user));//是否督学助手
+		  model.addAttribute("isXZS", schoolSuperviseService.isXZS(user));//是否校长室
+		  
 		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
 		  Map<String,Object>  res = this.superviseService.load(parameter);
 		  res.put("unitId", parameter.get("unitId"));

@@ -65,4 +65,17 @@
            #{id}  
         </foreach> ;
 	</delete>
+	
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From role a join role_user b on a.id=b.roleId 
+	   Where 0=0  
+	   <if test="roleType!=null and roleType!=''">
+	   and a.roleType=#{roleType}   
+	   </if>
+	   <if test="userId!=null and userId!=''">
+	   and b.userId=#{userId}   
+	   </if>
+	   limit 0,1
+	</select>
 </mapper>

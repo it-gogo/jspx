@@ -141,6 +141,38 @@ public class SchoolSuperviseService extends BaseService {
 		this.getBaseDao().update("material.approval", parameter);
 	}
 	/**
+	 * 是否督学助手
+	 * @author chenhb
+	 * @create_time  2016-3-10 下午5:01:01
+	 * @param parameter
+	 * @return
+	 */
+	public boolean isDXZS(Map<String,Object> parameter){
+		Map<String,Object> parame=new HashMap<String, Object>(parameter);
+		parame.put("roleType", "督学助手");
+		Map<String,Object> vo=this.getBaseDao().loadEntity("role.findOne", parame);
+		if(vo==null || vo.size()==0){
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * 是否校长室
+	 * @author chenhb
+	 * @create_time  2016-3-10 下午5:01:01
+	 * @param parameter
+	 * @return
+	 */
+	public boolean isXZS(Map<String,Object> parameter){
+		Map<String,Object> parame=new HashMap<String, Object>(parameter);
+		parame.put("roleType", "校长室");
+		Map<String,Object> vo=this.getBaseDao().loadEntity("role.findOne", parame);
+		if(vo==null || vo.size()==0){
+			return false;
+		}
+		return true;
+	}
+	/**
 	 * 导出材料
 	 * @author chenhb
 	 * @create_time  2016-3-9 下午4:09:21

@@ -72,6 +72,10 @@ $.extend($.fn.validatebox.defaults.rules, {
 					<td><input name="name" type="text" class="easyui-validatebox textbox" value="${vo.name }" data-options="required:true" placeholder="请输入名称" style="width:300px;">&nbsp;<span>*</span></td>
 				</tr>
 				<tr>
+					<th>身份证</th>
+					<td><input name="idcard" type="text"   class="easyui-validatebox textbox" required="required" style="width:300px;"  value="${vo.idcard }"></td>
+				</tr>
+				<tr>
 					<th>账号</th>
 					<td><input name="text" type="text" class="easyui-validatebox textbox"  data-options="required:true,validType:'checkText'" placeholder="请输入管理账号"  style="width:300px;" value="${vo.text }"></td>
 				</tr>
