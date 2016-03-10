@@ -12,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,6 +194,9 @@ public class WeiXin_Util {
 			 * @param template
 			 */
 			public static void sendNotify(WxTemplate template,String token){
+				if(StringUtils.isBlank(token)){
+					LogUtil.error(WeiXin_Util.class, "未启动获取token定时任务！");
+				}
 				 String send_url=SEND_MSG_URL.replace("ACCESS_TOKEN", token);//获取token方法临时,后期将token保存到数据库防止超出频率限制
 				 JSONObject json=httpRequest(send_url, "POST", JSONObject.fromObject(template).toString());
 				 LogUtil.error(WeiXin_Util.class, "返回消息:"+json.getString("errmsg"));
