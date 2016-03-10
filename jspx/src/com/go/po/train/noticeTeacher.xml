@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noticeTeacher">
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.Map" parameterType="java.util.HashMap" >
+	   select a.*,b.name teacherName From  notice_teacher a  join teacher_info b on a.teacherId=b.id
+	   Where 0=0
+	   <if test="noticeId!=null and noticeId!=''">
+	   	and a.noticeId=#{noticeId}
+	   </if>
+	</select> 
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into notice_teacher(id,noticeId,teacherId,isRead,readDate)
+	   values(#{id},#{noticeId},#{teacherId},'未阅读',#{readDate})
+	</insert>
+	<insert id="batchAdd" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	   insert into notice_teacher(id,noticeId,teacherId,isRead,readDate)
+	   values(#{vo.noticeTeacherId},#{id},#{vo.teacherId},'未阅读',#{vo.readDate});
+	   </foreach>
+	</insert>
+	<!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select b.*,(select text from user_info where id=b.creator) creatorName,a.isRead isRead,a.readDate readDate From notice_teacher a join  notice_management b on a.noticeId=b.id   
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and b.title like '%${title}%'
+	   </if>
+	   <if test="isInstation!=null and isInstation!=''">
+	   	and b.isInstation=#{isInstation}
+	   </if>
+	   <if test="teacherId!=null and teacherId!=''">
+	   	and a.teacherId =#{teacherId}
+	   </if>
+	   <if test="loginId!=null and loginId!=''">
+	   	and a.teacherId  in (select id from teacher_info where userId=#{loginId})
+	   </if>
+	    order by createdate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From notice_teacher a join  notice_management b on a.noticeId=b.id   
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and b.title like '%${title}%'
+	   </if>
+	   <if test="isInstation!=null and isInstation!=''">
+	   	and b.isInstation=#{isInstation}
+	   </if>
+	   <if test="teacherId!=null and teacherId!=''">
+	   	and a.teacherId =#{teacherId}
+	   </if>
+	  <if test="loginId!=null and loginId!=''">
+	   	and a.teacherId  in (select id from teacher_info where userId=#{loginId})
+	   </if>
+	</select>
+	<update id="updateRead" parameterType="java.util.HashMap" >
+		update notice_teacher set isRead='已阅读',readDate=#{readDate} where noticeId=#{noticeId} and teacherId in (select id from teacher_info where userId=#{loginId})
+	</update>
+	
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+         delete from   notice_teacher    Where 1 = 1
+	    And noticeId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

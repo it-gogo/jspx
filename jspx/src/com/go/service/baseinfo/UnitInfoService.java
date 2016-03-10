@@ -1,5 +1,6 @@
 package com.go.service.baseinfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -152,6 +153,76 @@ public class UnitInfoService extends BaseService {
 		List<Map<String,Object>> resList=TreeUtil.createTree(list);
 		return resList;
 	}
+	
+	/**
+	 * 加载老师列表树形
+	 * @author zhangjf
+	 * @create_time 2016-3-10 上午10:42:25
+	 * @param parameter
+	 * @return
+	 * @throws  
+	 * @throws Exception 
+	 */
+	public List<Map<String,Object>> findTeacherTree(Map<String,Object> parameter) throws Exception{
+		List<Map<String,Object>> schoolList=this.getBaseDao().findList("unitInfo.findSchool", parameter);
+		List<Map<String,Object>> teacherList=this.getBaseDao().findList("teacherInfo.findTree",parameter);
+		schoolList.addAll(teacherList);
+		schoolList=TreeUtil.createTree(schoolList);
+		Map<String,Object> n_parameter=new HashMap<String, Object>(parameter);
+		List<Map<String,Object>> list=this.getBaseDao().findList("unitInfo.findTree", n_parameter);
+		parameter=new HashMap<String, Object>();
+		parameter.put("code", "XXLX");
+		List<Map<String,Object>> lxList=this.getBaseDao().findList("codeData.findAll", parameter);//学校类型数据
+		parameter.put("code", "XXLB");
+		List<Map<String,Object>> lbList=this.getBaseDao().findList("codeData.findAll", parameter);//学校类别数据
+		for(Map<String,Object> lb:lbList){
+			lb.put("children", Util.copyBySerialize(lxList));
+		}
+		
+		Map<Object,List<Map<String,Object>>> resMap=new HashMap<Object, List<Map<String,Object>>>();
+		for(Map<String,Object> school:schoolList){
+			Object pid=school.get("pid");
+			List<Map<String,Object>> res=resMap.get(pid);
+			if(res==null){
+				res=Util.copyBySerialize(lbList);
+				resMap.put(pid, res);
+			}
+			Object lbid=school.get("categoryId");//类别
+			Object lxid=school.get("typeId");//类型
+			for(Map<String,Object> lb:res){
+				if(lb.get("id").equals(lbid)){
+					List<Map<String,Object>> resLxList=(List<Map<String, Object>>) lb.get("children");
+					for(Map<String,Object> lx:resLxList){
+						if(lx.get("id").equals(lxid)){
+							List<Map<String,Object>> resSchoolList=(List<Map<String, Object>>) lx.get("children");
+							if(resSchoolList==null){
+								resSchoolList=new ArrayList<Map<String,Object>>();
+								lx.put("children", resSchoolList);
+							}
+							resSchoolList.add(school);
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		for(Map<String,Object> map:list){
+			Object isEdb=map.get("isEdb");//是否为教育局
+			if("1".equals(isEdb)){//是教育局
+				Object id=map.get("id");
+				List<Map<String,Object>> children=resMap.get(id);
+				if(children!=null){
+					map.put("children", children);
+				}else{
+					map.put("children", Util.copyBySerialize(lbList));
+				}
+			}
+		}
+		List<Map<String,Object>> resList=TreeUtil.createTree(list);
+		return resList;
+	}
+	
 	/**
 	 * 加载信息
 	 * @param parameter

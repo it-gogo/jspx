@@ -57,6 +57,17 @@ public class SystemConfigUtil {
 	public  String getServerPath(){
 		return config.getProperty("sys_path");
 	}
+
+	/**
+	 * 根据key获取value值
+	 * @author zhangjf
+	 * @create_time 2016-3-10 下午3:11:31
+	 * @param key
+	 * @return
+	 */
+	public String getValByKey(String key){
+		return config.getProperty(key);
+	}
 	
 	/**
 	 * 获取图片上传类型

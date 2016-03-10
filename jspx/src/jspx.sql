@@ -1682,6 +1682,7 @@ CREATE TABLE `role` (
   `updateTime` varchar(50) default NULL,
   `creator` varchar(100) default NULL,
   `type` varchar(10) default NULL,
+   roleType varchar(30),
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3067,3 +3068,27 @@ CREATE TABLE material(
     status			varchar(50),
     PRIMARY KEY (id)
 );
+
+
+CREATE TABLE notice_management(
+    id              VARCHAR(100)    NOT NULL,
+    isInStation     VARCHAR(10),
+    title           VARCHAR(100),
+    accessoryUrl    VARCHAR(100),
+    content         TEXT,
+    creator         VARCHAR(100),
+    createdate      VARCHAR(23),
+    PRIMARY KEY (id)
+)
+;
+
+
+CREATE TABLE notice_teacher(
+    id           VARCHAR(100)    NOT NULL,
+    noticeId     VARCHAR(100),
+    teacherId    VARCHAR(100),
+    isRead       VARCHAR(10),
+    readDate     VARCHAR(23),
+    PRIMARY KEY (id)
+)
+;

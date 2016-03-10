@@ -167,6 +167,7 @@ public class CustomizeController extends BaseController {
 	@RequestMapping("changestatus")
 	public void changestatus(HttpServletRequest request,HttpServletResponse response){
 		Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
 		Object obj=parameter.get("status");
 		if("禁用".equals(obj)){
 			 this.ajaxMessage(response, Syscontants.MESSAGE,"启用成功");
@@ -175,7 +176,12 @@ public class CustomizeController extends BaseController {
 			 parameter.put("status", "禁用");
 			this.ajaxMessage(response, Syscontants.MESSAGE,"禁用成功");
 		}
-		this.superviseService.changeStatus(parameter);
+		try {
+			this.superviseService.changeStatus(parameter,user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.ajaxMessage(response, Syscontants.MESSAGE,"系统繁忙,"+obj+"操作失败");
+		}
 	}
 	
 	/**
