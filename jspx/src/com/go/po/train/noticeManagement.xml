@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noticeManagement">
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  notice_management a  
+	   Where 0=0
+	   <if test="isRead!=null and isRead!=''">
+	   	and a.id in (select noticeId from notice_teacher where isRead=#{isRead})
+	   </if>
+	   <if test="loginId!=null and loginId!=''">
+	   	and a.id in (select noticeId from notice_teacher where teacherId  in (select id from teacher_info where userId=#{loginId}) )
+	   </if>
+	    <if test="isInstation!=null and isInstation!=''">
+	   	and a.isInstation=#{isInstation}
+	   </if>
+	   order by createdate desc
+	    <if test="limit!=null and limit!=''">
+	   	${limit}
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select text from user_info where id=a.creator) creatorName From  notice_management a   
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	   <if test="isInstation!=null and isInstation!=''">
+	   	and a.isInstation=#{isInstation}
+	   </if>
+	   <if test="teacherId!=null and teacherId!=''">
+	   	and a.id in (select noticeId from notice_teacher where teacherId =#{teacherId})
+	   </if>
+	    order by createdate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  notice_management a  
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	   <if test="isInstation!=null and isInstation!=''">
+	   	and a.isInstation=#{isInstation}
+	   </if>
+	   <if test="teacherId!=null and teacherId!=''">
+	   	and a.id in (select noticeId from notice_teacher where teacherId =#{teacherId})
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into notice_management(id,isInStation,title,accessoryUrl,content,creator,createdate)
+	   values(#{id},#{isInStation},#{title},#{accessoryUrl},#{content},#{creator},#{createdate})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update notice_management set isInStation = #{isInStation},
+	                    title = #{title},
+	                    accessoryUrl = #{accessoryUrl},
+	                    content = #{content}
+        where  id=#{id} 
+	</update>
+	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,(select text from user_info where id=a.creator) creatorName  From notice_management a  Where 0=0  And  a.id=#{id}
+	</select>
+	<select id="findNewOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*  From notice_management a  Where 0=0  
+	   <if test="isInStation!=null and isInStation!=''">
+	   	and a.isInStation=#{isInStation}
+	   </if>
+	   order by a.createdate desc
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   notice_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>
