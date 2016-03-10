@@ -196,6 +196,7 @@ public class WeiXin_Util {
 			public static void sendNotify(WxTemplate template,String token){
 				if(StringUtils.isBlank(token)){
 					LogUtil.error(WeiXin_Util.class, "未启动获取token定时任务！");
+					return;
 				}
 				 String send_url=SEND_MSG_URL.replace("ACCESS_TOKEN", token);//获取token方法临时,后期将token保存到数据库防止超出频率限制
 				 JSONObject json=httpRequest(send_url, "POST", JSONObject.fromObject(template).toString());
