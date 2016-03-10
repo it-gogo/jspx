@@ -1682,6 +1682,7 @@ CREATE TABLE `role` (
   `updateTime` varchar(50) default NULL,
   `creator` varchar(100) default NULL,
   `type` varchar(10) default NULL,
+   roleType varchar(30),
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

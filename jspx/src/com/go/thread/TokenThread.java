@@ -18,11 +18,10 @@ public class TokenThread implements Runnable {
                 accessToken = WeiXin_Util.getAccessToken();
                 if (null != accessToken) {  
                     //log.info("获取access_token成功，有效时长{}秒 token:{}", accessToken.getExpiresIn(), accessToken.getToken());  
-                	LogUtil.info(TokenThread.class, "获取access_token成功，有效时长"+accessToken.getExpiresIn()+" token:"+accessToken.getToken());
+                	LogUtil.error(TokenThread.class, "获取access_token成功，有效时长"+accessToken.getExpiresIn()+" token:"+accessToken.getToken());
                 	// 休眠7000秒  
                     Thread.sleep((accessToken.getExpiresIn() - 200) * 1000);  
                 } else {  
-                    // 如果access_token为null，60秒后再获取  
                     Thread.sleep(60 * 1000);  
                 }  
             } catch (InterruptedException e) {  
