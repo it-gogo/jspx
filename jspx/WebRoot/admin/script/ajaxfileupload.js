@@ -7,13 +7,28 @@ jQuery.extend({
             var frameId = 'jUploadFrame' + id;
             
             if(window.ActiveXObject) {
-                var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
-                if(typeof uri== 'boolean'){
-                    io.src = 'javascript:false';
-                }
-                else if(typeof uri== 'string'){
-                    io.src = uri;
-                }
+            	var userAgent = window.navigator.userAgent.toLowerCase();
+//         		alert(/msie 7\.0/i.test(userAgent))
+//         		alert(/msie 8\.0/i.test(userAgent))
+         		if(/msie 9\.0/i.test(userAgent)){
+         			var io = document.createElement("iframe");
+         			io.setAttribute("id", frameId);
+         			io.setAttribute("name", frameId);
+         			if(typeof uri== 'boolean'){
+         				io.setAttribute("src", 'javascript:false');
+         			}else if(typeof uri== 'string'){
+         				io.setAttribute("src", uri);
+         			}
+         			io.setAttribute("style","position:absolute;top:-1000px;left:-1000px;");
+         		}else{
+         			var io = document.createElement('<iframe id="' + frameId + '" name="' + frameId + '" />');
+         			if(typeof uri== 'boolean'){
+         				io.src = 'javascript:false';
+         			}
+         			else if(typeof uri== 'string'){
+         				io.src = uri;
+         			}
+         		}
             }
             else {
                 var io = document.createElement('iframe');
@@ -233,5 +248,15 @@ jQuery.extend({
         if ( s.global ) {
             (s.context ? jQuery(s.context) : jQuery.event).trigger( "ajaxError", [xhr, s, e] );
         }
+    }
+});
+
+$(function(){
+	if(window.ActiveXObject) {
+		 	$("#upload_ie").show();
+		 	$("#upload_google").hide();
+    }else {
+    	$("#upload_google").show();
+		 	$("#upload_ie").hide();
     }
 });

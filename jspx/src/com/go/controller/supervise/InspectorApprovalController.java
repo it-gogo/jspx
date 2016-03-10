@@ -36,23 +36,23 @@ import com.go.service.supervise.SchoolSuperviseService;
 import com.go.service.supervise.SuperviseService;
 
 /**
- * 学校督导控制器
+ * 督学审核
  * @author chenhb
- * @create_time  2016-3-8 下午2:17:59
+ * @create_time  2016-3-10 上午9:05:22
  */
 @Controller
-@RequestMapping("/supervise/schoolSupervise")
-public class SchoolSuperviseController extends BaseController {
+@RequestMapping("/supervise/inspectorApproval")
+public class InspectorApprovalController extends BaseController {
 		@Autowired
 		private SchoolSuperviseService schoolSuperviseService;
+		@Autowired
+		private InspectorApprovalService inspectorApprovalService;
 		@Autowired
 		private SuperviseService superviseService;
 		@Autowired
 		private ProjectService projectService;
 		@Autowired
 		private UnitInfoService unitInfoService;
-		@Autowired
-		private InspectorApprovalService inspectorApprovalService;
 	
 	  /**
 	   * 初始化
@@ -62,7 +62,7 @@ public class SchoolSuperviseController extends BaseController {
 	   */
 	  @RequestMapping("redirect.do")
 	  public String redirect(){
-		  return  "admin/supervise/schoolSupervise/list";
+		  return  "admin/supervise/inspectorApproval/list";
 	  }
 	  
 	  /**
@@ -78,24 +78,22 @@ public class SchoolSuperviseController extends BaseController {
 		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
 		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
 		  String type=user.get("type").toString();
-		  if("老师账号".equals(type) || "单位账号".equals(type)){
-			  parameter.put("flag", user.get("flag"));
+		  if("督学账号".equals(type)){
+			  parameter.put("userId", user.get("id"));
 		  }
-		  JSONObject jsonObj = this.schoolSuperviseService.findPageBean(parameter);
-		  
+		  JSONObject jsonObj = this.inspectorApprovalService.findPageBean(parameter);
 		  JSONArray jsonArr=jsonObj.getJSONArray("rows");
 		  List<Map<String,Object>> list=JSONUtil.jsonstrToList(jsonArr.toJSONString(), Map.class);
 		  Map<String,Object> parame=new HashMap<String, Object>();
 		  for(int i=0,j=list.size();i<j;i++){
 			  Map<String,Object> obj=list.get(i);
-			  parame.put("superviseId", obj.get("superviseId"));
+			  parame.put("superviseId", obj.get("id"));
 			  parame.put("unitId", obj.get("unitId"));
 			  parame.put("type", "督导报告");
 			  List<Map<String,Object>> superviseMaterials=inspectorApprovalService.findMaterial(parame);
 			  obj.put("superviseMaterials", superviseMaterials);
 		  }
 		  jsonObj.put("rows", JSONUtil.listToArray(list));
-		  
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }
 	  /**
@@ -118,22 +116,25 @@ public class SchoolSuperviseController extends BaseController {
 		  Map<String,Object> superviseUnit=new HashMap<String, Object>();
 		  superviseUnit.put("unitId", res.get("unitId"));
 		  superviseUnit.put("superviseId", res.get("id"));
-		  superviseUnit=schoolSuperviseService.findOneSU(superviseUnit);
+		  superviseUnit=inspectorApprovalService.findOneSU(superviseUnit);
 		  model.addAttribute("superviseUnit", superviseUnit);
 		  
 		  Map<String,Object> parame=new HashMap<String, Object>();
 		  parame.put("superviseId", res.get("id"));
-		  List<Map<String,Object>> projectList=schoolSuperviseService.findProject(parame);
+		  List<Map<String,Object>> projectList=inspectorApprovalService.findProject(parame);
 		  parame.clear();
 		  for(Map<String,Object> project:projectList){//遍历查询学校资料
 			  parame.put("superviseId", res.get("id"));
 			  parame.put("unitId", res.get("unitId"));
 			  parame.put("projectId", project.get("id"));
 			  parame.put("type", "学校材料");
-			  List<Map<String,Object>> schoolMaterials=schoolSuperviseService.findMaterial(parame);
+			  List<Map<String,Object>> schoolMaterials=inspectorApprovalService.findMaterial(parame);
+			  
 			  project.put("schoolMaterials", schoolMaterials);
 		  }
 		  model.addAttribute("projectList", projectList);
+		  
+		  
 		  //检查材料
 		  parame.clear();
 		  parame.put("superviseId", res.get("id"));
@@ -148,61 +149,7 @@ public class SchoolSuperviseController extends BaseController {
 		  parame.put("type", "整改材料");
 		  List<Map<String,Object>> modifyMaterials=schoolSuperviseService.findMaterial(parame);
 		  res.put("modifyMaterials", modifyMaterials);
-		  return  "admin/supervise/schoolSupervise/edit";
-	  }
-	  /**
-	   * 保存材料
-	   * @author chenhb
-	   * @create_time  2016-3-8 下午5:05:05
-	   * @param request
-	   * @param response
-	 * @throws Exception 
-	   */
-	  @RequestMapping("saveMaterial.do")
-	  public  void saveMaterial(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		  //获取请求参数
-		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  
-		  
-		  Map<String,Object> parame=new HashMap<String, Object>();
-		  parame.put("id", parameter.get("superviseId"));
-		  Map<String,Object> supervise=superviseService.load(parame);
-		  parame.put("id", parameter.get("unitId"));
-		  Map<String,Object> unit=unitInfoService.load(parame);
-		  parame.put("id", parameter.get("projectId"));
-		  Map<String,Object> project=projectService.load(parame);
-		  String endName=project==null ? parameter.get("type").toString():project.get("name").toString();
-		  String path="material/"+supervise.get("name")+"/"+unit.get("name")+"/"+endName;
-		  
-		  MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;  
-		   /**得到图片保存目录的真实路径**/      
-	        String logoRealPathDir = request.getSession().getServletContext().getRealPath(path);     
-	        /**根据真实路径创建目录**/      
-	        File logoSaveFile = new File(logoRealPathDir);       
-	        if(!logoSaveFile.exists())       
-	            logoSaveFile.mkdirs();             
-	         /**页面控件的文件流**/      
-	        /**页面控件的文件流**/
-	       MultipartFile multipartFile = multipartRequest.getFile("fileId");   
-	       //文件后缀
-	       String suffix=StringUtils.isNotBlank(multipartFile.getOriginalFilename())?multipartFile.getOriginalFilename():"";
-	       if(suffix!=null && !"".equals(suffix)){
-	    	   String[] suff = suffix.split("\\.");
-//	    	   parameter.put("name", suff[0]);
-	    	   String fileName=suff[0]+"-"+new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-//	    	   String fileName=schoolSuperviseService.findMaxName(parameter);
-	    	   if(suff.length>1){
-	    		   fileName +="."+suff[suff.length-1];
-	    	   }
-	    	   parameter.put("name", fileName);
-	    	   Util.saveFileFromInputStream(multipartFile.getInputStream(), logoRealPathDir, fileName);
-	    	   parameter.put("url", path+"/"+fileName);
-	    	   
-	    	   parameter.put("id", SqlUtil.uuid());
-	    	   this.schoolSuperviseService.addMaterial(parameter);
-	 		   this.ajaxMessage(response, Syscontants.MESSAGE,"上传成功");
-	       }
-	       this.ajaxMessage(response, Syscontants.ERROE,"上传失败");
+		  return  "admin/supervise/inspectorApproval/edit";
 	  }
 	  
 	  /**
@@ -222,15 +169,15 @@ public class SchoolSuperviseController extends BaseController {
 			  f.delete();
 		  }
 		  this.ajaxMessage(response, Syscontants.MESSAGE,"删除成功");
-		  schoolSuperviseService.deleteMaterial(parameter);
+		  inspectorApprovalService.deleteMaterial(parameter);
 	  }
 	  
 	  @RequestMapping("approvalMaterial.do")
 	  public  void approvalMaterial(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  Map<String,Object> material=schoolSuperviseService.loadMaterial(parameter);
-		  schoolSuperviseService.approvalMaterial(parameter);
+		  Map<String,Object> material=inspectorApprovalService.loadMaterial(parameter);
+		  inspectorApprovalService.approvalMaterial(parameter);
 	       this.ajaxMessage(response, Syscontants.ERROE,"审批成功");
 	  }
 	

@@ -22,7 +22,7 @@ function  addF(){
  * @param row
  */
 function  loadF(row){
-	var urls = "../supervise/schoolSupervise/load.do?id="+row.superviseId+"&unitId="+row.unitId+"&step="+row.step;
+	var urls = "../supervise/inspectorApproval/load.do?id="+row.id+"&unitId="+row.unitId+"&step="+row.step;
 	options.urls = urls;
 	parent.$.createDialog(options);
 	parent.$.createDialog.open_grid = dataGrid;

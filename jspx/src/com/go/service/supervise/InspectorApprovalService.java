@@ -18,7 +18,7 @@ import com.go.service.base.BaseService;
  * @create_time  2016-3-8 下午3:10:02
  */
 @Service
-public class SchoolSuperviseService extends BaseService {
+public class InspectorApprovalService extends BaseService {
 
 	/**
 	 * 分页查找数据
@@ -26,7 +26,7 @@ public class SchoolSuperviseService extends BaseService {
 	 * @return
 	 */
 	public  JSONObject  findPageBean(Map<String,Object> parameter){
-		return this.getBaseDao().findListPage("superviseUnit.findCount", "superviseUnit.findList", parameter);
+		return this.getBaseDao().findListPage("supervise.findInspectorApprovalCount", "supervise.findInspectorApprovalList", parameter);
 	}
 
 	/**
@@ -74,11 +74,7 @@ public class SchoolSuperviseService extends BaseService {
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 		}else if("整改材料".equals(parameter.get("type"))){//上传学校整改材料，属于督导助手上传为第六步流程
 			parame.put("step", 7);
-			parame.put("flowStatus", "待校长审批整改材料");
-			this.getBaseDao().update("superviseUnit.updateFlow", parame);
-		}else if("检查材料".equals(parameter.get("type"))){//上传检查材料，属于督学上传为第五步流程
-			parame.put("step", 6);
-			parame.put("flowStatus", "督学提交整改意见");
+			parame.put("flowStatus", "待督学审批整改材料");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 		}
 		parameter.put("status", "待审批");
@@ -95,45 +91,23 @@ public class SchoolSuperviseService extends BaseService {
 		Map<String,Object> vo=this.getBaseDao().loadEntity("material.load", parameter);
 		parame.put("superviseId", vo.get("superviseId"));
 		parame.put("unitId", vo.get("unitId"));
-		String status=parameter.get("status").toString();
-		String step=parameter.get("step").toString();
-		if(status.indexOf("不通过")>-1){
-			if("3".equals(step) || "4".equals(step)){//3为校长审批上传材料，4为督学审批上传材料
-				parame.put("step", 2);
-			}else if("7".equals(step) || "8".equals(step)){//7为校长审批整改材料，8为督学审批整改材料
-				parame.put("step", 6);
-			}
-			parame.put("flowStatus", status.replace("不通过", "")+"审批不通过");
+		if("不通过".equals(parameter.get("status"))){
+			parame.put("step", 2);
+			parame.put("flowStatus", "校长审批不通过");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 		}else{
+			
 			Map<String,Object> statusNum=new HashMap<String, Object>();
 			statusNum.put("superviseId", vo.get("superviseId"));
 			statusNum.put("unitId", vo.get("unitId"));
-			statusNum.put("status", status);
-			if("3".equals(step) || "4".equals(step)){
-				statusNum.put("type", "学校材料");
-			}else if("7".equals(step) || "8".equals(step)){
-				statusNum.put("type", "整改材料");
-			}
 			statusNum=this.getBaseDao().loadEntity("material.findNumber", statusNum);
 			int total=Integer.parseInt(statusNum.get("total").toString());
 			int passNum=Integer.parseInt(statusNum.get("passNum").toString());
 			int unpassNum=Integer.parseInt(statusNum.get("unpassNum").toString());
 			if(unpassNum==0){
 				if(passNum+1==total){//通过等于总数
-					if("3".equals(step)){//校长审批上传材料通过
-						parame.put("step", 4);
-						parame.put("flowStatus", "待督学审批材料");
-					}else if("4".equals(step)){//督学审批上传材料通过
-						parame.put("step", 5);
-						parame.put("flowStatus", "督学下校检查");
-					}else if("7".equals(step)){//校长审批整改材料通过
-						parame.put("step", 8);
-						parame.put("flowStatus", "待督学审批整改材料");
-					}else if("8".equals(step)){//督学审批整改材料通过
-						parame.put("step", 9);
-						parame.put("flowStatus", "督学填写督导报告");
-					}
+					parame.put("step", 4);
+					parame.put("flowStatus", "待督学审批材料");
 					this.getBaseDao().update("superviseUnit.updateFlow", parame);
 				}
 			}
