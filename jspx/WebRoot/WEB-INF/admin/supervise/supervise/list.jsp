@@ -44,7 +44,7 @@ function  handlerstatus(value,row,index){
 		            	<input type="text" class="easyui-validatebox" name="name" id="name" >&nbsp;&nbsp;
 		            	开始时间:<input name="startDate" id="startDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  >
 		            	&nbsp;&nbsp;
-		            	开始时间:<input name="endDate" id="endDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  >
+		            	结束时间:<input name="endDate" id="endDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  >
 		            </td>
 		            <td>
 		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryF('qform');">查  询</a>
