@@ -29,17 +29,29 @@ function  handlerstatus(value,row,index){
 *督导报告显示
 */
 function handImportFile(value,row,index){
-	var json = $.toJSON(row);
-	var handstr="<a href=\"javascript:void(0);\" onclick='importFile("+json+")'>上传</a>";
-	try{
-		for(var i=0,j=row.superviseMaterials.length;i<j;i++){
-			var material=row.superviseMaterials[i];
-			handstr="<a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
-			handstr+=" <a href=\"javascript:void(0);\" onclick='modifyFile("+json+",\""+material.url+"\",\""+material.id+"\")'>更改</a>";
-		}
-	}catch (e) {
-	}
 	if(row.step==9 || row.step==10){
+		var json = $.toJSON(row);
+		if(window.ActiveXObject) {//IE浏览器
+		 	var handstr="<a href=\"javascript:void(0);\" onclick='importFile("+json+")' style=\"position:relative;\">上传<input style=\"position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);\" onchange=\"ajaxFileUpload('fileId2"+row.id+"')\" type=\"file\" id=\"fileId2"+row.id+"\"  name=\"fileId\"/></a>";
+			try{
+				for(var i=0,j=row.superviseMaterials.length;i<j;i++){
+					var material=row.superviseMaterials[i];
+					handstr="<a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
+					handstr+=" <a href=\"javascript:void(0);\" onclick='modifyFileByIE("+json+",\""+material.url+"\",\""+material.id+"\")' style=\"position:relative;\" >更改<input style=\"position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);\" onchange=\"ajaxFileUpload('fileId2"+material.id+"')\" type=\"file\" id=\"fileId2"+material.id+"\"  name=\"fileId\"/></a>";
+				}
+			}catch (e) {
+			}
+	    }else {//google浏览器
+			var handstr="<a href=\"javascript:void(0);\" onclick='importFile("+json+")'>上传</a>";
+			try{
+				for(var i=0,j=row.superviseMaterials.length;i<j;i++){
+					var material=row.superviseMaterials[i];
+					handstr="<a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
+					handstr+=" <a href=\"javascript:void(0);\" onclick='modifyFile("+json+",\""+material.url+"\",\""+material.id+"\")'>更改</a>";
+				}
+			}catch (e) {
+			}
+	    }
 		return handstr;
 	}
 	return "";
@@ -51,7 +63,7 @@ var type="督导报告";
 function importFile(row){
 	unitId=row.unitId;
 	superviseId=row.id;
-	$("#fileId").click();
+	$("#fileId1").click();
 }
 /**
 *修改文件
@@ -69,11 +81,25 @@ function modifyFile(row,fileUrl,id){
 	});
 	importFile(row);
 }
-function ajaxFileUpload(){
+function modifyFileByIE(row,fileUrl,id){
+	if(fileUrl==""){
+		parent.$.messager.alert("提示窗口","没有上传资料。");
+		return;
+	}
+	$.ajax({
+		url:"../schoolSupervise/deleteMaterial.do",
+		data:"fileUrl="+fileUrl+"&id="+id,
+		success:function(data){
+		}
+	});
+	unitId=row.unitId;
+	superviseId=row.id;
+}
+function ajaxFileUpload(fileId){
 	$.ajaxFileUpload({  
         url:"../schoolSupervise/saveMaterial.do?unitId="+unitId+"&superviseId="+superviseId+"&projectId="+projectId+"&type="+type,  
         secureuri:false,  
-        fileElementId:"fileId",  
+        fileElementId:fileId,  
         dataType: "text",
         success: function (data) { 
         	var json=eval("("+data+")");
@@ -166,7 +192,7 @@ function downFile(fileUrl,fileName){
 		       <div style="width:100%;height:100%">
 		          <form id="qform">
 		          <span  id="upload_google" >
-		          	<input type="file" id="fileId" style="display:none;" name="fileId" onchange="ajaxFileUpload();" />
+		          	<input type="file" id="fileId1" style="display:none;" name="fileId" onchange="ajaxFileUpload('fileId1');" />
 		          </span>
 		          <span   id="upload_ie" style="display: none;">
 		              <input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload()" type="file" id="fileId"  name="fileId"/>
