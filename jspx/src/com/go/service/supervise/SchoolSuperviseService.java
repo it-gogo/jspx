@@ -137,6 +137,20 @@ public class SchoolSuperviseService extends BaseService {
 			 * zhangjf 2016-03-11 发送需整改消息提醒end
 			 */
 			
+		}else if("督导报告".equals(parameter.get("type"))){
+			/**
+			 * zhangjf 2016-03-11 发送督学报告消息提醒start
+			 */
+		   	    Map<String,Object> params=new HashMap<String, Object>();
+		   	    params.put("superviseId", superviseId);
+		   	    params.put("roleType", "校长室");
+		   		params.put("title", "督导报告消息提醒");
+		   		params.put("content", "您当前有一个督导项目督学已上传相应的督导报告,请及时查看！");
+		   		superviseService.sendMsg(params, userMap);
+			
+			/**
+			 * zhangjf 2016-03-11 发送督学报告消息提醒end
+			 */
 		}
 		parameter.put("status", "待审批");
 	    this.getBaseDao().insert("material.add", parameter);
