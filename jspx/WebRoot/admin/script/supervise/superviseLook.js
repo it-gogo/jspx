@@ -10,7 +10,7 @@ var dbuttons = [{
 /**
  * 打开添加数据窗口参数
  */
-var options = {id:"d3",title:"查看操作",width:"1500px",height:"800px;"};
+var options = {id:"d3",title:"查看操作",width:"95%",height:"80%"};
 /**
  * 导出数据
  * @param row

@@ -10,7 +10,7 @@ var dbuttons = [{
 /**
  * 打开添加数据窗口参数
  */
-var options = {id:"d3",title:"统一项目编辑",width:"1500px",height:"800px;",buttons:dbuttons};
+var options = {id:"d3",title:"统一项目编辑",width:"95%",height:"90%",buttons:dbuttons};
 //添加函数
 function  addF(){
 	options["urls"]="../supervise/supervise/add.do";
