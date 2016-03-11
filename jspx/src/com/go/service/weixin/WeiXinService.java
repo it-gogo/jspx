@@ -28,6 +28,7 @@ import com.go.po.model.Menu;
 import com.go.po.model.TemplateData;
 import com.go.po.model.TextMessage;
 import com.go.po.model.ViewButton;
+import com.go.po.model.WeiXinToken;
 import com.go.po.model.WxTemplate;
 import com.go.service.base.BaseService;
 import com.go.thread.TokenThread;
@@ -212,8 +213,9 @@ public class WeiXinService extends BaseService {
 		 tempMap.put("keyword4", keyword4Data);
 		 
 		 template.setData(tempMap);
+		 WeiXinToken token=TokenThread.accessToken;
 		 //进行消息推送
-		 WeiXin_Util.sendNotify(template,TokenThread.accessToken.getToken());
+		 WeiXin_Util.sendNotify(template,token==null?null:token.getToken());
 	 }
 	 
 	
