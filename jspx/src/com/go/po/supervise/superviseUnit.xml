@@ -3,7 +3,9 @@
 <mapper namespace="superviseUnit">
 	<!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select a.*,b.name superviseName,b.type superviseType,b.superviseDate superviseDate From  supervise_unit a join supervise b on a.superviseId=b.id join unit_info c on a.unitId=c.id
+	   select a.*,b.name superviseName,b.type superviseType,b.superviseDate superviseDate 
+	   From  supervise_unit a join supervise b on a.superviseId=b.id  and b.status='启用'
+	   join unit_info c on a.unitId=c.id
 	   Where 0=0
 	     <if test="beginDate!=null and beginDate!=''">
 	   	and b.superviseDate >= #{beginDate}
@@ -18,7 +20,9 @@
 	</select> 
 	<!-- 查询记录数 -->
 	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
-	    Select count(1) From  supervise_unit a join supervise b on a.superviseId=b.id join unit_info c on a.unitId=c.id
+	    Select count(1) 
+	    From  supervise_unit a join supervise b on a.superviseId=b.id and b.status='启用'
+	    join unit_info c on a.unitId=c.id
 	   Where 0=0
 	   <if test="beginDate!=null and beginDate!=''">
 	   	and b.superviseDate >= #{beginDate}
