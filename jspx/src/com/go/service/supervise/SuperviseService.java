@@ -91,6 +91,7 @@ public class SuperviseService extends BaseService {
 				Map<String,Object> params=new HashMap<String, Object>();
 				params.put("superviseId", superviseId);
 				params.put("roleType", "督学助手");
+				params.put("title", "提交材料消息");
 				params.put("content", "您有一个督导项目需要进行资料上传");
 				sendMsg(params,userMap);
 			}
@@ -115,14 +116,15 @@ public class SuperviseService extends BaseService {
 		}
 		try {
 			List<Map<String,Object>> noticeTeacherList=this.getBaseDao().findList("supervise.listInspectorById", parameter);//查询通知对象
+			if(noticeTeacherList!=null &&!noticeTeacherList.isEmpty()){
 			List<Map<String,Object>> notices=new ArrayList<Map<String,Object>>();//保存消息老师关系集合
-			String content="您有一个督导项目需要资料上传,请及时处理！";
+			String content=parameter.get("content").toString();
 			//构建消息推送内容
 			Map<String,Object> noticeMap=new HashMap<String, Object>();
 			String noticeId=SqlUtil.uuid();
 			noticeMap.put("id", noticeId);
 			noticeMap.put("isInStation", "站内短信");
-			noticeMap.put("title", "提交材料消息");
+			noticeMap.put("title", parameter.get("title"));
 			noticeMap.put("content", content);
 			noticeMap.put("creator", userMap.get("id"));
 			noticeMap.put("createdate", DateUtil.getCurrentTime());
@@ -152,12 +154,14 @@ public class SuperviseService extends BaseService {
 			/**
 			 * 遍历通知老师发送消息end
 			 */
-			
-			if(notices!=null&&!notices.isEmpty()){
-				params=new HashMap<String, Object>();
-				params.put("id", noticeId);
-				params.put("list", notices);
-				this.getBaseDao().insert("noticeTeacher.batchAdd", params);
+				
+				if(notices!=null&&!notices.isEmpty()){
+					params=new HashMap<String, Object>();
+					params.put("id", noticeId);
+					params.put("list", notices);
+					this.getBaseDao().insert("noticeTeacher.batchAdd", params);
+				}
+		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

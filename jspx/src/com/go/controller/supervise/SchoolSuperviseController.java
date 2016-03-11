@@ -167,7 +167,7 @@ public class SchoolSuperviseController extends BaseController {
 	  public  void saveMaterial(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
 		  
 		  Map<String,Object> parame=new HashMap<String, Object>();
 		  parame.put("id", parameter.get("superviseId"));
@@ -205,6 +205,21 @@ public class SchoolSuperviseController extends BaseController {
 	    	   
 	    	   parameter.put("id", SqlUtil.uuid());
 	    	   this.schoolSuperviseService.addMaterial(parameter);
+	    	   
+	    	   	/**
+		   	     * zhangjf 2016-03-11组装发送校长审批消息start
+		   	     */
+		   	    Object superviseId=parameter.get("superviseId");
+		   	    Map<String,Object> params=new HashMap<String, Object>();
+		   	    params.put("superviseId", superviseId);
+		   	    params.put("roleType", "校长室");
+		   		params.put("title", "审核消息提醒");
+		   		params.put("content", "您有一个督导项目需要审核,请及时处理");
+		   		superviseService.sendMsg(params, user);
+		   	    /**
+		   	     * zhangjf 2016-03-11组装发送校长审批消息end
+		   	     */
+	    	   
 	 		   this.ajaxMessage(response, Syscontants.MESSAGE,"上传成功");
 	       }
 	       this.ajaxMessage(response, Syscontants.ERROE,"上传失败");
