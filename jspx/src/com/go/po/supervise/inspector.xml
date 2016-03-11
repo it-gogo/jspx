@@ -63,4 +63,13 @@
            #{id}  
         </foreach> ;
 	</delete>
+	
+	<!--zhangjf 2016-03-11 查询督学账号信息列表start -->
+	<select id="listInspectors" parameterType="map" resultType="map">
+		select t2.*  from inspector_unit t1 join inspector t2 on t1.inspectorId=t2.id
+		<if test="unitId!=null and unitId!=''">
+			and t1.unitId=#{unitId}
+		</if>
+	</select>
+	<!--zhangjf 2016-03-11 查询督学账号信息列表end -->
 </mapper>

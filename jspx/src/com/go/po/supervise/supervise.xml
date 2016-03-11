@@ -103,7 +103,7 @@
 	
 	<!-- zhangjf 2016-03-10 根据督学项目查询相应的督学助手列表 start -->
 	 <select id="listInspectorById" parameterType="map" resultType="map">
-	 	select  t1.*,t3.name unitName,t4.id teacherId,t4.name teacherName,t4.wechat wechat  
+	 	select  t1.*,t3.name unitName,t4.id teacherId,t4.name teacherName,t4.wechat wechat,t4.userId userId  
 	 	from supervise t1 join supervise_unit t2 on t1.id=t2.superviseId 
 	 	<if test="superviseId!=null and superviseId!=''">
 	 		and t1.id=#{superviseId}

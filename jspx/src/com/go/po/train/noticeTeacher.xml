@@ -3,7 +3,7 @@
 <mapper namespace="noticeTeacher">
 	<!-- 查询所有 -->
 	<select id="findAll" resultType="java.util.Map" parameterType="java.util.HashMap" >
-	   select a.*,b.name teacherName From  notice_teacher a  join teacher_info b on a.teacherId=b.id
+	   select a.*,b.name teacherName From  notice_teacher a  join teacher_info b on a.teacherId=b.userId
 	   Where 0=0
 	   <if test="noticeId!=null and noticeId!=''">
 	   	and a.noticeId=#{noticeId}
@@ -31,10 +31,10 @@
 	   	and b.isInstation=#{isInstation}
 	   </if>
 	   <if test="teacherId!=null and teacherId!=''">
-	   	and a.teacherId =#{teacherId}
+	   	and a.teacherId =select userId from teacher_info where id=#{teacherId}
 	   </if>
 	   <if test="loginId!=null and loginId!=''">
-	   	and a.teacherId  in (select id from teacher_info where userId=#{loginId})
+	   	and a.teacherId=#{loginId}
 	   </if>
 	    order by createdate desc
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
@@ -50,14 +50,15 @@
 	   	and b.isInstation=#{isInstation}
 	   </if>
 	   <if test="teacherId!=null and teacherId!=''">
-	   	and a.teacherId =#{teacherId}
+	   	and a.teacherId =select userId from teacher_info where id=#{teacherId}
 	   </if>
 	  <if test="loginId!=null and loginId!=''">
-	   	and a.teacherId  in (select id from teacher_info where userId=#{loginId})
+	   		and a.teacherId=#{loginId}
 	   </if>
 	</select>
 	<update id="updateRead" parameterType="java.util.HashMap" >
-		update notice_teacher set isRead='已阅读',readDate=#{readDate} where noticeId=#{noticeId} and teacherId in (select id from teacher_info where userId=#{loginId})
+		update notice_teacher set isRead='已阅读',readDate=#{readDate} where noticeId=#{noticeId} 
+		and teacherId=#{loginId}
 	</update>
 	
 	<!-- 删除数据 -->

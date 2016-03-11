@@ -64,7 +64,12 @@ function beforeSubmit(dform){
 		if(!$("#treeID").tree("isLeaf",n.target)){//是否父节点
 			continue;
 		}
-		html+="<input name=\"teacherIds\"  type=\"hidden\"      value=\""+n.id+"\">"
+		var teacher=n.teacher;
+		if(teacher==1){
+			html+="<input name=\"teacherIds\"  type=\"hidden\"      value=\""+n.id+"\">"
+		}else{
+			continue
+		}	
 	}
 	$("#dform").prepend(html);
 	

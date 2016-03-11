@@ -165,7 +165,7 @@ public class UnitInfoService extends BaseService {
 	 */
 	public List<Map<String,Object>> findTeacherTree(Map<String,Object> parameter) throws Exception{
 		List<Map<String,Object>> schoolList=this.getBaseDao().findList("unitInfo.findSchool", parameter);
-		List<Map<String,Object>> teacherList=this.getBaseDao().findList("teacherInfo.findTree",parameter);
+		List<Map<String,Object>> teacherList=this.getBaseDao().findList("teacherInfo.findTreeData",parameter);
 		schoolList.addAll(teacherList);
 		schoolList=TreeUtil.createTree(schoolList);
 		Map<String,Object> n_parameter=new HashMap<String, Object>(parameter);

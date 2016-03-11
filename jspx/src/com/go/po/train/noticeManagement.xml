@@ -9,7 +9,7 @@
 	   	and a.id in (select noticeId from notice_teacher where isRead=#{isRead})
 	   </if>
 	   <if test="loginId!=null and loginId!=''">
-	   	and a.id in (select noticeId from notice_teacher where teacherId  in (select id from teacher_info where userId=#{loginId}) )
+	   	and a.id in (select noticeId from notice_teacher where teacherId=#{loginId} )
 	   </if>
 	    <if test="isInstation!=null and isInstation!=''">
 	   	and a.isInstation=#{isInstation}
@@ -30,7 +30,7 @@
 	   	and a.isInstation=#{isInstation}
 	   </if>
 	   <if test="teacherId!=null and teacherId!=''">
-	   	and a.id in (select noticeId from notice_teacher where teacherId =#{teacherId})
+	   	and a.id in (select noticeId from notice_teacher where teacherId =select userId from teacher where id=#{teacherId})
 	   </if>
 	    order by createdate desc
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
@@ -46,7 +46,7 @@
 	   	and a.isInstation=#{isInstation}
 	   </if>
 	   <if test="teacherId!=null and teacherId!=''">
-	   	and a.id in (select noticeId from notice_teacher where teacherId =#{teacherId})
+	   	and a.id in (select noticeId from notice_teacher where teacherId =select userId from teacher where id=#{teacherId})
 	   </if>
 	</select>
 	<!-- 添加后台数据 -->

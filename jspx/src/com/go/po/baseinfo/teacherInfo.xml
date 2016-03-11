@@ -9,6 +9,16 @@
 	   	and  c.flag  like '${flag}%'  
 	   </if>
 	</select> 
+	<!-- zhangjf 2016-03-11 查询树形结构数据start -->
+	<select id="findTreeData" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.userId id,a.schoolId pid,a.name text,1 teacher from teacher_info a   left join unit_info c on c.id=a.schoolId
+	   Where a.isDeleted=0
+	   <if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	</select> 
+	<!-- zhangjf 2016-03-11 查询树形结构数据end -->
+	
     <!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select (select name from code_data cd where cd.id = a.zkxdId) zkxdName,(select name from code_data cd where cd.id = a.fkxdId) fkxdName,(select name from code_data cd where cd.id = a.zkxkId) zkxkName,(select name from code_data cd where cd.id = a.fkxkId) fkxkName,a.*,b.text text,c.name schoolName From teacher_info a left join user_info b on a.userId=b.id left join unit_info c on c.id=a.schoolId

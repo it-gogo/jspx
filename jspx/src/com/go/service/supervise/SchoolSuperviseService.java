@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.go.common.util.DateUtil;
 import com.go.common.util.ExtendDate;
 import com.go.common.util.SqlUtil;
+import com.go.common.util.SystemConfigUtil;
 import com.go.common.util.TreeUtil;
 import com.go.service.base.BaseService;
+import com.go.service.weixin.WeiXinService;
 /**
  * 学校督导
  * @author chenhb
@@ -20,6 +24,11 @@ import com.go.service.base.BaseService;
 @Service
 public class SchoolSuperviseService extends BaseService {
 
+	@Autowired
+	private WeiXinService weixinService;
+	@Autowired
+	private SuperviseService superviseService;
+	
 	/**
 	 * 分页查找数据
 	 * @param parameter
@@ -65,21 +74,69 @@ public class SchoolSuperviseService extends BaseService {
 	 * 添加数据
 	 * @param parameter
 	 * @return
+	 * @throws Exception 
 	 */
-	public  void  addMaterial(Map<String,Object> parameter){
+	public  void  addMaterial(Map<String,Object> parameter,Map<String,Object> userMap) throws Exception{
 		Map<String,Object> parame=new HashMap<String, Object>(parameter);
+   	    Object superviseId=parameter.get("superviseId");
 		if("学校材料".equals(parameter.get("type"))){//上传学校材料，属于督导助手上传为第二步流程
 			parame.put("step", 3);
 			parame.put("flowStatus", "待校长审批");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
+			
+		 	/**
+	   	     * zhangjf 2016-03-11组装发送校长审批消息start
+	   	     */
+	   	    Map<String,Object> params=new HashMap<String, Object>();
+	   	    params.put("superviseId", superviseId);
+	   	    params.put("roleType", "校长室");
+	   		params.put("title", "审核消息提醒");
+	   		params.put("content", "您有一个督导项目上传资料"+parameter.get("name")+" 需要审核,请及时处理");
+	   		superviseService.sendMsg(params, userMap);
+	   	    /**
+	   	     * zhangjf 2016-03-11组装发送校长审批消息end
+	   	     */
+			
+			
 		}else if("整改材料".equals(parameter.get("type"))){//上传学校整改材料，属于督导助手上传为第六步流程
 			parame.put("step", 7);
 			parame.put("flowStatus", "待校长审批整改材料");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
+			
+			/**
+			 * zhangjf 2016-03-11 发送提交整改材料消息start
+			 */
+			 	Map<String,Object> params=new HashMap<String, Object>();
+		   	    params.put("superviseId", superviseId);
+		   	    params.put("roleType", "校长室");
+		   		params.put("title", "提交整改材料消息提醒");
+		   		params.put("content", "您有一个督导项目提交整改材料名称为:"+parameter.get("name")+" 需要审批,请及时处理");
+		   		superviseService.sendMsg(params, userMap);
+			
+			/**
+			 * zhangjf 2016-03-11 发送提交整改材料消息end
+			 */
+			
+			
 		}else if("检查材料".equals(parameter.get("type"))){//上传检查材料，属于督学上传为第五步流程
 			parame.put("step", 6);
 			parame.put("flowStatus", "督学提交整改意见");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
+			
+			/**
+			 * zhangjf 2016-03-11 发送需整改消息提醒start
+			 */
+		   	    Map<String,Object> params=new HashMap<String, Object>();
+		   	    params.put("superviseId", superviseId);
+		   	    params.put("roleType", "督学助手");
+		   		params.put("title", "需整改消息提醒");
+		   		params.put("content", "您当前有一个督导项目需进行整改,请及时处理");
+		   		superviseService.sendMsg(params, userMap);
+			
+			/**
+			 * zhangjf 2016-03-11 发送需整改消息提醒end
+			 */
+			
 		}
 		parameter.put("status", "待审批");
 	    this.getBaseDao().insert("material.add", parameter);
@@ -89,8 +146,9 @@ public class SchoolSuperviseService extends BaseService {
 	 * @author chenhb
 	 * @create_time  2016-3-9 下午4:07:52
 	 * @param pamameter
+	 * @throws Exception 
 	 */
-	public void approvalMaterial(Map<String,Object> parameter){
+	public void approvalMaterial(Map<String,Object> parameter,Map<String,Object> userMap) throws Exception{
 		Map<String,Object> parame=new HashMap<String, Object>();
 		Map<String,Object> vo=this.getBaseDao().loadEntity("material.load", parameter);
 		parame.put("superviseId", vo.get("superviseId"));
@@ -124,6 +182,17 @@ public class SchoolSuperviseService extends BaseService {
 					if("3".equals(step)){//校长审批上传材料通过
 						parame.put("step", 4);
 						parame.put("flowStatus", "待督学审批材料");
+						/**
+						 * zhangjf 2016-03-11 发送材料已提交消息start
+						 */
+							Map<String,Object> params=new HashMap<String,Object>();
+							params.put("unitId", parame.get("unitId"));
+							params.put("title", "已提交材料消息提醒");
+							params.put("content", "您当前有一个督学项目,学校已提交相关资料,请及时处理。谢谢！");
+							sendMsg(params,userMap);
+						/**
+						 * zhangjf 2016-03-11 发送材料已提交消息end
+						 */
 					}else if("4".equals(step)){//督学审批上传材料通过
 						parame.put("step", 5);
 						parame.put("flowStatus", "督学下校检查");
@@ -140,6 +209,78 @@ public class SchoolSuperviseService extends BaseService {
 		}
 		this.getBaseDao().update("material.approval", parameter);
 	}
+	
+	/**
+	 * 发送督学消息
+	 * @author zhangjf
+	 * @create_time 2016-3-11 上午10:33:11
+	 * @param params
+	 * @throws Exception 
+	 */
+	public void sendMsg(Map<String, Object> parameter,Map<String,Object> userMap) throws Exception {
+		/**
+		 * 根据当前单位查询督学账号信息
+		 */
+		
+		List<Map<String,Object>> inspectors=this.getBaseDao().findList("inspector.listInspectors", parameter);
+		if(inspectors==null||inspectors.isEmpty()){
+			return;
+		}
+		try {
+			List<Map<String,Object>> notices=new ArrayList<Map<String,Object>>();//保存消息老师关系集合
+			String content=parameter.get("content").toString();
+			/**
+			 * 构建消息信息
+			 */
+			Map<String,Object> noticeMap=new HashMap<String, Object>();
+			String noticeId=SqlUtil.uuid();
+			noticeMap.put("id", noticeId);
+			noticeMap.put("isInStation", "站内短信");
+			noticeMap.put("title", parameter.get("title"));
+			noticeMap.put("content", content);
+			noticeMap.put("creator", userMap.get("id"));
+			noticeMap.put("createdate", DateUtil.getCurrentTime());
+			this.getBaseDao().insert("noticeManagement.add", noticeMap);//保存消息
+			/**
+			 * 遍历督学账号进行消息发送start
+			 */
+			Map<String,Object> params=null;
+			for (Map<String, Object> inspector : inspectors) {
+				params=new HashMap<String, Object>();
+				params.put("noticeTeacherId", SqlUtil.uuid());
+				params.put("teacherId", inspector.get("userId"));
+				notices.add(params);
+				
+				/**
+				 * 微端消息发送start
+				 */
+				if("true".equals(SystemConfigUtil.getInstance().getValByKey("sendMsg"))){
+					Object wechat=inspector.get("wechat");
+					if(wechat!=null){
+						weixinService.sendMessage(inspector.get("name")+"", content, "", wechat.toString());
+					}
+				}
+				/**
+				 * 微端消息发送end
+				 */
+				
+			}
+			/**
+			 * 遍历督学账号进行消息发送end
+			 */
+			if(notices!=null&&!notices.isEmpty()){
+				params=new HashMap<String, Object>();
+				params.put("id", noticeId);
+				params.put("list", notices);
+				this.getBaseDao().insert("noticeTeacher.batchAdd", params);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
+
 	/**
 	 * 是否督学助手
 	 * @author chenhb
