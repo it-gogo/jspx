@@ -253,10 +253,10 @@ jQuery.extend({
 
 $(function(){
 	if(window.ActiveXObject) {
-		 	$("#upload_ie").show();
-		 	$("#upload_google").hide();
+	 	$(".upload_ie").show();
+	 	$(".upload_google").hide();
     }else {
-    	$("#upload_google").show();
-		 	$("#upload_ie").hide();
+    	$(".upload_google").show();
+		$(".upload_ie").hide();
     }
 });

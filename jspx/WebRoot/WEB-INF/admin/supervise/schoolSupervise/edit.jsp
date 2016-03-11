@@ -32,15 +32,19 @@ var type="";
 function importFile(id,str){
 	projectId=id;
 	type=str;
-	$("#fileId").click();
+	$("#fileId1").click();
 }
-function ajaxFileUpload(){
+function setParameter(id,str){
+	projectId=id;
+	type=str;
+}
+function ajaxFileUpload(fileId){
 	var unitId=$("#unitId").val();
 	var superviseId=$("#id").val();
 	$.ajaxFileUpload({  
         url:"saveMaterial.do?unitId="+unitId+"&superviseId="+superviseId+"&projectId="+projectId+"&type="+type,  
         secureuri:false,  
-        fileElementId:"fileId",  
+        fileElementId:fileId,  
         dataType: "text",
         success: function (data) { 
         	var json=eval("("+data+")");
@@ -103,7 +107,17 @@ function deleteFile(fileUrl,id){
 		}
 	});
 }
+/**
+*修改
+*/
 function modifyFile(projectId,type,fileUrl,id){
+	deleteFileNoReload(fileUrl,id);
+	importFile(projectId,type);
+}
+/**
+*删除文件不刷新
+*/
+function deleteFileNoReload(fileUrl,id){
 	if(fileUrl==""){
 		parent.$.messager.alert("提示窗口","没有上传资料。");
 		return;
@@ -114,7 +128,6 @@ function modifyFile(projectId,type,fileUrl,id){
 		success:function(data){
 		}
 	});
-	importFile(projectId,type);
 }
 /**
 *审批
@@ -149,7 +162,7 @@ function approvalFile(id,status){
   <body >
   	<div class="easyui-layout" data-options="fit:'true',border:false" >
   	<form id="dform" method="post" >
-  	<input type="file" id="fileId" style="display:none;" name="fileId" onchange="ajaxFileUpload();" />
+  		<input type="file" id="fileId1" style="display:none;" name="fileId" onchange="ajaxFileUpload('fileId1');" />
            <input name="id"  type="hidden"  id="id"    value="${vo.id }">
            <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
            <input name="step"  type="hidden"  id="step"    value="${vo.step }">
@@ -174,13 +187,25 @@ function approvalFile(id,status){
 							</c:otherwise>
 						</c:choose> --%>
 						<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
-							<div><a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a></div>
+							<div class="upload_google" style="display: none;">
+								<a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a>
+							</div>
+							<div   class="upload_ie" style="display: none;">
+								<a href="javascript:void(0);" onclick="setParameter('${project.id}','学校材料')" style="position:relative;">
+									上传
+									<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId2${project.id }')" type="file" id="fileId2${project.id }"  name="fileId"/>
+								</a>
+							</div>
 						</c:if>
 						<c:forEach items="${project.schoolMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
 								<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
-									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','学校材料','${material.url}','${material.id}')">修改</a>
+									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','学校材料','${material.url}','${material.id}')"  class="upload_google" style="display: none;" >修改</a>
+									<a href="javascript:void(0);" onclick="setParameter('${project.id}','学校材料');deleteFileNoReload('${material.url}','${material.id}');"  class="upload_ie" style="display: none;position:relative;" >
+										修改
+										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId3${material.id }')" type="file" id="fileId3${material.id }"  name="fileId"/>
+									</a>
 									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
 								</c:if>
 								<c:choose>
@@ -205,13 +230,27 @@ function approvalFile(id,status){
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >${project.modifyMaterials }
 							<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
-								<div><a href="javascript:void(0);" onclick="importFile('','整改材料')">上传</a></div>
+								<div class="upload_google" style="display: none;">
+									<a href="javascript:void(0);" onclick="importFile('','整改材料');">上传</a>
+								</div>
+								<div   class="upload_ie" style="display: none;">
+									<a href="javascript:void(0);" onclick="setParameter('','整改材料');" style="position:relative;">
+										上传
+										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId4${project.id }')" type="file" id="fileId4${project.id }"  name="fileId"/>
+									</a>
+								</div>
+								
 							</c:if>
 						<c:forEach items="${vo.modifyMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
 								<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
-									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','整改材料','${material.url}','${material.id}')">修改</a>
+									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','整改材料','${material.url}','${material.id}')"  class="upload_google" style="display: none;" >修改</a>
+									<a href="javascript:void(0);" onclick="setParameter('${project.id}','整改材料');deleteFileNoReload('${material.url}','${material.id}');"  class="upload_ie" style="display: none;position:relative;" >
+										修改
+										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId5${material.id }')" type="file" id="fileId5${material.id }"  name="fileId"/>
+									</a>
+									
 									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
 								</c:if>
 								<c:choose>
