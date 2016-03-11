@@ -22,6 +22,11 @@
 		   </if>
 		   )
 	   </if>
+	   <if test="userType!=null and userType=='督学账号'">
+	   		<if test="userId!=null and userId!=''">
+	   			and a.id in (select t1.unitId from inspector_unit t1 join inspector t2 on t1.inspectorId=t2.id and t2.userId=#{userId})
+	   		</if>
+	   </if>
 	</select>
 	<!-- 查询所有 -->
 	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >

@@ -14,6 +14,9 @@
 		 	$(document).ready(function(){
 			  	var gridoption = {url:"list.do",id:"grid",pagination:true};
 			  	dataGrid = $.initBasicGrid(gridoption); 
+			  	
+			  	var treeoptions = {id:"treeID",url:"../inspectorApproval/school.do",onClick:treeClick};
+		  		$.initTree(treeoptions);
 		 	});
 	
 
@@ -50,6 +53,9 @@ function importFile(row){
 	superviseId=row.id;
 	$("#fileId").click();
 }
+/**
+*修改文件
+*/
 function modifyFile(row,fileUrl,id){
 	if(fileUrl==""){
 		parent.$.messager.alert("提示窗口","没有上传资料。");
@@ -107,10 +113,53 @@ function downFile(fileUrl,fileName){
 		}
 	});
 }
+
+/**
+ 	*点击树节点操作
+ 	*/
+ 	function  treeClick(node){
+ 		var  parameter = {};
+		if(node!=null && typeof(node.type)=="undefined"){//点击学校类型跟类别
+			var flag="";
+			var pnode=$('#treeID').tree('getParent',node.target);//字典类型
+			if(typeof(pnode.type)=="undefined"){//上一级不是单位，那就是点击学校类型
+				var ppnode=$('#treeID').tree('getParent',pnode.target);//单位
+				flag=ppnode.flag;
+				
+				var categoryId=pnode.id;
+				parameter["categoryId"]=categoryId;
+				$("#categoryId","#qform").val(categoryId);//类别ID
+				
+				var typeId=node.id;
+				parameter["typeId"]=typeId;
+				$("#typeId","#qform").val(typeId);//类别ID
+			}else{//上一级是单位，那就是点击学校类别
+				var categoryId=node.id;
+				parameter["categoryId"]=categoryId;
+				$("#categoryId","#qform").val(categoryId);//类别ID
+				$("#typeId","#qform").val("");//类型ID
+				flag=pnode.flag;
+			}
+			parameter["flag"]=flag;
+			$("#flag","#qform").val(flag);
+		}else{//查询单位
+			var flag = node.flag;
+			parameter["flag"]=flag;
+			$("#flag","#qform").val(flag);
+			$("#typeId","#qform").val("");
+			$("#categoryId","#qform").val("");
+		}
+		dataGrid.datagrid('load',parameter);
+	}
 		</script>
 		
 	</head>
 	<body >
+		<div class="easyui-layout" data-options="fit:'true'">
+		<div data-options="region:'west',split:true,title:'单位树',collapsible:true" style="width:300px;">
+			<%@include file="/WEB-INF/admin/common/tree.jsp"%>
+		</div>
+		<div data-options="region:'center'">
 		   <div class="easyui-panel" style="padding:5px;"  data-options="fit:true,border:false">
 		   	<div class="easyui-layout" data-options="fit:true" >
 		     <div data-options="region:'north'" style="height:35px;">
@@ -148,14 +197,16 @@ function downFile(fileUrl,fileName){
             	<th data-options="field:'id'" width="10" checkbox=true ></th>
                 <th data-options="field:'name'" width="40">督导项目名称</th>
                 <th data-options="field:'superviseDate'" width="30">时间</th>
-                <th data-options="field:'type'" width="30" >类型</th>
+                <th data-options="field:'type'" width="20" >类型</th>
                 <th data-options="field:'flowStatus'" width="30" >状态</th>
-                <th data-options="field:'schoolName'" width="30" >学校</th>
+                <th data-options="field:'schoolName'" width="50" >学校</th>
                 <th data-options="field:'checkMaterials'" width="100" formatter="handImportFile" >督导报告</th>
                 <th data-options="field:'handler'" width="30" formatter="handlerstatus" align="center">操作</th>
             </tr>
         </thead>
     </table>
+    </div>
+    </div>
     </div>
     </div>
     </div>

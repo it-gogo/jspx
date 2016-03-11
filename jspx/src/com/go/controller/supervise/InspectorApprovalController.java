@@ -54,6 +54,31 @@ public class InspectorApprovalController extends BaseController {
 		@Autowired
 		private UnitInfoService unitInfoService;
 	
+		/**
+		   * 查询学校
+		   * @author chenhb
+		   * @create_time {date} 上午10:03:08
+		   * @param request
+		   * @param response
+		   * @param model
+		 * @throws Exception 
+		   */
+		  @RequestMapping("school.do")
+		  public  void school(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
+			  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+			  Map<String,Object> userMap=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+			  Map<String,Object> unitInfo=new HashMap<String, Object>();
+			  unitInfo.put("userId", userMap.get("id"));
+			  unitInfo=this.unitInfoService.findOne(unitInfo);
+			  if(unitInfo!=null){
+				  parameter.put("flag", userMap.get("flag"));
+			  }
+			  parameter.put("userType", userMap.get("type"));
+			  parameter.put("userId", userMap.get("id"));
+			  List<Map<String,Object>> list=unitInfoService.findSchool(parameter);
+			  this.ajaxData(response, JSONUtil.listToArrayStr(list));
+		  }
+		  
 	  /**
 	   * 初始化
 	   * @author chenhb

@@ -89,6 +89,19 @@
 			join inspector_unit d on d.unitId=c.id 
 			join inspector e on e.id=d.inspectorId and e.userId=#{userId}
 		</if>
+		where 1=1
+		<if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  c.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  c.categoryId=#{categoryId}
+	   </if>
+	   <if test="schoolId!=null and schoolId!=''">
+	   	and  a.id=#{schoolId}
+	   </if>
 	</select>
 	<select id="findInspectorApprovalCount" parameterType="map" resultType="object">
 		select count(1) 
@@ -99,6 +112,19 @@
 			join inspector_unit d on d.unitId=c.id 
 			join inspector e on e.id=d.inspectorId and e.userId=#{userId}
 		</if>
+		where 1=1
+		<if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  c.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  c.categoryId=#{categoryId}
+	   </if>
+	   <if test="schoolId!=null and schoolId!=''">
+	   	and  a.id=#{schoolId}
+	   </if>
 	</select>
 	
 	<!-- zhangjf 2016-03-10 根据督学项目查询相应的督学助手列表 start -->
