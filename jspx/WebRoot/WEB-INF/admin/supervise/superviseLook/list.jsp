@@ -90,6 +90,17 @@ function  handlerstatus(value,row,index){
 		            	<input type="text" class="easyui-datebox" id="beginDate" data-options="editable:false" >——
 		            	<input type="text" class="easyui-datebox" id="endDate" data-options="editable:false" >
 		            </td>
+		             <td>
+		            	督导项目：
+		            </td>
+		            <td>
+		            	<input class="easyui-combobox" style="width:200px;"  id="superviseId"   data-options="url:'../supervise/tree.do?isSelect=1',
+			                    method:'get',
+			                    valueField:'id',
+			                    textField:'text',
+			                    editable:false
+			            	">
+		            </td>
 		            <td>
 		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryF('qform');">查  询</a>
 		              &nbsp;&nbsp;

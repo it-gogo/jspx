@@ -76,9 +76,13 @@ $.getQueryParameter = function(formID){
 				  }
 			   }else if($(this).hasClass("easyui-datebox")){
 				   var val = $(this).datebox("getValue");
-				   
 					  if(val!=null&&val!=''){
 				         parameter[id] = $(this).datebox("getValue");
+					  }
+			   }else if($(this).hasClass("easyui-combobox")){
+				   var val = $(this).combobox("getValue");
+					  if(val!=null&&val!=''){
+				         parameter[id] = val;
 					  }
 			   }
 			}
@@ -86,6 +90,7 @@ $.getQueryParameter = function(formID){
 			if(id!=''&&id!=null&&id!='undefined'){
 				if($(this).hasClass("easyui-combobox")){
 				  var val = $(this).combobox("getValue");
+				  alert(val)
 				  if(val!=''&&val!=null&&val!='0'){
 				    parameter[id] = val;
 				  }

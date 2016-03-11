@@ -1,5 +1,6 @@
 package com.go.controller.supervise;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.alibaba.fastjson.JSONObject;
 import com.go.common.util.ExtendDate;
+import com.go.common.util.JSONUtil;
 import com.go.common.util.SysUtil;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
@@ -33,6 +35,29 @@ public class SuperviseController extends BaseController {
 		@Autowired
 		private ProjectService projectService;
 	
+		/**
+		   *督导项目树
+		   * @author chenhb
+		   * @create_time {date} 上午10:03:08
+		   * @param request
+		   * @param response
+		   * @param model
+		 * @throws Exception 
+		   */
+		  @RequestMapping("tree.do")
+		  public  void tree(HttpServletRequest request,HttpServletResponse response,Model  model) throws Exception{
+			  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+			  List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+			  if(parameter.containsKey("isSelect")){
+				  Map<String,Object> map=new HashMap<String, Object>();
+				  map.put("id", "");
+				  map.put("text", "请选择");
+				  list.add(map);
+			  }
+			  list.addAll(superviseService.findTree(parameter));
+			  this.ajaxData(response, JSONUtil.listToArrayStr(list));
+		  }
+		  
 	  /**
 	   * 初始化
 	   * @author chenhb
