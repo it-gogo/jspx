@@ -83,7 +83,7 @@ public class SchoolSuperviseController extends BaseController {
 		  }
 		  JSONObject jsonObj = this.schoolSuperviseService.findPageBean(parameter);
 		  
-		  JSONArray jsonArr=jsonObj.getJSONArray("rows");
+		 /* JSONArray jsonArr=jsonObj.getJSONArray("rows");
 		  List<Map<String,Object>> list=JSONUtil.jsonstrToList(jsonArr.toJSONString(), Map.class);
 		  Map<String,Object> parame=new HashMap<String, Object>();
 		  for(int i=0,j=list.size();i<j;i++){
@@ -94,7 +94,7 @@ public class SchoolSuperviseController extends BaseController {
 			  List<Map<String,Object>> superviseMaterials=inspectorApprovalService.findMaterial(parame);
 			  obj.put("superviseMaterials", superviseMaterials);
 		  }
-		  jsonObj.put("rows", JSONUtil.listToArray(list));
+		  jsonObj.put("rows", JSONUtil.listToArray(list));*/
 		  
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }
