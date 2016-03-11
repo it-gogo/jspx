@@ -100,7 +100,7 @@ function downFile(fileUrl,fileName){
                 <th data-options="field:'superviseDate'" width="30">时间</th>
                 <th data-options="field:'superviseType'" width="30" >类型</th>
                 <th data-options="field:'flowStatus'" width="30" >状态</th>
-                <th data-options="field:'checkMaterials'" width="100"  formatter="handImportFile" >督导报告</th>
+                <!-- <th data-options="field:'checkMaterials'" width="100"  formatter="handImportFile" >督导报告</th> -->
                 <th data-options="field:'handler'" width="30" formatter="handlerstatus" align="center">操作</th>
             </tr>
         </thead>

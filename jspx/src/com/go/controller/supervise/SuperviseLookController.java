@@ -36,13 +36,13 @@ import com.go.service.supervise.SchoolSuperviseService;
 import com.go.service.supervise.SuperviseService;
 
 /**
- * 督学审核
+ * 督导项目查询
  * @author chenhb
  * @create_time  2016-3-10 上午9:05:22
  */
 @Controller
-@RequestMapping("/supervise/inspectorApproval")
-public class InspectorApprovalController extends BaseController {
+@RequestMapping("/supervise/superviseLook")
+public class SuperviseLookController extends BaseController {
 		@Autowired
 		private SchoolSuperviseService schoolSuperviseService;
 		@Autowired
@@ -87,7 +87,7 @@ public class InspectorApprovalController extends BaseController {
 	   */
 	  @RequestMapping("redirect.do")
 	  public String redirect(){
-		  return  "admin/supervise/inspectorApproval/list";
+		  return  "admin/supervise/superviseLook/list";
 	  }
 	  
 	  /**
@@ -183,7 +183,7 @@ public class InspectorApprovalController extends BaseController {
 		  parame.put("type", "督导报告");
 		  List<Map<String,Object>> superviseMaterials=inspectorApprovalService.findMaterial(parame);
 		  res.put("superviseMaterials", superviseMaterials);
-		  return  "admin/supervise/inspectorApproval/edit";
+		  return  "admin/supervise/superviseLook/edit";
 	  }
 	  
 	  /**

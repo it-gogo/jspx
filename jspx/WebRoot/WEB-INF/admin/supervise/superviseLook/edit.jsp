@@ -24,39 +24,6 @@
 			parent.dialogMap["d3"].dialog('close');
 		 });
 	});
-/**
-*导入信息
-*/
-var projectId="";
-var type="";
-function importFile(id,str){
-	projectId=id;
-	type=str;
-	$("#fileId").click();
-}
-function ajaxFileUpload(){
-	var unitId=$("#unitId").val();
-	var superviseId=$("#id").val();
-	$.ajaxFileUpload({  
-        url:"../schoolSupervise/saveMaterial.do?unitId="+unitId+"&superviseId="+superviseId+"&projectId="+projectId+"&type="+type,  
-        secureuri:false,  
-        fileElementId:"fileId",  
-        dataType: "text",
-        success: function (data) { 
-        	var json=eval("("+data+")");
-        	if(json.message){
-	        	parent.$.messager.alert("提示窗口",json.message);
-        	}else{
-        		parent.$.messager.alert("提示窗口",json.error);
-        	}
-        	//parent.dialogMap["d3"].dialog('refresh');
-        	history.go(0);
-        }, error: function (data) {  
-            alert(data);  
-        }  
-    });
-	return false;  
-}
 
 /**
 *上传资料
@@ -78,51 +45,6 @@ function downFile(fileUrl,fileName){
 			}else{
 				parent.$.messager.alert("提示窗口",json.error);
 			}
-		}
-	});
-}
-/**
-*删除资料
-*/
-function deleteFile(fileUrl,id){
-	if(fileUrl==""){
-		parent.$.messager.alert("提示窗口","没有上传资料。");
-		return;
-	}
-	$.ajax({
-		url:"../schoolSupervise/deleteMaterial.do",
-		data:"fileUrl="+fileUrl+"&id="+id,
-		success:function(data){
-			var json=eval("("+data+")");
-			if(json.message){
-	        	parent.$.messager.alert("提示窗口",json.message);
-        	}else{
-        		parent.$.messager.alert("提示窗口",json.error);
-        	}
-			history.go(0);
-		}
-	});
-}
-/**
-*审批
-*/
-function approvalFile(id,status){
-	var step=$("#step").val();
-	$.messager.confirm("询问", "您确定"+status+"该材料吗？", function(r){
-		if (r){
-			$.ajax({
-				url:"../schoolSupervise/approvalMaterial.do",
-				data:"id="+id+"&status=督学"+status+"&step="+step,
-				success:function(data){
-					var json=eval("("+data+")");
-					if(json.message){
-			        	parent.$.messager.alert("提示窗口",json.message);
-		        	}else{
-		        		parent.$.messager.alert("提示窗口",json.error);
-		        	}
-					history.go(0);
-				}
-			});
 		}
 	});
 }
@@ -159,27 +81,14 @@ function approvalFile(id,status){
 						<c:forEach items="${project.schoolMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:choose>
-									<c:when test="${user.type=='督学账号' && superviseUnit.step==4 && material.status=='校长通过'}">
-										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
-										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
-									</c:when>
-									<c:otherwise>${material.status }</c:otherwise>
-								</c:choose>
 							</div>
 						</c:forEach>
 					</td>
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >
-							<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==5 || superviseUnit.step==6)}">
-								<div><a href="javascript:void(0);" onclick="importFile('','检查材料')">上传</a></div>
-							</c:if>
 							<c:forEach items="${vo.checkMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==5 || superviseUnit.step==6)}">
-									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
-								</c:if>
 							</div>
 						</c:forEach>
 						</td>
@@ -189,28 +98,15 @@ function approvalFile(id,status){
 							<c:forEach items="${vo.modifyMaterials}" var="material">
 								<div>
 									<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-									<c:choose>
-										<c:when test="${user.type=='督学账号' && superviseUnit.step==8 && material.status=='校长通过'}">
-											<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
-											<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
-										</c:when>
-										<c:otherwise>${material.status }</c:otherwise>
-									</c:choose>
 								</div>
 							</c:forEach>
 						</td>
 					</c:if>
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >
-							<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==9 || superviseUnit.step==10)}">
-								<div><a href="javascript:void(0);" onclick="importFile('','督导报告')">上传</a></div>
-							</c:if>
 							<c:forEach items="${vo.superviseMaterials}" var="material">
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								<c:if test="${user.type=='督学账号' &&  (superviseUnit.step==9 || superviseUnit.step==10)}">
-									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
-								</c:if>
 							</div>
 						</c:forEach>
 						</td>

@@ -159,6 +159,13 @@ public class SchoolSuperviseController extends BaseController {
 		  parame.put("type", "整改材料");
 		  List<Map<String,Object>> modifyMaterials=schoolSuperviseService.findMaterial(parame);
 		  res.put("modifyMaterials", modifyMaterials);
+		//督导报告
+		  parame.clear();
+		  parame.put("superviseId", res.get("id"));
+		  parame.put("unitId", res.get("unitId"));
+		  parame.put("type", "督导报告");
+		  List<Map<String,Object>> superviseMaterials=inspectorApprovalService.findMaterial(parame);
+		  res.put("superviseMaterials", superviseMaterials);
 		  return  "admin/supervise/schoolSupervise/edit";
 	  }
 	  /**

@@ -175,6 +175,7 @@ function approvalFile(id,status){
 		        <th>学校材料</th>
 		        <th>督学下校检查</th>
 		        <th>整改处理</th>
+		        <th>督导报告</th>
 			</tr>
 			<c:forEach items="${projectList }" var="project" varStatus="i">
 				<tr>
@@ -260,6 +261,21 @@ function approvalFile(id,status){
 									</c:when>
 									<c:otherwise>${material.status }</c:otherwise>
 								</c:choose>
+							</div>
+						</c:forEach>
+						</td>
+					</c:if>
+					<c:if test="${i.index==0 }">
+						<td rowspan="${projectList.size() }" >
+							<%-- <c:if test="${user.type=='督学账号' &&  (superviseUnit.step==9 || superviseUnit.step==10)}">
+								<div><a href="javascript:void(0);" onclick="importFile('','督导报告')">上传</a></div>
+							</c:if> --%>
+							<c:forEach items="${vo.superviseMaterials}" var="material">
+							<div>
+								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+								<%-- <c:if test="${user.type=='督学账号' &&  (superviseUnit.step==9 || superviseUnit.step==10)}">
+									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
+								</c:if> --%>
 							</div>
 						</c:forEach>
 						</td>
