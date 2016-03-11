@@ -117,13 +117,19 @@ public class SchoolSuperviseController extends BaseController {
 		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
 		  Map<String,Object>  res = this.superviseService.load(parameter);
 		  res.put("unitId", parameter.get("unitId"));
-		  res.put("step", parameter.get("step"));
+		 /* res.put("step", parameter.get("step"));
+		  Map<String,Object> superviseUnit=new HashMap<String, Object>();
+		  superviseUnit.put("superviseId", res.get("id"));
+		  superviseUnit.put("unitId", res.get("unitId"));
+		  superviseUnit=schoolSuperviseService.findOneSU(superviseUnit);
+		  res.put("step", superviseUnit.get("step"));*/
 		  model.addAttribute("vo", res);
 		  
 		  Map<String,Object> superviseUnit=new HashMap<String, Object>();
 		  superviseUnit.put("unitId", res.get("unitId"));
 		  superviseUnit.put("superviseId", res.get("id"));
 		  superviseUnit=schoolSuperviseService.findOneSU(superviseUnit);
+		  res.put("step", superviseUnit.get("step"));
 		  model.addAttribute("superviseUnit", superviseUnit);
 		  
 		  Map<String,Object> parame=new HashMap<String, Object>();

@@ -138,6 +138,9 @@ public class SchoolSuperviseService extends BaseService {
 			 */
 			
 		}else if("督导报告".equals(parameter.get("type"))){
+			parame.put("step", 10);
+			parame.put("flowStatus", "校方查看督导报告");
+			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 			/**
 			 * zhangjf 2016-03-11 发送督学报告消息提醒start
 			 */

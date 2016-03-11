@@ -26,7 +26,7 @@ function  handlerstatus(value,row,index){
 *督导报告显示
 */
 function handImportFile(value,row,index){
-	if(row.step==9){
+	if(row.step==9 || row.step==10){
 		var json = $.toJSON(row);
 		var handstr="";
 		try{

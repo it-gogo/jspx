@@ -39,7 +39,7 @@ function handImportFile(value,row,index){
 		}
 	}catch (e) {
 	}
-	if(row.step==9){
+	if(row.step==9 || row.step==10){
 		return handstr;
 	}
 	return "";
