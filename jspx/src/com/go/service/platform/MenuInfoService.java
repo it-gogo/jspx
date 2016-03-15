@@ -45,8 +45,9 @@ public class MenuInfoService extends BaseService {
 			List<Map<String,Object>> plist=this.getBaseDao().findList("menuInfo.findByListId", parameter);
 			list.addAll(plist);
 		}
-		
-		return TreeUtil.createTree(list);
+		list=TreeUtil.createTree(list);
+		Util.sortListByseq(list, "seq");
+		return list;
 	}
 	/**
 	 * 分页查找数据
@@ -69,7 +70,9 @@ public class MenuInfoService extends BaseService {
 	public List<Map<String,Object>> findTree(Map<String,Object> parameter) throws Exception{
 		parameter=SqlUtil.setPowId(parameter);//通过key控制权限
 		List<Map<String,Object>> list=this.getBaseDao().findList("menuInfo.findTree", parameter);
-		return TreeUtil.createTree(list);
+		list=TreeUtil.createTree(list);
+		Util.sortListByseq(list, "seq");
+		return list;
 	}
 	/**
 	 * 查询权限树

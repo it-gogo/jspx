@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="assessTheme">
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *  From  assess_theme a  
+	   Where 0=0
+	   <if test="title!=null and title">
+	   	and a.title=#{title}
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  assess_theme a 
+	    Where 0=0
+	    <if test="title!=null and title">
+	   	and a.title=#{title}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into assess_theme(id,title,templateId,beginDate,endDate,creator,createdate,topFileId,absoluteId)
+	   values(#{id},#{title},#{templateId},#{beginDate},#{endDate},#{creator},#{createdate},#{topFileId},#{absoluteId});
+	   
+	    insert into top_folder(id,name,type,creator,createdate)
+	   values(#{topFileId},#{title},#{type},#{creator},#{createdate});
+	   
+	   insert into absolute_management(id,topFileId,absoluteUrl,createdate,status,type)
+	   values(#{absoluteId},#{topFileId},#{absoluteUrl},#{createdate},'启用','评估文档');
+	   
+	   <!-- <if test="fileList!=null and fileList.size()>0">
+	   	<foreach collection="fileList" item="vo">
+	   		insert into file_management(id,topFileId,relativeUrl,absoluteId,name,type,parentId,creator,createdate,status)
+	   		values(#{vo.id},#{topFileId},#{vo.relativeUrl},#{absoluteId},#{vo.name},#{vo.type},#{vo.parentId},#{creator},#{createdate},'正常');
+	   	</foreach>
+	   </if> -->
+	</insert>
+	<!-- 添加后台数据 -->
+	<insert id="addFile" parameterType="java.util.HashMap" >
+	   	<foreach collection="fileList" item="vo">
+	   		insert into file_management(id,topFileId,relativeUrl,absoluteId,name,type,parentId,creator,createdate,status)
+	   		values(#{vo.id},#{topFileId},#{vo.relativeUrl},#{absoluteId},#{vo.name},#{vo.type},#{vo.parentId},#{creator},#{createdate},'正常');
+	   	</foreach>
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+         update assess_theme set title=#{title},
+         				templateId = #{templateId},
+	                    beginDate = #{beginDate},
+	                    endDate=#{endDate}
+        where  id=#{id} ;
+        
+        update top_folder set name =#{title}
+        where id=#{topFileId};
+        
+        update absolute_management set absoluteUrl =#{absoluteUrl}
+        where id=#{absoluteId};
+        
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,b.absoluteUrl absoluteUrl  From assess_theme a join  absolute_management b on a.absoluteId=b.id  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+         delete from   assess_theme    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+        delete from   theme_directory    Where 1 = 1
+	    And templateId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

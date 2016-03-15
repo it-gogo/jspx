@@ -68,7 +68,6 @@
 	background:url('icons/more.png') no-repeat center center;
 }
 
-
 .icon-mini-add{
 	background:url('icons/mini_add.png') no-repeat center center;
 }
@@ -93,4 +92,47 @@
 }
 .icon-large-chart{
 	background:url('icons/large_chart.png') no-repeat center center;
+}
+
+.icon-l-back{/* 大图标后退 */
+	background:url('icons/l-back.png') no-repeat center center;
+}
+.icon-l-delete{/* 大图标删除 */
+	background:url('icons/l-delete.png') no-repeat center center;
+}
+.icon-l-up-file{/* 大图标上传文件 */
+	background:url('icons/l-up-file.png') no-repeat center center;
+}
+.icon-l-new-file{/* 大图标新建文件 */
+	background:url('icons/l-new-file.png') no-repeat center center;
+}
+.icon-l-share{/* 大图标共享 */
+	background:url('icons/l-share.png') no-repeat center center;
+}
+.icon-l-folder{/* 大图标文件夹 */
+	background:url('icons/l-folder.png') no-repeat center center;
+}
+.icon-l-file-seq{/* 大图标文件排序 */
+	background:url('icons/l-file-seq.png') no-repeat center center;
+}
+.icon-l-folder-seq{/* 大图标文件夹排序 */
+	background:url('icons/l-folder-seq.png') no-repeat center center;
+}
+.icon-up{/* 小图标上 */
+	background:url('icons/up.png') no-repeat center center;
+}
+.icon-down{/* 小图标下 */
+	background:url('icons/down.png') no-repeat center center;
+}
+.icon-l-up-server{/* 大图标上传服务器 */
+	background:url('icons/l-up-server.png') no-repeat center center;
+}
+.icon-txt{
+	background:url('icons/txt.png') no-repeat center center;
+}
+.icon-doc{
+	background:url('icons/doc.png') no-repeat center center;
+}
+.icon-jpg{
+	background:url('icons/jpg.png') no-repeat center center;
 }

@@ -55,6 +55,7 @@
           <mvc:mapping path="/train/*/*.do"/>
           <mvc:mapping path="/main/*/*.do"/>
           <mvc:mapping path="/supervise/*/*.do"/>
+          <mvc:mapping path="/resources/*/*.do"/>
          <bean class="com.go.common.interceptor.HSessionInterceptor"></bean>
       </mvc:interceptor>
       <!-- 前台Session拦截器 -->

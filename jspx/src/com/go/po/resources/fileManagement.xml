@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fileManagement">
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*  From  file_management a 
+	   Where status ='正常'
+	   <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select> 
+	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,name text,case when  exists(select 1 from file_management t where t.parentId=a.id and t.type='文件夹') then 'closed' else 'open' end state  From  file_management a 
+	   Where 0=0
+	   <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   order by seq
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,(select name from view_user where id=a.modifier) modifyName  From  file_management a 
+	   Where status ='正常'
+	   <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   order by seq 
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  file_management a
+	    Where status ='正常'
+	    <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into file_management(id,topFileId,absoluteUrl,relativeUrl,absoluteId,name,type,parentId,suffix,remark,fileSize,seq,creator,createdate,modifier,modifydate,status)
+	   values(#{id},#{topFileId},#{absoluteUrl},#{relativeUrl},#{absoluteId},#{name},#{type},#{parentId},#{suffix},#{remark},#{fileSize},#{seq},#{creator},#{createdate},#{modifier},#{modifydate},'正常')
+	</insert>
+	
+	<insert id="addAll" parameterType="java.util.HashMap" >
+		<foreach collection="list" item="vo">
+	     insert into file_management(id,topFileId,absoluteUrl,relativeUrl,absoluteId,name,type,parentId,suffix,remark,fileSize,seq,creator,createdate,modifier,modifydate,status)
+	   	 values(#{vo.id},#{vo.topFileId},#{vo.absoluteUrl},#{vo.relativeUrl},#{vo.absoluteId},#{vo.name},#{vo.type},#{vo.parentId},#{vo.suffix},#{vo.remark},#{vo.fileSize},#{vo.seq},#{vo.creator},#{vo.createdate},#{vo.modifier},#{vo.modifydate},'正常');
+	   </foreach>
+	</insert> 
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update file_management set   name = #{name},
+	                    remark = #{remark},
+	                    modifier = #{modifier},
+	                    modifydate = #{modifydate}
+        where  id=#{id} ;
+        update  file_management set relativeUrl=replace (relativeUrl,#{historyRelativeUrl},#{nowUrl}) 
+       where relativeUrl like '${historyRelativeUrl}%';
+	</update>
+	<update id="updateSeq" parameterType="java.util.List">
+		<foreach collection="list" item="vo">
+			update file_management set seq=${vo.seq} where id=#{vo.id};
+		</foreach>
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*  From file_management a  Where 0=0  And  a.id=#{id}
+	</select>
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*  From file_management a  Where 0=0  
+	   <if test="name!=null and name!=''">
+	   	and a.name=#{name}
+	   </if>
+	   <if test="parentId!=null and parentId!=''">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 更新数据状态 -->
+	<update id="changeStatus"  parameterType="java.util.HashMap">
+	   update file_management set status = #{status} 
+	   Where id=#{id} 
+	</update>
+	<!-- 删除数据 -->
+	<delete id="deleteStatus"  parameterType = "java.util.HashMap">
+	    update  file_management  set status='删除',deleter=#{deleter},modifydate=#{modifydate}   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	<!-- zhangjf 2015-11-19 查询回收站数据start -->
+	<select id="recycleList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,(select name from file_management where id=a.parentId) location  From  file_management a 
+	   Where status ='删除'
+	   <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   order by seq 
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	
+	<select id="recycleAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,(select name from file_management where id=a.parentId) location  From  file_management a 
+	   Where status ='删除'
+	   <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select> 
+	
+	<select id="recycleCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  file_management a
+	    Where status ='删除'
+	    <if test="parentId!=null and parentId">
+	   	and a.parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select>
+	
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   file_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<delete id="deleteByTopFileId"  parameterType = "java.util.List">
+	    delete from   file_management    Where 1 = 1
+	    And topFileId =#{topFileId} ;
+	</delete>
+	
+	<select id="loadByIds"  parameterType = "java.util.List" resultType="map">
+	    select * from   file_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</select>
+	<!-- 还原回收站数据 -->
+	<update id="reduction"  parameterType = "list">
+	    update  file_management set status='正常'    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</update>
+	
+	<!-- zhangjf 2015-11-19 查询回收站数据end -->
+	
+	<!-- zhangjf 2015-11-20查询共享数据列表start -->
+	<select id="shareList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	  select *,(select GROUP_CONCAT(b.type) from folder_shared a  join shared_role b on a.id=b.sharedId where a.fileId=file_management.id)as oprType
+	  ,(select name from view_user where id=file_management.creator) creatorName,(select userName from login_info where id=file_management.modifier) modifyName from file_management 
+	  	<choose>
+	  	<when test="parentId==null or parentId==''">
+	  	
+	  	where id in(
+		select DISTINCT t1.fileId from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		where t4.loginId=#{userId}
+		) 
+		</when> 
+		<otherwise>
+			where 1=1
+		</otherwise>
+		</choose>
+		and status='正常'
+	   <if test="parentId!=null and parentId">
+	   	and parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and type=#{type}
+	   </if>
+	   order by seq 
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	
+	<select id="shareCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	   select count(1) from file_management
+	   	<choose>
+	  	<when test="parentId==null or parentId==''">
+	  	
+	  	where id in(
+		select DISTINCT t1.fileId from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		where t4.loginId=#{userId}
+		) 
+		</when> 
+		<otherwise>
+			where 1=1
+		</otherwise>
+		</choose>
+		and status='正常'
+	   <if test="parentId!=null and parentId">
+	   	and parentId=#{parentId}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and type=#{type}
+	   </if>
+	</select>
+	<!-- zhangjf 2015-11-20查询共享数据列表end -->
+	
+	<!-- chenhb2015-11-24 start -->
+	<!-- 资源文件夹共享查询 -->
+	<select id="findShareSchoolFolder" parameterType="map" resultType="map">
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		join file_management t5 on t1.fileId =t5.id
+		join top_folder t6 on t5.topFileId=t6.id  and t6.type='资源文件夹'
+		where t4.loginId=#{userId}
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		union
+		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		join top_folder t5 on t1.fileId =t5.id  and t5.type='资源文件夹'
+		where t4.loginId=#{userId}
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		
+		union
+		
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
+		join file_management t5 on t1.fileId =t5.id
+		join top_folder t6 on t5.topFileId=t6.id  and t6.type='资源文件夹'
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		union
+		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
+		join top_folder t5 on t1.fileId =t5.id  and t5.type='资源文件夹'
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+	</select>
+	
+	
+	<!-- 评估文件夹共享查询 -->
+	<select id="findShareAssessFolder" parameterType="map" resultType="map">
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		join file_management t5 on t1.fileId =t5.id
+		join top_folder t6 on t5.topFileId=t6.id and t6.type='评估文档'
+		join assess_theme t7 on t6.id=t7.topFileId
+		where t4.loginId=#{userId}
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		<if test="date!=null and date!=''"><!-- 当前时间 -->
+	   	 and t7.beginDate &lt;=#{date} and t7.endDate >= #{date}
+	   </if>
+	   <if test="notId!=null">
+	   		and t6.id not in 
+		   	<foreach collection="notId" item="vo" open="(" separator="," close=")">
+		   		#{vo.id}
+		   	</foreach>
+	   </if>
+		union
+		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
+		join role t3 on t2.roleId=t3.id
+		join role_login t4 on t3.id=t4.roleId
+		join top_folder t5 on t1.fileId =t5.id  and t5.type='评估文档'
+		join assess_theme t7 on t5.id=t7.topFileId
+		where t4.loginId=#{userId}
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		<if test="date!=null and date!=''"><!-- 当前时间 -->
+	   	 and t7.beginDate &lt;=#{date} and t7.endDate >= #{date}
+	   </if>
+	   <if test="notId!=null">
+	   		and t5.id not in 
+		   	<foreach collection="notId" item="vo" open="(" separator="," close=")">
+		   		#{vo.id}
+		   	</foreach>
+	   </if>
+	   
+		union
+		
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
+		join file_management t5 on t1.fileId =t5.id
+		join top_folder t6 on t5.topFileId=t6.id and t6.type='评估文档'
+		join assess_theme t7 on t6.id=t7.topFileId
+		where 1=1
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		<if test="date!=null and date!=''"><!-- 当前时间 -->
+	   	 and t7.beginDate &lt;=#{date} and t7.endDate >= #{date}
+	   </if>
+	   <if test="notId!=null">
+	   		and t6.id not in 
+		   	<foreach collection="notId" item="vo" open="(" separator="," close=")">
+		   		#{vo.id}
+		   	</foreach>
+	   </if>
+	   union
+		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
+		join top_folder t5 on t1.fileId =t5.id  and t5.type='评估文档'
+		join assess_theme t7 on t5.id=t7.topFileId
+		where 1=1
+		<if test="id!=null and id!=''">
+			and t1.topFileId!=#{id}
+		</if>
+		<if test="date!=null and date!=''"><!-- 当前时间 -->
+	   	 and t7.beginDate &lt;=#{date} and t7.endDate >= #{date}
+	   </if>
+	   <if test="notId!=null">
+	   		and t5.id not in 
+		   	<foreach collection="notId" item="vo" open="(" separator="," close=")">
+		   		#{vo.id}
+		   	</foreach>
+	   </if>
+	</select>
+	<!-- chenhb2015-11-24 end -->
+</mapper>

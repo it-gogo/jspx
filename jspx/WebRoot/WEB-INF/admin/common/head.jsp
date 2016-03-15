@@ -23,6 +23,9 @@
 
 <style>
 <!--
+a{
+	text-decoration: inherit;
+}
 -->
 </style>
 <!-- 样式模板1 start-->
