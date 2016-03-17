@@ -117,12 +117,6 @@ public class SchoolSuperviseController extends BaseController {
 		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
 		  Map<String,Object>  res = this.superviseService.load(parameter);
 		  res.put("unitId", parameter.get("unitId"));
-		 /* res.put("step", parameter.get("step"));
-		  Map<String,Object> superviseUnit=new HashMap<String, Object>();
-		  superviseUnit.put("superviseId", res.get("id"));
-		  superviseUnit.put("unitId", res.get("unitId"));
-		  superviseUnit=schoolSuperviseService.findOneSU(superviseUnit);
-		  res.put("step", superviseUnit.get("step"));*/
 		  model.addAttribute("vo", res);
 		  
 		  Map<String,Object> superviseUnit=new HashMap<String, Object>();
@@ -145,6 +139,13 @@ public class SchoolSuperviseController extends BaseController {
 			  project.put("schoolMaterials", schoolMaterials);
 		  }
 		  model.addAttribute("projectList", projectList);
+		  //自查报告
+		  parame.clear();
+		  parame.put("superviseId", res.get("id"));
+		  parame.put("unitId", res.get("unitId"));
+		  parame.put("type", "自查报告");
+		  List<Map<String,Object>> zcMaterials=schoolSuperviseService.findMaterial(parame);
+		  res.put("zcMaterials", zcMaterials);
 		  //检查材料
 		  parame.clear();
 		  parame.put("superviseId", res.get("id"));
@@ -242,7 +243,13 @@ public class SchoolSuperviseController extends BaseController {
 		  this.ajaxMessage(response, Syscontants.MESSAGE,"删除成功");
 		  schoolSuperviseService.deleteMaterial(parameter);
 	  }
-	  
+	  /**
+	   * 审核材料
+	   * @author chenhb
+	   * @create_time  2016-3-17 上午9:18:29
+	   * @param request
+	   * @param response
+	   */
 	  @RequestMapping("approvalMaterial.do")
 	  public  void approvalMaterial(HttpServletRequest request, HttpServletResponse response) {
 		  //获取请求参数
@@ -252,6 +259,26 @@ public class SchoolSuperviseController extends BaseController {
 			  Map<String,Object> material=schoolSuperviseService.loadMaterial(parameter);
 			  schoolSuperviseService.approvalMaterial(parameter,user);
 			   this.ajaxMessage(response, Syscontants.ERROE,"审批成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			 this.ajaxMessage(response, Syscontants.ERROE,"系统繁忙,审批失败！");
+		}
+	  }
+	  /**
+	   * 一键通过
+	   * @author chenhb
+	   * @create_time  2016-3-17 上午9:24:39
+	   * @param request
+	   * @param response
+	   */
+	  @RequestMapping("oneKeyPass.do")
+	  public  void oneKeyPass(HttpServletRequest request, HttpServletResponse response) {
+		  //获取请求参数
+		  try {
+			Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+			  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+			  schoolSuperviseService.oneKeyPass(parameter, user);
+			  this.ajaxMessage(response, Syscontants.ERROE,"审批成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 			 this.ajaxMessage(response, Syscontants.ERROE,"系统繁忙,审批失败！");

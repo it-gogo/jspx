@@ -178,4 +178,11 @@ public class InspectorApprovalService extends BaseService {
 		this.getBaseDao().delete("material.delete", parameter);
 	}
 
+	/**
+	 * 评分
+	 * @param parameter
+	 */
+	public  void  assess(Map<String,Object> parameter){
+		this.getBaseDao().update("superviseProject.assess", parameter);
+	}
 }

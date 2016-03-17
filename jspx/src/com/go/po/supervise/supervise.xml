@@ -103,8 +103,10 @@
 	   	and  a.id=#{schoolId}
 	   </if>
 	   <if test="superviseId!=null and superviseId!=''">
-		   	and a.id=#{superviseId}
-		   </if>
+	   	and a.id=#{superviseId}
+	   </if>
+	   order by a.superviseDate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select>
 	<select id="findInspectorApprovalCount" parameterType="map" resultType="object">
 		select count(1) 

@@ -160,7 +160,13 @@ public class SuperviseLookController extends BaseController {
 		  }
 		  model.addAttribute("projectList", projectList);
 		  
-		  
+		  //自查报告
+		  parame.clear();
+		  parame.put("superviseId", res.get("id"));
+		  parame.put("unitId", res.get("unitId"));
+		  parame.put("type", "自查报告");
+		  List<Map<String,Object>> zcMaterials=schoolSuperviseService.findMaterial(parame);
+		  res.put("zcMaterials", zcMaterials);
 		  //检查材料
 		  parame.clear();
 		  parame.put("superviseId", res.get("id"));

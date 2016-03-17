@@ -16,6 +16,7 @@
 	   <if test="flag!=null and flag!=''">
 	   	and c.flag=#{flag}
 	   </if>
+	   order by b.superviseDate desc
 	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select> 
 	<!-- 查询记录数 -->
