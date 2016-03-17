@@ -173,20 +173,15 @@ function approvalFile(id,status){
 		        <th>项目名</th>
 		        <th>项目说明</th>
 		        <th>学校材料</th>
-		        <th>督学下校检查</th>
+		        <!-- <th>督学下校检查</th>
 		        <th>整改处理</th>
-		        <th>督导报告</th>
+		        <th>督导报告</th> -->
 			</tr>
 			<c:forEach items="${projectList }" var="project" varStatus="i">
 				<tr>
 					<td>${project.name }</td>
 					<td>${project.remark }</td>
 					<td>
-						<%-- <c:choose>
-							<c:when test="${empty  project.schoolMaterials}"></c:when>
-							<c:otherwise>
-							</c:otherwise>
-						</c:choose> --%>
 						<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
 							<div class="upload_google" style="display: none;">
 								<a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a>
@@ -219,6 +214,73 @@ function approvalFile(id,status){
 							</div>
 						</c:forEach>
 					</td>
+					<%-- <c:if test="${i.index==0 }">
+						<td rowspan="${projectList.size() }" >
+							<c:forEach items="${vo.checkMaterials}" var="material">
+							<div>
+								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+							</div>
+						</c:forEach>
+						</td>
+					</c:if>
+					<c:if test="${i.index==0 }">
+						<td rowspan="${projectList.size() }" >${project.modifyMaterials }
+							<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
+								<div class="upload_google" style="display: none;">
+									<a href="javascript:void(0);" onclick="importFile('','整改材料');">上传</a>
+								</div>
+								<div   class="upload_ie" style="display: none;">
+									<a href="javascript:void(0);" onclick="setParameter('','整改材料');" style="position:relative;">
+										上传
+										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId4${project.id }')" type="file" id="fileId4${project.id }"  name="fileId"/>
+									</a>
+								</div>
+								
+							</c:if>
+						<c:forEach items="${vo.modifyMaterials}" var="material">
+							<div>
+								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+								<c:if test="${isDXZS && (superviseUnit.step==6 || superviseUnit.step==7)}">
+									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','整改材料','${material.url}','${material.id}')"  class="upload_google" style="display: none;" >修改</a>
+									<a href="javascript:void(0);" onclick="setParameter('${project.id}','整改材料');deleteFileNoReload('${material.url}','${material.id}');"  class="upload_ie" style="display: none;position:relative;" >
+										修改
+										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId5${material.id }')" type="file" id="fileId5${material.id }"  name="fileId"/>
+									</a>
+									
+									<a href="javascript:void(0);" onclick="deleteFile('${material.url}','${material.id}')">删除</a>
+								</c:if>
+								<c:choose>
+									<c:when test="${isXZS && superviseUnit.step==7 && material.status=='待审批'}">
+										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','通过')">通过</a>
+										<a href="javascript:void(0);" onclick="approvalFile('${material.id}','不通过')">不通过</a>
+									</c:when>
+									<c:otherwise>${material.status }</c:otherwise>
+								</c:choose>
+							</div>
+						</c:forEach>
+						</td>
+					</c:if>
+					<c:if test="${i.index==0 }">
+						<td rowspan="${projectList.size() }" >
+							<c:forEach items="${vo.superviseMaterials}" var="material">
+							<div>
+								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+							</div>
+						</c:forEach>
+						</td>
+					</c:if> --%>
+				</tr>
+			</c:forEach>
+		</table>
+		<div style="height: 50px;"></div>
+		<table width="100%" class="table table-hover table-condensed">
+		    <tr>
+		        <th>督学下校检查</th>
+		        <th>整改处理</th>
+		        <th>督导报告</th>
+			</tr>
+			<c:forEach items="${projectList }" var="project" varStatus="i">
+				<tr>
 					<c:if test="${i.index==0 }">
 						<td rowspan="${projectList.size() }" >
 							<c:forEach items="${vo.checkMaterials}" var="material">
@@ -283,7 +345,6 @@ function approvalFile(id,status){
 				</tr>
 			</c:forEach>
 		</table>
-
      </div>
      </form>
      </div>

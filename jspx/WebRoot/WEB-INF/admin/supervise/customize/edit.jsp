@@ -24,6 +24,11 @@
 		 $(cbutton).bind('click',function(){
 			parent.dialogMap["d3"].dialog('close');
 		 });
+		 
+		  //设置图片的URL
+		 var dataUrl = $("#accessoryUrl").val();
+		 $("#accessoryFile").filebox('setValue',dataUrl);
+		 
 		 var id="${vo.id}";
 		 var treeoptions = {id:"treeID",url:"../project/tree.do",onDblClick:treeClick};
  		 $.initTree(treeoptions);
@@ -167,14 +172,14 @@ function beforeSubmit(){
   </head>
   <body >
   	<div id="layout_" class="easyui-layout" data-options="fit:'true',border:false" >
-  	<form id="dform" method="post" >
+  	<form id="dform" method="post" enctype="multipart/form-data" >
 		<div  data-options="region:'west',split:true,title:'项目库列表',collapsible:false,collapsed:true" style="width:200px;">
 			<%@include file="/WEB-INF/admin/common/tree.jsp"%>
 		</div>
 		<div  data-options="region:'east',split:true,title:'学校列表',collapsible:false,collapsed:true" style="width:300px;">
 			<%@include file="/WEB-INF/admin/common/tree_.jsp"%>
 		</div>
-         <div data-options="region:'north'"  style="height:135px;">
+         <div data-options="region:'north'"  style="height:160px;">
          
             <input name="id"  type="hidden"  id="id"    value="${vo.id }">
             <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
@@ -185,19 +190,26 @@ function beforeSubmit(){
 					<td width="130px"><input name="name" class="easyui-textbox validatebox"  type="text" value="${vo.name }" style="width: 350px;"></td>
 				</tr>
 				<tr>
-					<th  width="100px">时间</th>
-					<td  width="100px"><input name="superviseDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  style="width: 350px;"   value="${vo.superviseDate }"></td>
+					<th>时间</th>
+					<td><input name="superviseDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  style="width: 350px;"   value="${vo.superviseDate }"></td>
 				</tr>
 				<tr>
-					<th  width="100px">督导项目</th>
-					<td  width="100px">
+					<th>督导方案</th>
+					<td>
+						<input class="easyui-filebox" name="accessoryFile" id="accessoryFile" data-options="prompt:'选择方案',buttonText:'选择方案'" style="width:350px;" >
+						<input id="accessoryUrl" name="accessoryUrl" type="hidden" value="${vo.accessoryUrl }" />
+					</td>
+				</tr>
+				<tr>
+					<th>督导项目</th>
+					<td>
 						<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-tip'" onclick="openStore();">项目库</a>
 						&nbsp;&nbsp;<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addRow();">新增</a>
 					</td>
 				</tr>
 				<tr>
-					<th  width="100px">学校设置</th>
-					<td  width="100px">
+					<th>学校设置</th>
+					<td>
 						<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="openSchool();">学校列表</a>
 						<span style="font-weight:bold;color:red;text-align: center">(若没有设置,默认为全区的学校名单)</span>
 					</td>

@@ -4,7 +4,7 @@
 	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select a.*  From  shared_role a 
 	   Where 0=0
-	   <if test="sharedId!=null and sharedId">
+	   <if test="sharedId!=null and sharedId!=''">
 	   	and a.sharedId=#{sharedId}
 	   </if>
 	   <if test="type!=null and type!=''">
@@ -33,8 +33,8 @@
 		select t2.* from folder_shared t1 
 		join shared_role t2 on t1.id=t2.sharedId
 		join role t3 on t2.roleId=t3.id
-		join role_login t4 on t3.id=t4.roleId
-		where t4.loginId=#{userId}
+		join role_user t4 on t3.id=t4.roleId
+		where t4.userId=#{userId}
 		and t1.fileId=#{parentId}
 		group by type
 	</select>

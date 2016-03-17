@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="topFolder">
     <select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select a.*,name text  From  top_folder a 
+	   select a.*,name text,case when  exists(select 1 from file_management t where t.parentId=a.id and t.type='文件夹') then 'closed' else 'open' end state   
+	   From  top_folder a 
 	   Where 0=0
 	   <if test="name!=null and name!=''">
 	   	and a.name=#{name}

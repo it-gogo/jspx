@@ -1,5 +1,9 @@
 package com.go.controller.supervise;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import com.alibaba.fastjson.JSONObject;
 import com.go.common.util.ExtendDate;
 import com.go.common.util.SysUtil;
+import com.go.common.util.Util;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
 import com.go.service.supervise.ProjectService;
@@ -74,7 +82,7 @@ public class CustomizeController extends BaseController {
 		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
 		  Map<String,Object>  res = this.superviseService.load(parameter);
 		  model.addAttribute("vo", res);
-		  return  "admin/supervise/supervise/edit";
+		  return  "admin/supervise/customize/edit";
 	  }
 	  
 	  /**
@@ -86,12 +94,15 @@ public class CustomizeController extends BaseController {
 	   * @param projectId
 	   * @param remark
 	   * @param unitId 设置学校 无选择则默认全部
+	 * @throws Exception 
 	   * @throws Exception
 	   */
 	  @RequestMapping("save.do")
-	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] projectName,String[] remark) {
+	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] projectName,String[] remark) throws Exception {
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> vo=superviseService.load(parameter);
+		  List<File> deleteFile=new ArrayList<File>();
 		  if(projectId==null||projectName==null){
 			  this.ajaxMessage(response, Syscontants.ERROE,"至少选择一个督导项目");
 			  return;
@@ -101,6 +112,38 @@ public class CustomizeController extends BaseController {
 		  if(unitIds!=null){
 			 unitId=unitIds.toString().split(",");
 		  }
+		  
+		  MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;  
+		   /**得到图片保存目录的真实路径**/      
+	        String logoRealPathDir = request.getSession().getServletContext().getRealPath("file/supervise");     
+	        /**根据真实路径创建目录**/      
+	        File logoSaveFile = new File(logoRealPathDir);       
+	        if(!logoSaveFile.exists())       
+	            logoSaveFile.mkdirs();             
+	         /**页面控件的文件流**/      
+	        /**页面控件的文件流**/
+	       MultipartFile multipartFile = multipartRequest.getFile("accessoryFile");   
+	       if(multipartFile!=null){
+	    	   //文件后缀
+	    	   String suffix=StringUtils.isNotBlank(multipartFile.getOriginalFilename())?multipartFile.getOriginalFilename():"";
+	    	   if(suffix!=null && !"".equals(suffix)){
+	    		   String[] suff = suffix.split("\\.");
+	    		   String fileName=new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+"";
+	    		   if(suff.length>1){
+	    			   fileName +="."+suff[suff.length-1];
+	    		   }
+	    		   Util.saveFileFromInputStream(multipartFile.getInputStream(), logoRealPathDir, fileName);
+	    		   parameter.put("accessoryUrl", "file/supervise/"+fileName);
+	    		   
+		    	   if(vo!=null && vo.get("accessoryUrl")!=null){
+		    		   File file=new File(request.getSession().getServletContext().getRealPath(vo.get("accessoryUrl").toString()));
+		    		   if(file.exists()){
+		    			   deleteFile.add(file);
+		    		   }
+		    	   }
+	    	   }
+	       }
+		  
 		  boolean  isIDNull = sqlUtil.isIDNull(parameter,"id");
 		  try {
 			if(isIDNull){
@@ -122,6 +165,10 @@ public class CustomizeController extends BaseController {
 					 }else{
 						 this.ajaxMessage(response, Syscontants.ERROE,msg);
 					 }
+			  }
+			
+			for(File file:deleteFile){
+				  file.delete();
 			  }
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -22,7 +22,16 @@ public class SystemConfigUtil {
 	interface Holder{
 		SystemConfigUtil INSTANSE=new SystemConfigUtil();
 	}
-	
+	/**
+	 * 通过参数获取base.properties 的值
+	 * @author chenhb
+	 * @create_time  2015-10-21 下午8:17:17
+	 * @param parameter
+	 * @return
+	 */
+	public static String getParameter(String parameter){
+		return config.getProperty(parameter);
+	}
 	/**
 	 * 开放初始化入口
 	 * @author zhangjf

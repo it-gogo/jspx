@@ -65,6 +65,37 @@ public class FileManagementController extends BaseController {
 	  private  AssessPicService  assessPicService;
 	  
 	  /**
+	   * 顶级文件夹树
+	   * @author chenhb
+	   * @create_time  2015-11-26 上午9:29:21
+	   * @param request
+	   * @param response
+	   * @param model
+	   */
+	  @RequestMapping("topFileTree.do")
+	  public  void  topFileTree(HttpServletRequest request, HttpServletResponse response,Model  model){
+		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+		  parameter.put("userId", user.get("id"));
+		  List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		  if(!"管理员账号".equals(user.get("type"))){//非管理员
+			  /**
+			   * 通过查询共享顶级资源文件
+			   */
+			  Map<String,Object> params=new HashMap<String, Object>();
+			  params.put("userId", user.get("id"));
+			  list=fileManagementService.findShareSchoolFolder(params);//顶级文件为top_folder
+		  }else{
+			  /**
+			   * 管理员账号查询所有顶级资源文件夹
+			   */
+			  Map<String,Object> parame=new HashMap<String, Object>();
+			  parame.put("type", "资源文件夹");
+			  list=topFolderService.findAll(parame);
+		  }
+		  this.ajaxData(response, JSONUtil.listToArrayStr(list));
+	  }
+	  /**
 	   * 初始化
 	   * @author chenhb
 	   * @create_time {date} 下午5:17:53

@@ -47,7 +47,7 @@
 	   Select a.*  From absolute_management a  Where 0=0  And  a.id=#{id}
 	</select>
 	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
-	   Select a.*  From absolute_management a  Where status='启用' 
+	   Select a.*,b.name name  From absolute_management a join top_folder b on a.topFileId=b.id  Where status='启用' 
 	   <if test="topFileId!=null and topFileId!=''">
 	   	and a.topFileId=#{topFileId}
 	   </if>

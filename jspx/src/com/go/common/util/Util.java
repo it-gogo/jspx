@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,7 +39,18 @@ public class Util {
 		byte[] buf = md.digest(str.getBytes());
 		return new Base64Encoder().encode(buf);
 	}
-	
+	/**
+	 * 扩容
+	 * 
+	 * @param arr
+	 * @param value
+	 * @return
+	 */
+	public static <T> T[] expansion(T[] arr, T value) {
+		arr = Arrays.copyOf(arr, arr.length + 1);
+		arr[arr.length - 1] = value;
+		return arr;
+	}
 	/**
 	  * 保存文件
 	  */
@@ -51,7 +63,7 @@ public class Util {
 			fls.mkdirs();
 		}
        FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
-       byte[] buffer =new byte[1024*1024];
+       byte[] buffer =new byte[1024*1];
        while (stream.read(buffer)!=-1)
        {
        	fs.write(buffer);

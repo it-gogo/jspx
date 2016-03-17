@@ -171,7 +171,7 @@
 	<!-- zhangjf 2015-11-20查询共享数据列表start -->
 	<select id="shareList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	  select *,(select GROUP_CONCAT(b.type) from folder_shared a  join shared_role b on a.id=b.sharedId where a.fileId=file_management.id)as oprType
-	  ,(select name from view_user where id=file_management.creator) creatorName,(select userName from login_info where id=file_management.modifier) modifyName from file_management 
+	  ,(select name from view_user where id=file_management.creator) creatorName,(select name from view_user where id=file_management.modifier) modifyName from file_management 
 	  	<choose>
 	  	<when test="parentId==null or parentId==''">
 	  	
@@ -228,30 +228,33 @@
 	<!-- chenhb2015-11-24 start -->
 	<!-- 资源文件夹共享查询 -->
 	<select id="findShareSchoolFolder" parameterType="map" resultType="map">
-		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name,case when  exists(select 1 from file_management t where t.parentId=t5.id and t.type='文件夹') then 'closed' else 'open' end state 
+		from folder_shared t1 
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
 		join role t3 on t2.roleId=t3.id
-		join role_login t4 on t3.id=t4.roleId
+		join role_user t4 on t3.id=t4.roleId
 		join file_management t5 on t1.fileId =t5.id
 		join top_folder t6 on t5.topFileId=t6.id  and t6.type='资源文件夹'
-		where t4.loginId=#{userId}
+		where t4.userId=#{userId}
 		<if test="id!=null and id!=''">
 			and t1.topFileId!=#{id}
 		</if>
 		union
-		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		select DISTINCT t5.id,t5.name name ,case when  exists(select 1 from file_management t where t.parentId=t5.id and t.type='文件夹') then 'closed' else 'open' end state 
+		from folder_shared t1 <!-- 共享顶级文件夹 -->
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
 		join role t3 on t2.roleId=t3.id
-		join role_login t4 on t3.id=t4.roleId
+		join role_user t4 on t3.id=t4.roleId
 		join top_folder t5 on t1.fileId =t5.id  and t5.type='资源文件夹'
-		where t4.loginId=#{userId}
+		where t4.userId=#{userId}
 		<if test="id!=null and id!=''">
 			and t1.topFileId!=#{id}
 		</if>
 		
 		union
 		
-		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
+		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name,case when  exists(select 1 from file_management t where t.parentId=t5.id and t.type='文件夹') then 'closed' else 'open' end state  
+		from folder_shared t1 
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
 		join file_management t5 on t1.fileId =t5.id
 		join top_folder t6 on t5.topFileId=t6.id  and t6.type='资源文件夹'
@@ -259,7 +262,8 @@
 			and t1.topFileId!=#{id}
 		</if>
 		union
-		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
+		select DISTINCT t5.id,t5.name name,case when  exists(select 1 from file_management t where t.parentId=t5.id and t.type='文件夹') then 'closed' else 'open' end state  
+		from folder_shared t1 <!-- 共享顶级文件夹 -->
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='所有人可见'
 		join top_folder t5 on t1.fileId =t5.id  and t5.type='资源文件夹'
 		<if test="id!=null and id!=''">
@@ -273,11 +277,11 @@
 		select DISTINCT t5.id,concat(t6.name,'-',t5.name) name from folder_shared t1 
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
 		join role t3 on t2.roleId=t3.id
-		join role_login t4 on t3.id=t4.roleId
+		join role_user t4 on t3.id=t4.roleId
 		join file_management t5 on t1.fileId =t5.id
 		join top_folder t6 on t5.topFileId=t6.id and t6.type='评估文档'
 		join assess_theme t7 on t6.id=t7.topFileId
-		where t4.loginId=#{userId}
+		where t4.userId=#{userId}
 		<if test="id!=null and id!=''">
 			and t1.topFileId!=#{id}
 		</if>
@@ -294,10 +298,10 @@
 		select DISTINCT t5.id,t5.name name from folder_shared t1 <!-- 共享顶级文件夹 -->
 		join shared_role t2 on t1.id=t2.sharedId and t1.status='指定角色可见'
 		join role t3 on t2.roleId=t3.id
-		join role_login t4 on t3.id=t4.roleId
+		join role_user t4 on t3.id=t4.roleId
 		join top_folder t5 on t1.fileId =t5.id  and t5.type='评估文档'
 		join assess_theme t7 on t5.id=t7.topFileId
-		where t4.loginId=#{userId}
+		where t4.userId=#{userId}
 		<if test="id!=null and id!=''">
 			and t1.topFileId!=#{id}
 		</if>

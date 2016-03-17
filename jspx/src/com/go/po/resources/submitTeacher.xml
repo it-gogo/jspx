@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="submitTeacher">
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.Map" parameterType="java.util.HashMap" >
+	    select a.*,c.name teacherName,(select name from view_user where id=a.creator) creatorName,b.isSubmit isSubmit,b.submitUrl submitUrl,c.userId userId,c.name teacherName,b.teacherId teacherId,
+	   (case when a.endDate > date_format(now(),'%Y-%m-%d')  then 0 else 1 end) isExpired <!-- 是否过期 -->
+	   From  file_submit a join submit_teacher b on a.id=b.submitId join teacher_info c on b.teacherId=c.id
+	   Where 0=0 
+	   <if test="submitId!=null and submitId!=''">
+	   	and a.id=#{submitId}
+	   </if>
+	   <if test="userId!=null and userId!=''">
+	   	and c.userId=#{userId}
+	   </if>
+	   <if test="teacherName!=null and teacherName!=''">
+	   	and c.name like '%${teacherName}%'
+	   </if>
+	</select> 
+	<!-- 导出数据 -->
+	<select id="load" resultType="java.util.Map" parameterType="java.util.HashMap" >
+	   select b.* From  submit_teacher a  left join file_submit b on a.submitId=b.id
+	   Where 0=0 and b.id=#{id}
+	   limit 0,1
+	</select> 
+	<select id="findOne" resultType="java.util.Map" parameterType="java.util.HashMap" >
+	   select a.* From  submit_teacher a  
+	   Where 0=0 
+	   <if test="submitId!=null and submitId!=''">
+		   and a.submitId=#{submitId}
+	   </if>
+	   <if test="userId!=null and userId!=''">
+		   and teacherId in (select id from teacher_info where userId=#{userId})
+	   </if>
+	   limit 0,1
+	</select> 
+	<!-- 添加后台数据 -->
+	<insert id="batchAdd" parameterType="java.util.HashMap" >
+		<foreach collection="teacherList" item="vo">
+	   insert into submit_teacher(id,submitId,teacherId,isSubmit,submitUrl)
+	   values(#{vo.id},#{id},#{vo.teacherId},'未提交',#{vo.submitUrl});
+	   </foreach>
+	</insert>
+	
+	<update id="updateSubmit" parameterType="java.util.HashMap" >
+		update submit_teacher set isSubmit='已提交',
+		submitDate=#{submitDate},
+		submitUrl=#{submitUrl}
+		<if test="fileId!=null and fileId!=''">
+		,fileId=#{fileId}
+		</if>
+		where submitId=#{submitId} and teacherId in (select id from teacher_info where userId=#{userId})
+	</update>
+	
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+         delete from   submit_teacher    Where 1 = 1
+	    And submitId in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>
