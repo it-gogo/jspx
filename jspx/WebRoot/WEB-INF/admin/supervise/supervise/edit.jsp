@@ -57,7 +57,9 @@ function  treeClick(node){
 			parent:node[0]==null?'':node[0].id, 
 			data:eval('(' + jsonStr + ')')	
 		});
-		
+	$(".grid_text").textbox().validatebox();
+				$(".grid_button").linkbutton();
+				$(".grid_num").numberbox();	
 	
 	
 }
