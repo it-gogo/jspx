@@ -55,7 +55,7 @@
      </select>
 	<!-- 查询所有数据 -->
 	<select id="findTree" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select *,name text From  menu_info 
+	   select *,name text,case when  exists(select 1 from menu_info t where t.pid=a.id) then 'closed' else 'open' end state From  menu_info a
 	   Where isDeleted=0
 	   <if test="menuIds!=null">
 	   	and a.id in 
@@ -66,7 +66,7 @@
 	</select> 
     <!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select * From  menu_info 
+	   select * From  menu_info a
 	   Where isDeleted=0
 	   <if test="code!=null and code!=''">
 	   		and code  like '${code}%'  
@@ -84,7 +84,7 @@
 	</select> 
 	<!-- 查询记录数 -->
 	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
-	    Select count(1) From  menu_info 
+	    Select count(1) From  menu_info a
 	    Where isDeleted=0
 	   <if test="code!=null and code!=''">
 	   		and code  like '${code}%'  

@@ -14,8 +14,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +39,18 @@ public class Util {
 		byte[] buf = md.digest(str.getBytes());
 		return new Base64Encoder().encode(buf);
 	}
-	
+	/**
+	 * 扩容
+	 * 
+	 * @param arr
+	 * @param value
+	 * @return
+	 */
+	public static <T> T[] expansion(T[] arr, T value) {
+		arr = Arrays.copyOf(arr, arr.length + 1);
+		arr[arr.length - 1] = value;
+		return arr;
+	}
 	/**
 	  * 保存文件
 	  */
@@ -49,7 +63,7 @@ public class Util {
 			fls.mkdirs();
 		}
        FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
-       byte[] buffer =new byte[1024*1024];
+       byte[] buffer =new byte[1024*1];
        while (stream.read(buffer)!=-1)
        {
        	fs.write(buffer);
@@ -266,5 +280,76 @@ public class Util {
 			        return seq1-seq2;
 			      }
 			    });
+		}
+		
+		/**
+		 * 根据导入文件地址进行数据保存
+		 * @author zhangjf
+		 * @create_time 2015-11-19 下午4:23:37
+		 * @param file 导入的地址
+		 * @param path 替换的地址
+		 * @param mapList 转换后的数据集合
+		 * @param parentId 父ID
+		 * @param relativeUrl 相对地址
+		 * @param params 其他参数
+		 */
+		public static void fileList(File file,String path,List<Map<String,Object>> mapList,String parentId,String relativeUrl,Map<String,Object> params){
+			if(file.isFile()){
+				Map<String,Object> fileMap=new HashMap<String, Object>();
+				fileMap.put("id", SqlUtil.uuid());
+				fileMap.put("type", "文件");
+				fileMap.put("parentId", parentId);
+				fileMap.put("absoluteUrl", file.getAbsolutePath());
+				fileMap.put("relativeUrl", relativeUrl+file.getAbsolutePath().replace(path, "").replace("\\", "/"));
+				fileMap.put("name", file.getName());
+				fileMap.put("fileSize", file.length());
+				String[] suff=file.getName().split("\\.");
+				fileMap.put("suffix", "."+suff[suff.length-1]);
+				fileMap.putAll(params);
+				mapList.add(fileMap);
+			}
+			if((!file.isHidden() && file.isDirectory()) && !isIgnoreFile(file)) {
+				/**
+				 * 创建文件夹集合
+				 */
+				Map<String,Object>dirMap=new HashMap<String, Object>();
+				dirMap.put("id", SqlUtil.uuid());
+				dirMap.put("type", "文件夹");
+				dirMap.put("parentId", parentId);
+				dirMap.put("absoluteUrl", file.getAbsolutePath());
+				dirMap.put("relativeUrl", relativeUrl+file.getAbsolutePath().replace(path, "").replace("\\", "/"));
+				dirMap.put("name", file.getName());
+				dirMap.putAll(params);
+				mapList.add(dirMap);
+				File[] subFiles = file.listFiles();
+				for(int i = 0; i < subFiles.length; i++) {
+					fileList(subFiles[i],path,mapList,dirMap.get("id")+"",relativeUrl,params);
+				}
+			}
+		}
+
+		
+		
+		/**
+		 * 忽略文件
+		 * @author zhangjf
+		 * @create_time 2015-11-19 上午10:51:18
+		 * @param file
+		 * @return
+		 */
+		private static boolean isIgnoreFile(File file) {
+			List<String> ignoreList = new ArrayList<String>();
+			ignoreList.add(".svn");
+			ignoreList.add("CVS");
+			ignoreList.add(".cvsignore");
+			ignoreList.add("SCCS");
+			ignoreList.add("vssver.scc");
+			ignoreList.add(".DS_Store");
+			for(int i = 0; i < ignoreList.size(); i++) {
+				if(file.getName().equals(ignoreList.get(i))) {
+					return true;
+				}
+			}
+			return false;
 		}
 }

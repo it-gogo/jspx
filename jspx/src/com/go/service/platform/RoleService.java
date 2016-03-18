@@ -16,6 +16,17 @@ import com.go.service.base.BaseService;
 public class RoleService extends BaseService {
 
 	/**
+	 * 查询所有
+	 * @author chenhb
+	 * @create_time  2015-11-20 上午11:14:02
+	 * @param parameter
+	 * @return
+	 */
+	public List<Map<String,Object>> findAll(Map<String,Object> parameter){
+		return this.getBaseDao().findList("role.findAll", parameter);
+	}
+	
+	/**
 	 * 分页查找数据
 	 * @param parameter
 	 * @return

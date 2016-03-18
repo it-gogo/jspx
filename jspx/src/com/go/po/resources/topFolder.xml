@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="topFolder">
+    <select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,name text,case when  exists(select 1 from file_management t where t.parentId=a.id and t.type='文件夹') then 'closed' else 'open' end state   
+	   From  top_folder a 
+	   Where 0=0
+	   <if test="name!=null and name!=''">
+	   	and a.name=#{name}
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*  From  top_folder a 
+	   Where 0=0
+	   <if test="name!=null and name!=''">
+	   		and a.name like '%${name}%'
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  top_folder a
+	    Where 0=0
+	    <if test="name!=null and name!=''">
+	   	and a.name like '%${name}%'
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into top_folder(id,name,type,creator,createdate)
+	   values(#{id},#{name},#{type},#{creator},#{createdate})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update top_folder set name = #{name}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*  From top_folder a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 查询顶级文件夹（科室文件夹，学校文件夹，文件夹） -->
+	<select id="findTopFolder"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select id,name  From top_folder a  Where 0=0  And  a.id=#{id}
+	   union
+	   Select id,name  From file_management a  Where 0=0  And  a.id=#{id}
+	   limit 0,1
+	</select>
+	<!-- 更新数据状态 -->
+	<update id="changeStatus"  parameterType="java.util.HashMap">
+	   update top_folder set status = #{status} 
+	   Where id=#{id} 
+	</update>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   top_folder    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fileSubmit">
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  file_submit a  
+	   Where 0=0
+	   <if test="isSubmit!=null and isSubmit!=''">
+	   	and a.id in (select submitId from submit_teacher where isSubmit=#{isSubmit})
+	   </if>
+	   <if test="userId!=null and userId!=''">
+	   	and a.id in (select submitId from submit_teacher t1 join teacher_info t2 on t1.teacherId=t2.id  where t2.userId=#{userId} )
+	   </if>
+	   order by createdate desc
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findOperateList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,b.isSubmit isSubmit
+	   
+	   From  file_submit a   join submit_teacher b on a.id=b.submitId join teacher_info c on b.teacherId=c.id
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	  <if test="userId!=null and userId!=''">
+	   	and c.userId=#{userId}
+	   </if>
+	    order by b.isSubmit,createdate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findOperateCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  file_submit a   join submit_teacher b on a.id=b.submitId join teacher_info c on b.teacherId=c.id
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	  <if test="userId!=null and userId!=''">
+	   	and c.userId=#{userId}
+	   </if>
+	</select>
+	<!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,
+	   (select count(1) from submit_teacher where submitId=a.id) totalNumber,
+	   (select count(1) from submit_teacher where submitId=a.id and isSubmit='已提交') submitNumber
+	   From  file_submit a   
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	  <if test="userId!=null and userId!=''">
+	   	and a.id in (select submitId from submit_teacher t1 join teacher_info t2 on t1.teacherId=t2.id  where t2.userId=#{userId} )
+	   </if>
+	   <if test="creator!=null and creator!=''">
+	   	and a.creator=#{creator}
+	   </if>
+	    order by createdate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  file_submit a  
+	   Where 0=0
+	  <if test="title!=null and title!=''">
+	   	and a.title like '%${title}%'
+	   </if>
+	   <if test="userId!=null and userId!=''">
+	   	and a.id in (select submitId from submit_teacher t1 join teacher_info t2 on t1.teacherId=t2.id  where t2.userId=#{userId} )
+	   </if>
+	   <if test="creator!=null and creator!=''">
+	   	and a.creator=#{creator}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into file_submit(id,title,content,accessoryUrl,endDate,creator,createdate,status,fileId)
+	   values(#{id},#{title},#{content},#{accessoryUrl},#{endDate},#{creator},#{createdate},'启用',#{fileId})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update file_submit set  title = #{title},
+	                    content = #{content},
+	                    accessoryUrl = #{accessoryUrl},
+	                    endDate=#{endDate},
+	                    fileId=#{fileId}
+        where  id=#{id} 
+	</update>
+	<!-- 更新数据状态 -->
+	<update id="changeStatus"  parameterType="java.util.HashMap">
+	   update file_submit set status = #{status} 
+	   Where id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,(select name from view_user where id=a.creator) creatorName,b.submitUrl submitUrl,c.name teacherName  
+	   From file_submit a join submit_teacher b on a.id=b.submitId  join teacher_info c on b.teacherId=c.id
+	   Where 0=0  
+	   <if test="userId!=null and userId!=''">
+	   	and c.userId=#{userId}
+	   </if>
+	   <if test="submitId!=null and submitId!=''">
+	   	and a.id=#{submitId}
+	   </if>
+	</select>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,(select name from view_user where id=a.creator) creatorName,b.name fileName  From file_submit a left join (select id,name from file_management union select id,name from top_folder) b on a.fileId=b.id  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   file_submit    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

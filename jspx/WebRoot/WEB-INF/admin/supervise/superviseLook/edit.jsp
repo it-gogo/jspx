@@ -69,9 +69,6 @@ function downFile(fileUrl,fileName){
 		        <th>项目名</th>
 		        <th>项目说明</th>
 		        <th>学校材料</th>
-		        <th>督学下校检查</th>
-		        <th>整改处理</th>
-		        <th>督导报告</th>
 			</tr>
 			<c:forEach items="${projectList }" var="project" varStatus="i">
 				<tr>
@@ -84,37 +81,48 @@ function downFile(fileUrl,fileName){
 							</div>
 						</c:forEach>
 					</td>
-					<c:if test="${i.index==0 }">
-						<td rowspan="${projectList.size() }" >
-							<c:forEach items="${vo.checkMaterials}" var="material">
-							<div>
-								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-							</div>
-						</c:forEach>
-						</td>
-					</c:if>
-					<c:if test="${i.index==0 }">
-						<td rowspan="${projectList.size() }" >
-							<c:forEach items="${vo.modifyMaterials}" var="material">
-								<div>
-									<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-								</div>
-							</c:forEach>
-						</td>
-					</c:if>
-					<c:if test="${i.index==0 }">
-						<td rowspan="${projectList.size() }" >
-							<c:forEach items="${vo.superviseMaterials}" var="material">
-							<div>
-								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
-							</div>
-						</c:forEach>
-						</td>
-					</c:if>
 				</tr>
 			</c:forEach>
 		</table>
-
+		<div style="height: 50px"></div>
+		<table width="100%" class="table table-hover table-condensed">
+		    <tr>
+		        <th>自查报告</th>
+		        <th>督学下校检查</th>
+		        <th>整改处理</th>
+		        <th>督导报告</th>
+			</tr>
+			<tr>
+				<td>
+					<c:forEach items="${vo.zcMaterials}" var="material">
+						<div>
+							<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+						</div>
+					</c:forEach>
+				</td>
+				<td>
+					<c:forEach items="${vo.checkMaterials}" var="material">
+					<div>
+						<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+					</div>
+					</c:forEach>
+				</td>
+				<td >
+					<c:forEach items="${vo.modifyMaterials}" var="material">
+						<div>
+							<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+						</div>
+					</c:forEach>
+				</td>
+				<td >
+					<c:forEach items="${vo.superviseMaterials}" var="material">
+					<div>
+						<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
+					</div>
+					</c:forEach>
+				</td>
+			</tr>
+		</table>
      </div>
      </form>
      </div>

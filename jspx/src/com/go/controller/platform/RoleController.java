@@ -55,7 +55,27 @@ public class RoleController extends BaseController {
 	  public String redirect(){
 		  return  "admin/platform/role/list";
 	  }
-	  
+	  /**
+	   * 角色树
+	   * @author chenhb
+	   * @create_time  2016-3-14 下午6:00:57
+	   * @param request
+	   * @param response
+	   * @param model
+	   */
+	  @RequestMapping("roleTree.do")
+	  public  void roleTree(HttpServletRequest request,HttpServletResponse response,Model  model){
+		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+		  Object isSuperadmin=user.get("isSuperadmin");
+		  if("超级管理员".equals(isSuperadmin)){
+			  
+		  }else{
+			  parameter.put("isSuperadmin", "超级管理员");
+		  }
+		  List<Map<String,Object>> list=roleService.findAll(parameter);
+		  this.ajaxData(response, JSONUtil.listToArrayStr(list));
+	  }
 	  /**
 	   * 添加数据页面
 	   * @return

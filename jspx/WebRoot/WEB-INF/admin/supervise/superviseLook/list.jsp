@@ -106,7 +106,7 @@ function  handlerstatus(value,row,index){
 		              &nbsp;&nbsp;
 		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="$.queryAllF('qform');">全  部</a>
 		              &nbsp;&nbsp;
-		              <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addF();">新  增</a>
+		              <!-- <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="addF();">新  增</a> -->
 		            </td>
 		          </tr>
 		          </table>

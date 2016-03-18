@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="superviseProject">
 	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-	   select c.* 
+	   select c.*,a.assessScore assessScore,a.totalScore totalScore,a.id superviseProjectId
 	   From  supervise_project a join supervise b on a.superviseId=b.id join project c on a.projectId=c.id
 	   Where 0=0
 	   <if test="superviseId!=null and superviseId!=''">
@@ -24,4 +24,8 @@
            #{id}  
         </foreach> ;
 	</delete>
+	<!-- 评分 -->
+	<update id="assess" parameterType="map">
+		update supervise_project set assessScore=#{score} where id=#{superviseProjectId}
+	</update>
 </mapper>

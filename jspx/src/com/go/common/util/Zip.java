@@ -9,11 +9,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
+import org.apache.tools.zip.ZipOutputStream;
 
 public class Zip {
 	public static final String Father="a";
@@ -36,20 +35,26 @@ public class Zip {
 		out.close();
 		System.out.println("*****************压缩完毕*******************");
 	}
+	public static void ZipStream(OutputStream fos,String path,File... srcFiles) throws IOException{
+		ZipOutputStream out = new ZipOutputStream(fos);
+		Zip.ZipFiles(out,path,srcFiles);
+		out.close();
+	}
+	public static void ZipStreamByName(OutputStream fos,String path,File[] srcFiles,String[] fileNames) throws IOException{
+		ZipOutputStream out = new ZipOutputStream(fos);
+		Zip.ZipFiles(out,path,srcFiles,fileNames);
+		out.close();
+	}
 	/**
 	 * 压缩文件-File
 	 * @param zipFile  zip文件
 	 * @param srcFiles 被压缩源文件
 	 * @author isea533
 	 */
-	public static void ZipFiles(ZipOutputStream out,String path,File... srcFiles){
-		if(StringUtils.isNotBlank(path)){
-			path = path.replaceAll("\\*", "/");
-			if(!path.endsWith("/")){
-				path+="/";
-			}
-		}else{
-			path="";
+	public static void ZipFiles(ZipOutputStream out,String path,File[] srcFiles){
+		path = path.replaceAll("\\*", "/");
+		if(!path.endsWith("/")){
+			path+="/";
 		}
 		byte[] buf = new byte[1024];
 		try {
@@ -68,6 +73,8 @@ public class Zip {
 					FileInputStream in = new FileInputStream(srcFiles[i]);
 					System.out.println(path + srcFiles[i].getName());
 					out.putNextEntry(new ZipEntry(path + srcFiles[i].getName()));
+					out.setEncoding("gbk");
+//					out.putNextEntry(new ZipEntry(path + "chb-"+srcFiles[i].getName()));
 					int len;
 					while((len=in.read(buf))>0){
 						out.write(buf,0,len);
@@ -80,7 +87,52 @@ public class Zip {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * 自定义压缩文件里面的文件名称
+	 * @author chenhb
+	 * @create_time  2015-10-22 下午4:39:49
+	 * @param out
+	 * @param path
+	 * @param srcFiles
+	 * @param fileNames
+	 */
+	public static void ZipFiles(ZipOutputStream out,String path,File[] srcFiles,String[] fileNames){
+		path = path.replaceAll("\\*", "/");
+		if(!path.endsWith("/")){
+			path+="/";
+		}
+		byte[] buf = new byte[1024];
+		try {
+			for(int i=0;i<srcFiles.length;i++){
+				if(srcFiles[i].isDirectory()){
+					File[] files = srcFiles[i].listFiles();
+					String srcPath = srcFiles[i].getName();
+					srcPath = srcPath.replaceAll("\\*", "/");
+					if(!srcPath.endsWith("/")){
+						srcPath+="/";
+					}
+					out.putNextEntry(new ZipEntry(path+srcPath));
+					ZipFiles(out,path+srcPath,files);
+				}
+				else{
+					FileInputStream in = new FileInputStream(srcFiles[i]);
+					System.out.println(path + srcFiles[i].getName());
+//					out.putNextEntry(new ZipEntry(path + srcFiles[i].getName()));
+					out.putNextEntry(new ZipEntry(path + fileNames[i]));
+					SystemConfigUtil.getInstance();
+					out.setEncoding(SystemConfigUtil.getParameter("encoding"));
+					int len;
+					while((len=in.read(buf))>0){
+						out.write(buf,0,len);
+					}
+					out.closeEntry();
+					in.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * 解压到指定目录
@@ -176,8 +228,12 @@ public class Zip {
 		/** 
          * 解压文件 
          */  
-        File zipFile = new File("D:\\dddd.zip");  
-        ZipFiles(zipFile,"aa",new File("d://fcjavalog.txt"));
-       
+//        File zipFile = new File("D:\\apache-tomcat-7.0.53\\webapps\\user\\upload/1441201485555.zip");  
+//        String path = "d:/zipfile/";  
+//        System.out.println(unZipFiles(zipFile, path));  
+        File[] arr={new File("D:1.xls"),new File("D:你好.xls")};
+        ZipFiles(new File("d:chb.zip"), "", arr);
+//		File file=new File("D:1.xls");
+//		file.renameTo(new   File("D:123.xls"));
 	}
 }

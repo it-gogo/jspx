@@ -98,8 +98,45 @@ public class SchoolSuperviseService extends BaseService {
 	   	     */
 			
 			
+		}else if("自查报告".equals(parameter.get("type"))){//上传自查报告，属于督学助手上传
+			parame.put("step", 6);
+			parame.put("flowStatus", "待校长审批自查报告");
+			this.getBaseDao().update("superviseUnit.updateFlow", parame);
+			
+			/**
+	   	     * chenhb 2016-03-17组装发送校长审批消息start
+	   	     */
+	   	    Map<String,Object> params=new HashMap<String, Object>();
+	   	    params.put("superviseId", superviseId);
+	   	    params.put("roleType", "校长室");
+	   		params.put("title", "审核自查报告消息提醒");
+	   		params.put("content", "您有一个督导项目自查报告"+parameter.get("name")+" 需要审核,请及时处理");
+	   		superviseService.sendMsg(params, userMap);
+	   	    /**
+	   	     * chenhb 2016-03-17组装发送校长审批消息end
+	   	     */
+	   		
+		}else if("检查材料".equals(parameter.get("type"))){//上传检查材料，属于督学上传为第五步流程
+			parame.put("step", 9);
+			parame.put("flowStatus", "督学提交整改意见");
+			this.getBaseDao().update("superviseUnit.updateFlow", parame);
+			
+			/**
+			 * zhangjf 2016-03-11 发送需整改消息提醒start
+			 */
+		   	    Map<String,Object> params=new HashMap<String, Object>();
+		   	    params.put("superviseId", superviseId);
+		   	    params.put("roleType", "督学助手");
+		   		params.put("title", "需整改消息提醒");
+		   		params.put("content", "您当前有一个督导项目需进行整改,请及时处理");
+		   		superviseService.sendMsg(params, userMap);
+			
+			/**
+			 * zhangjf 2016-03-11 发送需整改消息提醒end
+			 */
+			
 		}else if("整改材料".equals(parameter.get("type"))){//上传学校整改材料，属于督导助手上传为第六步流程
-			parame.put("step", 7);
+			parame.put("step", 10);
 			parame.put("flowStatus", "待校长审批整改材料");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 			
@@ -118,27 +155,8 @@ public class SchoolSuperviseService extends BaseService {
 			 */
 			
 			
-		}else if("检查材料".equals(parameter.get("type"))){//上传检查材料，属于督学上传为第五步流程
-			parame.put("step", 6);
-			parame.put("flowStatus", "督学提交整改意见");
-			this.getBaseDao().update("superviseUnit.updateFlow", parame);
-			
-			/**
-			 * zhangjf 2016-03-11 发送需整改消息提醒start
-			 */
-		   	    Map<String,Object> params=new HashMap<String, Object>();
-		   	    params.put("superviseId", superviseId);
-		   	    params.put("roleType", "督学助手");
-		   		params.put("title", "需整改消息提醒");
-		   		params.put("content", "您当前有一个督导项目需进行整改,请及时处理");
-		   		superviseService.sendMsg(params, userMap);
-			
-			/**
-			 * zhangjf 2016-03-11 发送需整改消息提醒end
-			 */
-			
 		}else if("督导报告".equals(parameter.get("type"))){
-			parame.put("step", 10);
+			parame.put("step", 13);
 			parame.put("flowStatus", "校方查看督导报告");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 			/**
@@ -159,6 +177,26 @@ public class SchoolSuperviseService extends BaseService {
 	    this.getBaseDao().insert("material.add", parameter);
 	}
 	/**
+	 * 一键通过
+	 * @author chenhb
+	 * @create_time  2016-3-17 上午9:37:42
+	 * @param parameter
+	 * @param userMap
+	 * @throws Exception
+	 */
+	public void oneKeyPass(Map<String,Object> parameter,Map<String,Object> userMap) throws Exception{
+		List<Map<String,Object>> materialList=this.getBaseDao().findList("material.findAll",parameter);
+		  if(materialList!=null && materialList.size()>0){
+			  Map<String,Object> parame=new HashMap<String, Object>();
+			  parame.put("status", parameter.get("status"));
+			  parame.put("step", parameter.get("step"));
+			  for(Map<String,Object> material:materialList){
+				  parame.put("id", material.get("id"));
+				  this.approvalMaterial(parame,userMap);
+			  }
+		  }
+	}
+	/**
 	 * 审批材料
 	 * @author chenhb
 	 * @create_time  2016-3-9 下午4:07:52
@@ -175,19 +213,24 @@ public class SchoolSuperviseService extends BaseService {
 		if(status.indexOf("不通过")>-1){
 			if("3".equals(step) || "4".equals(step)){//3为校长审批上传材料，4为督学审批上传材料
 				parame.put("step", 2);
-			}else if("7".equals(step) || "8".equals(step)){//7为校长审批整改材料，8为督学审批整改材料
-				parame.put("step", 6);
+			}else if("6".equals(step) || "7".equals(step)){//6为校长审批自查报告，7为督学审批自查报告
+				parame.put("step", 5);
+			}else if("10".equals(step) || "11".equals(step)){//10为校长审批整改材料，11为督学审批整改材料
+				parame.put("step", 9);
 			}
 			parame.put("flowStatus", status.replace("不通过", "")+"审批不通过");
 			this.getBaseDao().update("superviseUnit.updateFlow", parame);
 		}else{
+			String superviseId=vo.get("superviseId").toString();
 			Map<String,Object> statusNum=new HashMap<String, Object>();
-			statusNum.put("superviseId", vo.get("superviseId"));
+			statusNum.put("superviseId", superviseId);
 			statusNum.put("unitId", vo.get("unitId"));
 			statusNum.put("status", status);
 			if("3".equals(step) || "4".equals(step)){
 				statusNum.put("type", "学校材料");
-			}else if("7".equals(step) || "8".equals(step)){
+			}else if("6".equals(step) || "7".equals(step)){
+				statusNum.put("type", "自查报告");
+			}else if("10".equals(step) || "11".equals(step)){
 				statusNum.put("type", "整改材料");
 			}
 			statusNum=this.getBaseDao().loadEntity("material.findNumber", statusNum);
@@ -212,12 +255,58 @@ public class SchoolSuperviseService extends BaseService {
 						 */
 					}else if("4".equals(step)){//督学审批上传材料通过
 						parame.put("step", 5);
-						parame.put("flowStatus", "督学下校检查");
-					}else if("7".equals(step)){//校长审批整改材料通过
+						parame.put("flowStatus", "待学校上传自查报告");
+						
+						/**
+						 * chenhb 2016-03-17 发送待学校上传自查报告消息提醒start
+						 */
+					   	    Map<String,Object> params=new HashMap<String, Object>();
+					   	    params.put("superviseId", superviseId);
+					   	    params.put("roleType", "督学助手");
+					   		params.put("title", "待学校上传自查报告消息提醒");
+					   		params.put("content", "您当前有一个督导项目需要上传自查报告,请及时查看！");
+					   		superviseService.sendMsg(params, userMap);
+						/**
+						 * chenhb 2016-03-17 发送待学校上传自查报告消息提醒end
+						 */
+						
+					}else if("6".equals(step)){//校长审批自查报告通过
+						parame.put("step", 7);
+						parame.put("flowStatus", "待督学审批自查报告");
+						
+						/**
+						 * chenhb 2016-03-17 发送待督学审批自查报告消息提醒start
+						 */
+						Map<String,Object> params=new HashMap<String,Object>();
+						params.put("unitId", parame.get("unitId"));
+						params.put("title", "需督学审批自查报告消息提醒");
+						params.put("content", "您当前有一个督学项目,需要审批自查报告,请及时处理。谢谢！");
+						sendMsg(params,userMap);
+						/**
+						 * chenhb 2016-03-17 发送待督学审批自查报告消息提醒end
+						 */
+						
+					}else if("7".equals(step)){//督学审批自查报告通过
 						parame.put("step", 8);
+						parame.put("flowStatus", "督学下校检查");
+					}else if("10".equals(step)){//校长审批整改材料通过
+						parame.put("step", 11);
 						parame.put("flowStatus", "待督学审批整改材料");
-					}else if("8".equals(step)){//督学审批整改材料通过
-						parame.put("step", 9);
+						
+						/**
+						 * chenhb 2016-03-17 发送待督学审批整改材料消息提醒start
+						 */
+						Map<String,Object> params=new HashMap<String,Object>();
+						params.put("unitId", parame.get("unitId"));
+						params.put("title", "需督学审批整改材料消息提醒");
+						params.put("content", "您当前有一个督学项目,需要审批整改材料,请及时处理。谢谢！");
+						sendMsg(params,userMap);
+						/**
+						 * chenhb 2016-03-17 发送待督学审批整改材料消息提醒end
+						 */
+						
+					}else if("11".equals(step)){//督学审批整改材料通过
+						parame.put("step", 12);
 						parame.put("flowStatus", "督学填写督导报告");
 					}
 					this.getBaseDao().update("superviseUnit.updateFlow", parame);

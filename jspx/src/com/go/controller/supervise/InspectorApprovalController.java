@@ -160,7 +160,13 @@ public class InspectorApprovalController extends BaseController {
 		  }
 		  model.addAttribute("projectList", projectList);
 		  
-		  
+		  //自查报告
+		  parame.clear();
+		  parame.put("superviseId", res.get("id"));
+		  parame.put("unitId", res.get("unitId"));
+		  parame.put("type", "自查报告");
+		  List<Map<String,Object>> zcMaterials=schoolSuperviseService.findMaterial(parame);
+		  res.put("zcMaterials", zcMaterials);
 		  //检查材料
 		  parame.clear();
 		  parame.put("superviseId", res.get("id"));
@@ -205,7 +211,22 @@ public class InspectorApprovalController extends BaseController {
 		  this.ajaxMessage(response, Syscontants.MESSAGE,"删除成功");
 		  inspectorApprovalService.deleteMaterial(parameter);
 	  }
-	  
+	  /**
+	   * 评分
+	   * @author chenhb
+	   * @create_time  2016-3-17 下午4:49:41
+	   * @param request
+	   * @param response
+	   * @param fileUrl
+	   */
+	  @RequestMapping("assess.do")
+	  public void assess(HttpServletRequest request, HttpServletResponse response,String fileUrl){
+		  //获取请求参数
+		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  inspectorApprovalService.assess(parameter);
+		  this.ajaxMessage(response, Syscontants.MESSAGE,"评分成功");
+	  }
+	  /*
 	  @RequestMapping("approvalMaterial.do")
 	  public  void approvalMaterial(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		  //获取请求参数
@@ -213,6 +234,6 @@ public class InspectorApprovalController extends BaseController {
 		  Map<String,Object> material=inspectorApprovalService.loadMaterial(parameter);
 		  inspectorApprovalService.approvalMaterial(parameter);
 	       this.ajaxMessage(response, Syscontants.ERROE,"审批成功");
-	  }
+	  }*/
 	
 }

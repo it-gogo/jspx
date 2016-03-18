@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="absoluteManagement">
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*  From  absolute_management a 
+	   Where 0=0
+	   <if test="topFileId!=null and topFileId!=''">
+	   	and a.topFileId=#{topFileId}
+	   </if>
+	   <if test="absoluteUrl!=null and absoluteUrl!=''">
+	   	and a.absoluteUrl like '%${absoluteUrl}%'
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  absolute_management a
+	    Where 0=0
+	    <if test="topFileId!=null and topFileId!=''">
+	   	and a.topFileId=#{topFileId}
+	   </if>
+	   <if test="absoluteUrl!=null and absoluteUrl!=''">
+	   	and a.absoluteUrl like '%${absoluteUrl}%'
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into absolute_management(id,topFileId,absoluteUrl,createdate,status,type)
+	   values(#{id},#{topFileId},#{absoluteUrl},#{createdate},'启用','资源文档')
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update absolute_management set topFileId = #{topFileId},
+	                    absoluteUrl = #{absoluteUrl}
+        where  id=#{id} 
+	</update>
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*  From absolute_management a  Where 0=0  And  a.id=#{id}
+	</select>
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.*,b.name name  From absolute_management a join top_folder b on a.topFileId=b.id  Where status='启用' 
+	   <if test="topFileId!=null and topFileId!=''">
+	   	and a.topFileId=#{topFileId}
+	   </if>
+	   limit 0,1
+	</select>
+	<!-- 更新数据状态 -->
+	<update id="changeStatus"  parameterType="java.util.HashMap">
+	   update absolute_management set status = #{status} 
+	   Where id=#{id} 
+	</update>
+	<update id="disabled"  parameterType="java.util.HashMap">
+	   update absolute_management set status = '禁用'
+	   Where topFileId =#{topFileId}
+	</update>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   absolute_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+</mapper>

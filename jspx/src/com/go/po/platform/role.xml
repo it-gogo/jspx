@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="role">
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select *,name text From  role 
+	   Where 0=0
+	   <if test="isSuperadmin!=null and isSuperadmin!=''">
+	   	and creator not in (select id from user_info where isSuperadmin=#{isSuperadmin})
+	   </if>
+	</select> 
     <!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select * From  role 

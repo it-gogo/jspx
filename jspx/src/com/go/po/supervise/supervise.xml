@@ -43,14 +43,15 @@
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
-	   insert into supervise(id,superviseDate,name,type,creator,createdate,status)
-	   values(#{aid},#{superviseDate},#{name},#{type},#{creator},#{createdate},'禁用');
+	   insert into supervise(id,superviseDate,name,type,creator,createdate,status,accessoryUrl)
+	   values(#{aid},#{superviseDate},#{name},#{type},#{creator},#{createdate},'禁用',#{accessoryUrl});
 	</insert>
 	
 	<!-- 添加后台数据 -->
 	<update id="update" parameterType="java.util.HashMap" >
-	   update supervise set  name = #{name},superviseDate=#{superviseDate}
+	   update supervise set  name = #{name},superviseDate=#{superviseDate},accessoryUrl=#{accessoryUrl}
         where  id=#{aid} 
+
 	</update>
 	<!-- 更新数据状态 -->
 	<update id="changeStatus"  parameterType="java.util.HashMap">
@@ -59,7 +60,7 @@
 	</update>	
 	<!-- 导出数据 -->
 	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
-	   Select a.* From supervise a  Where   a.id=#{id}
+	   Select a.* From supervise a  Where   a.id=#{aid}
 	</select>
 	<!-- 删除数据 -->
 	<delete id="delete"  parameterType = "java.util.List">
@@ -103,8 +104,10 @@
 	   	and  a.id=#{schoolId}
 	   </if>
 	   <if test="superviseId!=null and superviseId!=''">
-		   	and a.id=#{superviseId}
-		   </if>
+	   	and a.id=#{superviseId}
+	   </if>
+	   order by a.superviseDate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
 	</select>
 	<select id="findInspectorApprovalCount" parameterType="map" resultType="object">
 		select count(1) 
