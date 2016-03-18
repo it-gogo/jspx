@@ -12,8 +12,8 @@
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
 		<foreach collection="list" item="vo">
-	   		insert into supervise_project(id,superviseId,projectId,status)
-	  		 values(#{vo.id},#{vo.superviseId},#{vo.projectId},'启用');
+	   		insert into supervise_project(id,superviseId,projectId,status,totalScore,pid)
+	  		 values(#{vo.id},#{vo.superviseId},#{vo.projectId},'启用',#{vo.totalScore},#{vo.pid});
 		</foreach>
 	</insert>
 	<!-- 删除数据 -->

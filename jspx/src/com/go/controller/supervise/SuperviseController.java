@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alibaba.fastjson.JSONObject;
 import com.go.common.util.ExtendDate;
 import com.go.common.util.JSONUtil;
+import com.go.common.util.SqlUtil;
 import com.go.common.util.SysUtil;
+import com.go.common.util.TreeUtil;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
 import com.go.service.supervise.ProjectService;
@@ -114,34 +116,35 @@ public class SuperviseController extends BaseController {
 	   * @throws Exception
 	   */
 	  @RequestMapping("save.do")
-	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] projectName,String[] remark) {
+	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] name,String[] remark,String[] parentId,String[] totalScore) {
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  if(projectId==null||projectName==null){
+		  if(projectId==null||name==null){
 			  this.ajaxMessage(response, Syscontants.ERROE,"至少选择一个督导项目");
 			  return;
 		  }
+		  String msg="";
 		  Object unitIds=parameter.get("unitId");
 		  String[] unitId=null;
 		  if(unitIds!=null){
 			 unitId=unitIds.toString().split(",");
 		  }
-		  boolean  isIDNull = sqlUtil.isIDNull(parameter,"id");
+		  boolean  isIDNull = sqlUtil.isIDNull(parameter,"aid");
 		  try {
 			if(isIDNull){
 				  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
 				  parameter.put("creator", user.get("id"));
 				  parameter.put("createdate", ExtendDate.getYMD_h_m_s(new Date()));
 				  //设置ID
-				  parameter = sqlUtil.setTableID(parameter);
-				 String msg= this.superviseService.addData(parameter,projectId,projectName,remark,unitId);
+				 parameter.put("aid", SqlUtil.uuid());
+				 msg= this.superviseService.addData(parameter,projectId,name,remark,unitId,parentId,totalScore);
 				 if(StringUtils.isBlank(msg)){
 					 this.ajaxMessage(response, Syscontants.MESSAGE,"添加成功");
 				 }else{
 					 this.ajaxMessage(response, Syscontants.ERROE,msg);
 				 }
 			  }else{
-				  String msg= this.superviseService.updateData(parameter,projectId,projectName,remark,unitId);
+				 msg= this.superviseService.updateData(parameter,projectId,name,remark,unitId,parentId,totalScore);
 				  if(StringUtils.isBlank(msg)){
 					  this.ajaxMessage(response, Syscontants.MESSAGE,"修改成功");
 					 }else{
@@ -220,14 +223,15 @@ public class SuperviseController extends BaseController {
 	@RequestMapping("projectList.do")
 	public void projectList(HttpServletRequest request,HttpServletResponse response){
 		Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		Object superviseId=parameter.get("superviseId");
-		Map<String,Object> msg=new HashMap<String, Object>();
+		this.ajaxData(response, JSONUtil.listToArrayStr(TreeUtil.createTree(projectService.listBySuperviseId(parameter))));
+		//Object superviseId=parameter.get("superviseId");
+		/*Map<String,Object> msg=new HashMap<String, Object>();
 		if(superviseId==null){
 			msg.put("rows", "");
 		}else{
 			msg.put("rows",projectService.listBySuperviseId(parameter));
 		}
-		this.ajaxData(response, net.sf.json.JSONObject.fromObject(msg).toString());
+		this.ajaxData(response, net.sf.json.JSONObject.fromObject(msg).toString());*/
 	}
 	
 }

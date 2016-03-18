@@ -120,8 +120,8 @@
 	
 	<!-- zhangjf 2016-03-07 根据督导ID查询督导相关项目数据start -->
 	<select id="listBySuperviseId" parameterType="map" resultType="map">
-		select  t1.id projectId,
-				t1.name projectName,
+		select  t2.pid parentId,
+				t2.totalScore ,
 				(case when t1.remark is null then '' else t1.remark end) remark,
 				t1.*  from  project t1 join supervise_project t2 on t1.id=t2.projectId 
 		<if test="superviseId!=null and superviseId!=''">

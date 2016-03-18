@@ -189,13 +189,13 @@ public class SuperviseService extends BaseService {
 	 * @throws Exception 
 	 */
 	public synchronized String addData(Map<String, Object> parameter, String[] projectId,String[] projectName,
-			String[] remark, String[] unitId) throws Exception {
+			String[] remark, String[] unitId,String[] parentId,String[] score) throws Exception {
 		
 		try {
 			/**
 			 * 第一步：保存督导信息
 			 */
-			Object superviseId=parameter.get("id");//获取督导ID
+			Object superviseId=parameter.get("aid");//获取督导ID
 			if(superviseId==null){
 				return "数据异常,请稍后重试!";
 			}
@@ -215,6 +215,8 @@ public class SuperviseService extends BaseService {
 			Map<String,Object> params=null;
 			for (int i = 0,len=projectId.length; i < len; i++) {
 				String pid=projectId[i];
+				String pscore=score[i];
+				String parentid=parentId[i];
 				if(StringUtils.isBlank(pid)){
 					continue;
 				}
@@ -228,6 +230,7 @@ public class SuperviseService extends BaseService {
 					projectMap.put("id", pid);
 					projectMap.put("name", projectName[i]);
 					projectMap.put("remark", remark[i]);
+					
 					projectMap.put("type", "游离");
 					projectMap.put("creator", parameter.get("creator"));
 					projectMap.put("createdate", ExtendDate.getYMD_h_m_s(new Date()));
@@ -238,6 +241,12 @@ public class SuperviseService extends BaseService {
 				supervisePro.put("id", SqlUtil.uuid());
 				supervisePro.put("superviseId", superviseId);
 				supervisePro.put("projectId", pid);
+				if(StringUtils.isNotBlank(pscore)){
+					supervisePro.put("totalScore", pscore);
+				}
+				if(StringUtils.isNotBlank(parentid)){
+					supervisePro.put("pid",parentid );
+				}
 				superviseProjectList.add(supervisePro);
 			}
 			
@@ -314,8 +323,8 @@ public class SuperviseService extends BaseService {
 	 * @return
 	 * @throws Exception 
 	 */
-	public synchronized String  updateData(Map<String, Object> parameter, String[] projectId,String[] projectName, String[] remark, String[] unitId) throws Exception {
-		Object superviseId=parameter.get("id");//获取督导ID
+	public synchronized String  updateData(Map<String, Object> parameter, String[] projectId,String[] projectName, String[] remark, String[] unitId,String[] parentId,String[]score) throws Exception {
+		Object superviseId=parameter.get("aid");//获取督导ID
 		if(superviseId==null){
 			return "数据异常,请稍后重试!";
 		}
@@ -330,7 +339,6 @@ public class SuperviseService extends BaseService {
 			 */
 			List<String> superviseIds=new ArrayList<String>();
 			superviseIds.add(superviseId.toString());
-			//params.put("superviseId", superviseId);
 			this.getBaseDao().delete("superviseProject.delete", superviseIds);
 			/**
 			 * 第二步:删除督导设置单位信息
@@ -350,6 +358,8 @@ public class SuperviseService extends BaseService {
 			Map<String,Object> supervisePro=null;
 			for (int i = 0,len=projectId.length; i < len; i++) {
 				String pid=projectId[i];
+				String pscore=score[i];
+				String parentid=parentId[i];
 				if(StringUtils.isBlank(pid)){
 					continue;
 				}
@@ -363,6 +373,7 @@ public class SuperviseService extends BaseService {
 					projectMap.put("id", pid);
 					projectMap.put("name", projectName[i]);
 					projectMap.put("remark", remark[i]);
+					
 					projectMap.put("type", "游离");
 					projectMap.put("creator", parameter.get("creator"));
 					projectMap.put("createdate", ExtendDate.getYMD_h_m_s(new Date()));
@@ -372,6 +383,12 @@ public class SuperviseService extends BaseService {
 				supervisePro=new HashMap<String, Object>();
 				supervisePro.put("id", SqlUtil.uuid());
 				supervisePro.put("superviseId", superviseId);
+				if(StringUtils.isNotBlank(pscore)){
+					supervisePro.put("totalScore", pscore);
+				}
+				if(StringUtils.isNotBlank(parentid)){
+					supervisePro.put("pid",parentid );
+				}
 				supervisePro.put("projectId", pid);
 				superviseProjectList.add(supervisePro);
 			}

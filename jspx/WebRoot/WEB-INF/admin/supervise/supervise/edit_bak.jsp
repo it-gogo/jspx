@@ -6,7 +6,7 @@
 	<%@include file="/WEB-INF/admin/common/head.jsp" %>
     <script type="text/javascript" src="<%=request.getContextPath() %>/admin/script/supervise/supervise.js"></script>
     <script type="text/javascript">
-    var pid=0;
+    var pid=1;
 	var formobj;
 	var cbutton = parent.$("#cbutton");
 	var sbutton = parent.$("#sbutton");
@@ -33,46 +33,59 @@
  		 
  		 
  		 if(id!=""){
- 		 $('#mxList').treegrid({    
-		    url:"projectList.do?superviseId="+id,
-		    onLoadSuccess:function(row,data){
-		    	$(".grid_text").textbox().validatebox();
-				$(".grid_button").linkbutton();
-				$(".grid_num").numberbox();
-		    }    
-		});
-		} 
+	 		 var gridoption = {url:"projectList.do?superviseId="+id,id:"mxList"};
+			dataGrid = $.initBasicGrid(gridoption); 
+ 		 }
 	});
 /**
 *点击树方法
 */
 function  treeClick(node){
-	var nodes=$(this).tree('getData',node.target);
-	
-	var arr=new Array();
-	arr[0]=nodes;
-	var jsonStr=JSON.stringify(arr);
-	var node = $('#mxList').treegrid('getChecked');
-	$('#mxList').treegrid('append',{
-			parent:node[0]==null?'':node[0].id, 
-			data:eval('(' + jsonStr + ')')	
-		});
-		
-	
-	
+	var isLeaf=$(this).tree('isLeaf',node.target);
+	if(isLeaf){
+		var rows=$("#mxList").datagrid("getRows");
+		for(var i=0;i<rows.length;i++){
+			var row=rows[i];
+			if(row.projectId==node.id){
+				return false;
+			}
+		}
+		var row=new Object();
+		var remark=node.remark;
+		if(remark==undefined){
+			remark="";
+		}
+		row["projectId"]=node.id;
+		row["projectName"]=node.name;
+		row["remark"]=remark;
+		$("#mxList").datagrid("appendRow",row);
+		$(".grid_text").textbox().validatebox();
+		$(".grid_button").linkbutton();
+	}
 }
 function loadSuccess(data){
 	$(".grid_text").textbox().validatebox();
-	$(".grid_button").linkbutton();
-	$(".grid_num").numberbox();
 }
-
-
+/*
+*获取索引
+*/
+function getIndex(id){
+	var rows=$("#mxList").datagrid("getRows");
+	for(var i=0;i<rows.length;i++){
+		var row=rows[i];
+		if(row.productId==id){
+			var index=$("#mxList").datagrid("getRowIndex",row);
+			return index;
+		}
+	}
+	return -1;
+}
 /*
 *删除
 */
 function deleteF(json){
-	$("#mxList").treegrid("remove",json.id);
+	var index=getIndex(json.productId);
+	$("#mxList").datagrid("deleteRow",index);
 }
 function  handlerstr(value,row,index){
 	  var json = $.toJSON(row);
@@ -83,35 +96,13 @@ function  handlerstr(value,row,index){
 /**格式化项目说明**/
 function  showRemark(value,row,index){
 	  var json = $.toJSON(row);
-	   if(json=="{}"){
-	  	return;
-	  }
-	  if(value==undefined){
-	  	value="";
-	  }
-     var  handstr = "<input type=\"text\" class=\"grid_text\" data-options=\"multiline:true\"  name=\"remark\" style=\"width:500px; height:30px;\"   value=\""+value+"\"  />";
+     var  handstr = "<input type=\"text\" class=\"grid_text\" data-options=\"multiline:true\"  name=\"remark\" style=\"width:500px;\"   value=\""+value+"\"  />";
      return  handstr;
 }
 
 function  showName(value,row,index){
 	  var json = $.toJSON(row);
-	  if(json=="{}"){
-	  	return;
-	  }
-     var  handstr = "<input type=\"text\" class=\"grid_text\" name=\"name\" style=\"width:250px;\"   value=\""+value+"\"  /><input type=\"hidden\" name=\"projectId\" value=\""+row.id+"\" />"+
-     "<input type=\"hidden\" name=\"parentId\" value=\""+row._parentId+"\" />";
-     return  handstr;
-}
-
-function  showScore(value,row,index){
-	  var json = $.toJSON(row);
-	  if(json=="{}"){
-	  	return;
-	  }
-	  if(value==undefined){
-	  	value="";
-	  }
-     var  handstr = "<input type=\"text\" class=\"grid_num\" name=\"totalScore\" style=\"width:250px;\"   value=\""+value+"\"  />";
+     var  handstr = "<input type=\"text\" class=\"grid_text\" data-options=\"multiline:true\"  name=\"projectName\" style=\"width:250px;\"   value=\""+value+"\"  /><input type=\"hidden\" name=\"projectId\" value=\""+row.projectId+"\" />";
      return  handstr;
 }
 
@@ -140,20 +131,14 @@ function openSchool(){
 }
 
 function addRow(){
+	var row=new Object();
 	var pid=generatePid();
-		var node = $('#mxList').treegrid('getChecked');
-		$('#mxList').treegrid('append',{
-			parent:node[0]==null?'':node[0].id, 
-			data: [{
-				id: pid,
-				name: '',
-				remark:'',
-				totalScore:''
-			}]
-		});
+		row["projectId"]=pid
+		row["projectName"]="";
+		row["remark"]="";
+		$("#mxList").datagrid("appendRow",row);
 		$(".grid_text").textbox().validatebox();
 		$(".grid_button").linkbutton();
-		$(".grid_num").numberbox();
 }
 
 function generatePid(){
@@ -174,7 +159,7 @@ function beforeSubmit(){
 			    	}
 			    }
 				id.push(s);
-	$("#unitId").val(id.join(","));
+	$("#unitId").val(id.join(","));			
 }
 
 
@@ -191,17 +176,17 @@ function beforeSubmit(){
 		</div>
          <div data-options="region:'north'"  style="height:135px;">
          
-            <input name="aid"  type="hidden"  id="aid"    value="${vo.id }">
+            <input name="id"  type="hidden"  id="id"    value="${vo.id }">
             <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
             <input name="type"  type="hidden"  id="type"    value="统一">
 			<table width="100%" class="table table-hover table-condensed">
 				<tr>
 					<th width="100px">名称</th>
-					<td width="130px"><input name="name" class="easyui-textbox validatebox" required="required"  type="text" value="${vo.name }" style="width: 350px;"></td>
+					<td width="130px"><input name="name" class="easyui-textbox validatebox"  type="text" value="${vo.name }" style="width: 350px;"></td>
 				</tr>
 				<tr>
 					<th  width="100px">时间</th>
-					<td  width="100px"><input name="superviseDate" type="text" class="easyui-datebox textbox" required="required" data-options="editable:false"  style="width: 350px;"   value="${vo.superviseDate }"></td>
+					<td  width="100px"><input name="superviseDate" type="text" class="easyui-datebox textbox" data-options="editable:false"  style="width: 350px;"   value="${vo.superviseDate }"></td>
 				</tr>
 				<tr>
 					<th  width="100px">督导项目</th>
@@ -221,21 +206,21 @@ function beforeSubmit(){
 		
      </div>
      <div data-options="region:'center'"  >
-     	<table id="mxList" class="easyui-treegrid"  data-options="border:false,singleSelect:true,
+     	<table id="mxList" class="easyui-datagrid"  data-options="border:false,autoRowHeight:true,border:false,
 			         fitColumns:true,
+			         singleSelect: true,
 			         selectOnCheck:false,
+			         multiSort:false,
 			         checkOnSelect:false,
+			         remoteSort:true,
+			         autoRowHeight:true,
 			         rownumbers:false,
-			         showHeader:true,showFooter:true,fit:'true',idField:'id',treeField:'name',rowStyler:function(index,row){
-			         			return  'height:50px'
-							}
-						" style="height:90%">   
+			         showHeader:true,showFooter:true,fit:'true'">   
 		    <thead>   
 		        <tr>   
-		        	<th data-options="field:'cid'"   checkbox=true></th>   
-		            <th data-options="field:'name'"  formatter="showName"  width="15">项目名称</th>   
+		        	<th data-options="field:'projectId'"   checkbox=true></th>   
+		            <th data-options="field:'projectName'"  formatter="showName"  width="15">项目名称</th>   
 		            <th data-options="field:'remark'" formatter="showRemark"   width="30">项目说明</th>
-		            <th data-options="field:'totalScore'" formatter="showScore"   width="30">项目分数</th>
 		            <th data-options="field:'handle'" formatter="handlerstr" width="10">操作</th>
 		        </tr>   
 		    </thead>   

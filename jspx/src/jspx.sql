@@ -3092,3 +3092,5 @@ CREATE TABLE notice_teacher(
     PRIMARY KEY (id)
 )
 ;
+
+ALTER table supervise_project add pid varchar(100);

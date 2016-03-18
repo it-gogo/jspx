@@ -44,13 +44,13 @@
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
 	   insert into supervise(id,superviseDate,name,type,creator,createdate,status)
-	   values(#{id},#{superviseDate},#{name},#{type},#{creator},#{createdate},'禁用');
+	   values(#{aid},#{superviseDate},#{name},#{type},#{creator},#{createdate},'禁用');
 	</insert>
 	
 	<!-- 添加后台数据 -->
 	<update id="update" parameterType="java.util.HashMap" >
 	   update supervise set  name = #{name},superviseDate=#{superviseDate}
-        where  id=#{id} 
+        where  id=#{aid} 
 	</update>
 	<!-- 更新数据状态 -->
 	<update id="changeStatus"  parameterType="java.util.HashMap">
