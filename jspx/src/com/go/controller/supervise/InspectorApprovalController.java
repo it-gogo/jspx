@@ -152,7 +152,7 @@ public class InspectorApprovalController extends BaseController {
 		  for(Map<String,Object> project:projectList){//遍历查询学校资料
 			  parame.put("superviseId", res.get("id"));
 			  parame.put("unitId", res.get("unitId"));
-			  parame.put("projectId", project.get("id"));
+			  parame.put("projectId", project.get("projectId"));
 			  parame.put("type", "学校材料");
 			  List<Map<String,Object>> schoolMaterials=inspectorApprovalService.findMaterial(parame);
 			  

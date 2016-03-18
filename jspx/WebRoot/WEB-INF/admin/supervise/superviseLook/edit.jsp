@@ -23,6 +23,9 @@
 		 $(cbutton).bind('click',function(){
 			parent.dialogMap["d3"].dialog('close');
 		 });
+		 
+		  var gridoption = {url:"../schoolSupervise/projectList.do?superviseId=${vo.id}&unitId=${vo.unitId}",id:"treegrid",idField:"id",treeField:"name",fitColumns:true};
+		  $.initTreeGrid(gridoption); 
 	});
 
 /**
@@ -48,6 +51,26 @@ function downFile(fileUrl,fileName){
 		}
 	});
 }
+
+function handlermaterial(vlaue,row,index){
+	var json = $.toJSON(row);
+	var type="${user.type}";
+	var step="${vo.step}";
+	var html="";
+	if(row.schoolMaterials!=null){
+		for(var i=0,j=row.schoolMaterials.length;i<j;i++){
+			var material=row.schoolMaterials[i];
+			html+="<div><a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
+			html+="</div>";
+		}
+	}
+	return html;
+}
+function handlerscore(value,row,index){
+	var html="";
+	html+=""+row.assessScore+"/"+row.totalScore+"";	
+	return html;
+}
 	</script>
 	<style type="text/css">
 	.table tbody th,.table tbody td{
@@ -64,7 +87,22 @@ function downFile(fileUrl,fileName){
            <input name="step"  type="hidden"  id="step"    value="${vo.step }">
          <div data-options="region:'north'"  style="height:52px;font-size:25px;font-weight: bold;text-align: center;line-height: 50px;">${vo.name }</div>
      <div data-options="region:'center'"  >
-		<table width="100%" class="table table-hover table-condensed">
+     	<table id="treegrid" class="easyui-treegrid"  >   
+		    <thead>   
+		        <tr>   
+		            <th data-options="field:'name',width:180">项目名</th>   
+		            <th data-options="field:'remark',width:200">项目说明</th>   
+		            <th data-options="field:'material',width:100" formatter="handlermaterial">
+		            	学校材料
+		            	<c:if test="${user.type=='督学账号' && vo.step==4}"> 
+			        		<a href="javascript:void(0);" onclick="oneKeyPass('督学通过','学校材料')">一键通过</a> 
+			        	</c:if>
+		            </th>   
+		            <th data-options="field:'sScore',width:80" formatter="handlerscore">项目评分</th>   
+		        </tr>   
+		    </thead>   
+		</table>
+		<%-- <table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>项目名</th>
 		        <th>项目说明</th>
@@ -83,8 +121,9 @@ function downFile(fileUrl,fileName){
 					</td>
 				</tr>
 			</c:forEach>
-		</table>
-		<div style="height: 50px"></div>
+		</table> --%>
+		</div>
+		<div data-options="region:'south'" style="height: 200px;"  >
 		<table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>自查报告</th>

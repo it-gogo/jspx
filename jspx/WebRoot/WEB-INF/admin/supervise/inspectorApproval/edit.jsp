@@ -23,6 +23,9 @@
 		 $(cbutton).bind('click',function(){
 			parent.dialogMap["d3"].dialog('close');
 		 });
+		 
+		 var gridoption = {url:"../schoolSupervise/projectList.do?superviseId=${vo.id}&unitId=${vo.unitId}",id:"treegrid",idField:"id",treeField:"name",fitColumns:true};
+		  $.initTreeGrid(gridoption); 
 	});
 /**
 *导入信息
@@ -173,6 +176,37 @@ function assess(newValue,oldValue){
 		}
 	});
 }
+
+function handlermaterial(vlaue,row,index){
+	var json = $.toJSON(row);
+	var type="${user.type}";
+	var step="${vo.step}";
+	var html="";
+	if(row.schoolMaterials!=null){
+		for(var i=0,j=row.schoolMaterials.length;i<j;i++){
+			var material=row.schoolMaterials[i];
+			html+="<div><a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
+			if("督学账号"==type && "4"==step && "校长通过"==material.status){
+				html+="<a href=\"javascript:void(0);\" onclick=\"approvalFile('"+material.id+"','通过')\"> 通过 </a><a href=\"javascript:void(0);\" onclick=\"approvalFile('"+material.id+"','不通过')\"> 不通过 </a>";
+			}else{
+				html+=material.status;
+			}
+			html+="</div>";
+		}
+	}
+	return html;
+}
+function handlerscore(value,row,index){
+	var type="${user.type}";
+	var step="${vo.step}";
+	var html="";
+	if("督学账号"==type  &&  (step==8 || step==9)){
+		html+="<input tye=\"text\"  class=\"easyui-numberbox text grid_number\" name=\"score\" value=\""+row.assessScore+"\" data-options=\"precision:1,onChange:assess,max:"+row.totalScore+"\" superviseProjectId=\""+row.superviseProjectId+"\"  />总分:"+row.totalScore+"";
+	}else{
+		html+=""+row.assessScore+"/"+row.totalScore+"";	
+	}
+	return html;
+}
 	</script>
 	<style type="text/css">
 	.table tbody th,.table tbody td{
@@ -188,8 +222,24 @@ function assess(newValue,oldValue){
            <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
            <input name="step"  type="hidden"  id="step"    value="${vo.step }">
          <div data-options="region:'north'"  style="height:52px;font-size:25px;font-weight: bold;text-align: center;line-height: 50px;">${vo.name }</div>
-     <div data-options="region:'center'"  >
-		<table width="100%" class="table table-hover table-condensed">
+     	<div data-options="region:'center'"  >
+     	
+     	<table id="treegrid" class="easyui-treegrid"  >   
+		    <thead>   
+		        <tr>   
+		            <th data-options="field:'name',width:180">项目名</th>   
+		            <th data-options="field:'remark',width:200">项目说明</th>   
+		            <th data-options="field:'material',width:100" formatter="handlermaterial">
+		            	学校材料
+		            	<c:if test="${user.type=='督学账号' && vo.step==4}"> 
+			        		<a href="javascript:void(0);" onclick="oneKeyPass('督学通过','学校材料')">一键通过</a> 
+			        	</c:if>
+		            </th>   
+		            <th data-options="field:'sScore',width:80" formatter="handlerscore">项目评分</th>   
+		        </tr>   
+		    </thead>   
+		</table>
+		<%-- <table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>项目名</th>
 		        <th>项目说明</th>
@@ -200,9 +250,6 @@ function assess(newValue,oldValue){
 		        	</c:if>
 		        </th>
 		        <th>项目评分</th>
-		        <!-- <th>督学下校检查</th>
-		        <th>整改处理</th>
-		        <th>督导报告</th> -->
 			</tr>
 			<c:forEach items="${projectList }" var="project" varStatus="i">
 				<tr>
@@ -234,8 +281,10 @@ function assess(newValue,oldValue){
 					</td>
 				</tr>
 			</c:forEach>
-		</table>
-		<div style="height: 50px"></div>
+		</table> --%>
+		
+		</div>
+		<div data-options="region:'south'" style="height: 200px;"  >
 		<table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>

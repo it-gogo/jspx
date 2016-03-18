@@ -32,6 +32,7 @@ $.initBasicGrid=function(options){
 	 						loadSuccess(data);
 	 					}
 			             $('.grid_button').linkbutton();  
+			             $('.grid_number').numberbox();  
 			         } 
 			        	 
 			        	

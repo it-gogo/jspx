@@ -23,6 +23,9 @@
 		 $(cbutton).bind('click',function(){
 			parent.dialogMap["d3"].dialog('close');
 		 });
+		 
+		 var gridoption = {url:"../schoolSupervise/projectList.do?superviseId=${vo.id}&unitId=${vo.unitId}",id:"treegrid",idField:"id",treeField:"name",fitColumns:true};
+		  $.initTreeGrid(gridoption); 
 	});
 /**
 *导入信息
@@ -177,6 +180,45 @@ function oneKeyPass(status,type){
 		}
 	});
 }
+
+function handlermaterial(vlaue,row,index){
+	var json = $.toJSON(row);
+	var type="${user.type}";
+	var step="${vo.step}";
+	var isDXZS=${isDXZS};
+	var isXZS=${isXZS};
+	var html="";
+	if(isDXZS && (step=="2" || step=="3") ){
+		if(window.ActiveXObject) {//IE浏览器
+			html+="<a href=\"javascript:void(0);\" onclick=\"setParameter('"+row.projectId+"','学校材料')\" style=\"position:relative;\">上传<input style=\"position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);\" onchange=\"ajaxFileUpload('fileId2"+row.id +"')\" type=\"file\" id=\"fileId2"+row.id +"\"  name=\"fileId\"/></a>";
+	    }else {
+			html+="<a href=\"javascript:void(0);\" onclick=\"importFile('"+row.projectId+"','学校材料')\">上传</a>";
+	    }
+	}
+	if(row.schoolMaterials!=null){
+		for(var i=0,j=row.schoolMaterials.length;i<j;i++){
+			var material=row.schoolMaterials[i];
+			html+="<div><a href=\"javascript:void(0);\" onclick=\"downFile('"+material.url+"','"+material.name+"')\">"+material.name+"</a> ";
+			if(isDXZS && (step=="2" || step=="3")){
+				html+="<a href=\"javascript:void(0);\" onclick=\"deleteFile('"+material.url+"','"+material.id+"')\"> 删除 </a>";
+			}
+			if(isXZS && "3"==step && "待审批"==material.status){
+				html+="<a href=\"javascript:void(0);\" onclick=\"approvalFile('"+material.id+"','通过')\"> 通过 </a><a href=\"javascript:void(0);\" onclick=\"approvalFile('"+material.id+"','不通过')\"> 不通过 </a>";
+			}else{
+				html+=material.status;
+			}
+			html+="</div>";
+		}
+	}
+	return html;
+}
+function handlerscore(value,row,index){
+	var type="${user.type}";
+	var step="${vo.step}";
+	var html="";
+	html+=""+row.assessScore+"/"+row.totalScore+"";	
+	return html;
+}
 	</script>
 	<style type="text/css">
 	.table tbody th,.table tbody td{
@@ -192,8 +234,23 @@ function oneKeyPass(status,type){
            <input name="unitId"  type="hidden"  id="unitId"    value="${vo.unitId }">
            <input name="step"  type="hidden"  id="step"    value="${vo.step }">
          <div data-options="region:'north'"  style="height:52px;font-size:25px;font-weight: bold;text-align: center;line-height: 50px;">${vo.name }</div>
-     <div data-options="region:'center'"  >
-		<table width="100%" class="table table-hover table-condensed">
+     	<div data-options="region:'center'"  >
+     	<table id="treegrid" class="easyui-treegrid"  >   
+		    <thead>   
+		        <tr>   
+		            <th data-options="field:'name',width:100">项目名</th>   
+		            <th data-options="field:'remark',width:150">项目说明</th>   
+		            <th data-options="field:'material',width:150" formatter="handlermaterial">
+		            	学校材料
+		            	<c:if test="${isXZS && vo.step==3}"> 
+		        		<a href="javascript:void(0);" onclick="oneKeyPass('校长通过','学校材料')">一键通过</a> 
+		        	</c:if>
+		            </th>   
+		            <th data-options="field:'sScore',width:80" formatter="handlerscore">项目评分</th>   
+		        </tr>   
+		    </thead>   
+		</table>
+		<%-- <table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>项目名</th>
 		        <th>项目说明</th>
@@ -204,9 +261,6 @@ function oneKeyPass(status,type){
 		        	</c:if>
 		        </th>
 		        <th>项目评分</th>
-		        <!-- <th>督学下校检查</th>
-		        <th>整改处理</th>
-		        <th>督导报告</th> -->
 			</tr>
 			<c:forEach items="${projectList }" var="project" varStatus="i">
 				<tr>
@@ -215,10 +269,10 @@ function oneKeyPass(status,type){
 					<td>
 						<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
 							<div class="upload_google" style="display: none;">
-								<a href="javascript:void(0);" onclick="importFile('${project.id}','学校材料')">上传</a>
+								<a href="javascript:void(0);" onclick="importFile('${project.projectId}','学校材料')">上传</a>
 							</div>
 							<div   class="upload_ie" style="display: none;">
-								<a href="javascript:void(0);" onclick="setParameter('${project.id}','学校材料')" style="position:relative;">
+								<a href="javascript:void(0);" onclick="setParameter('${project.projectId}','学校材料')" style="position:relative;">
 									上传
 									<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId2${project.id }')" type="file" id="fileId2${project.id }"  name="fileId"/>
 								</a>
@@ -228,8 +282,8 @@ function oneKeyPass(status,type){
 							<div>
 								<a href="javascript:void(0);" onclick="downFile('${material.url}','${material.name }')">${material.name }</a> 
 								<c:if test="${isDXZS && (superviseUnit.step==2 || superviseUnit.step==3)}">
-									<a href="javascript:void(0);" onclick="modifyFile('${project.id}','学校材料','${material.url}','${material.id}')"  class="upload_google" style="display: none;" >修改</a>
-									<a href="javascript:void(0);" onclick="setParameter('${project.id}','学校材料');deleteFileNoReload('${material.url}','${material.id}');"  class="upload_ie" style="display: none;position:relative;" >
+									<a href="javascript:void(0);" onclick="modifyFile('${project.projectId}','学校材料','${material.url}','${material.id}')"  class="upload_google" style="display: none;" >修改</a>
+									<a href="javascript:void(0);" onclick="setParameter('${project.projectId}','学校材料');deleteFileNoReload('${material.url}','${material.id}');"  class="upload_ie" style="display: none;position:relative;" >
 										修改
 										<input style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:999;filter:Alpha(opacity=0);" onchange="ajaxFileUpload('fileId3${material.id }')" type="file" id="fileId3${material.id }"  name="fileId"/>
 									</a>
@@ -250,8 +304,9 @@ function oneKeyPass(status,type){
 					</td>
 				</tr>
 			</c:forEach>
-		</table>
-		<div style="height: 50px;"></div>
+		</table> --%>
+		</div>
+		<div data-options="region:'south'" style="height: 200px;"  >
 		<table width="100%" class="table table-hover table-condensed">
 		    <tr>
 		        <th>

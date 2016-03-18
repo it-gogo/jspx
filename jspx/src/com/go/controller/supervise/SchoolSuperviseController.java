@@ -26,6 +26,7 @@ import com.go.common.util.ExtendDate;
 import com.go.common.util.JSONUtil;
 import com.go.common.util.SqlUtil;
 import com.go.common.util.SysUtil;
+import com.go.common.util.TreeUtil;
 import com.go.common.util.Util;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
@@ -82,22 +83,34 @@ public class SchoolSuperviseController extends BaseController {
 			  parameter.put("flag", user.get("flag"));
 		  }
 		  JSONObject jsonObj = this.schoolSuperviseService.findPageBean(parameter);
-		  
-		 /* JSONArray jsonArr=jsonObj.getJSONArray("rows");
-		  List<Map<String,Object>> list=JSONUtil.jsonstrToList(jsonArr.toJSONString(), Map.class);
-		  Map<String,Object> parame=new HashMap<String, Object>();
-		  for(int i=0,j=list.size();i<j;i++){
-			  Map<String,Object> obj=list.get(i);
-			  parame.put("superviseId", obj.get("superviseId"));
-			  parame.put("unitId", obj.get("unitId"));
-			  parame.put("type", "督导报告");
-			  List<Map<String,Object>> superviseMaterials=inspectorApprovalService.findMaterial(parame);
-			  obj.put("superviseMaterials", superviseMaterials);
-		  }
-		  jsonObj.put("rows", JSONUtil.listToArray(list));*/
-		  
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }
+	  /**
+	   * 
+	   * @author chenhb
+	   * @create_time  2016-3-18 下午4:40:03
+	   * @param request
+	   * @param response
+	   * @param model
+	   */
+	  @RequestMapping("projectList.do")
+	  public  void  projectList(HttpServletRequest request, HttpServletResponse response,Model  model){
+		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
+		  Map<String,Object> user=SysUtil.getSessionUsr(request, "user");//当前用户
+		  List<Map<String,Object>> projectList = schoolSuperviseService.findProject(parameter);
+		  Map<String,Object> parame=new HashMap<String, Object>();
+		  parame.put("superviseId", parameter.get("superviseId"));
+		  parame.put("unitId", parameter.get("unitId"));
+		  parame.put("type", "学校材料");
+		  for(Map<String,Object> project:projectList){//遍历查询学校资料
+			  parame.put("projectId", project.get("projectId"));
+			  List<Map<String,Object>> schoolMaterials=schoolSuperviseService.findMaterial(parame);
+			  project.put("schoolMaterials", schoolMaterials);
+		  }
+		  projectList=TreeUtil.createTree(projectList);
+		  this.ajaxData(response, JSONUtil.listToArrayStr(projectList));
+	  }
+	  
 	  /**
 	   * 导出数据
 	   * @author chenhb
@@ -133,7 +146,7 @@ public class SchoolSuperviseController extends BaseController {
 		  for(Map<String,Object> project:projectList){//遍历查询学校资料
 			  parame.put("superviseId", res.get("id"));
 			  parame.put("unitId", res.get("unitId"));
-			  parame.put("projectId", project.get("id"));
+			  parame.put("projectId", project.get("projectId"));
 			  parame.put("type", "学校材料");
 			  List<Map<String,Object>> schoolMaterials=schoolSuperviseService.findMaterial(parame);
 			  project.put("schoolMaterials", schoolMaterials);

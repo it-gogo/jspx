@@ -157,6 +157,10 @@ public class FileSubmitController extends BaseController {
 	  @RequestMapping("list.do")
 	  public  void  findList(HttpServletRequest request, HttpServletResponse response,Model  model){
 		  Map<String,Object> parameter = sqlUtil.queryParameter(request);
+		  Map<String,Object> userMap=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+		  if(!"管理员账号".equals(userMap.get("type"))){
+			  parameter.put("creator", userMap.get("id"));
+		  }
 		  JSONObject jsonObj = this.fileSubmitService.findPageBean(parameter);
 		  this.ajaxData(response, jsonObj.toJSONString());
 	  }
