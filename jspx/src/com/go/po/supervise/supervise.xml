@@ -67,6 +67,7 @@
 	   <if test="id!=null and id!=''">
 	   	and a.id=#{id}
 	   </if>
+	   limit 0,1
 	</select>
 	<!-- 删除数据 -->
 	<delete id="delete"  parameterType = "java.util.List">

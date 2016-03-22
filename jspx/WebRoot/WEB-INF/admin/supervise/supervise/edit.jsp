@@ -100,7 +100,7 @@ function  showName(value,row,index){
 	  if(json=="{}"){
 	  	return;
 	  }
-     var  handstr = "<input type=\"text\" class=\"grid_text\" name=\"name\" style=\"width:250px;\"   value=\""+value+"\"  /><input type=\"hidden\" name=\"projectId\" value=\""+row.id+"\" />"+
+     var  handstr = "<input type=\"text\" class=\"grid_text\" name=\"text\" style=\"width:250px;\"   value=\""+value+"\"  /><input type=\"hidden\" name=\"projectId\" value=\""+row.id+"\" />"+
      "<input type=\"hidden\" name=\"parentId\" value=\""+row._parentId+"\" />";
      return  handstr;
 }
@@ -148,7 +148,7 @@ function addRow(){
 			parent:node[0]==null?'':node[0].id, 
 			data: [{
 				id: pid,
-				name: '',
+				text: '',
 				remark:'',
 				totalScore:''
 			}]
@@ -228,14 +228,14 @@ function beforeSubmit(){
 			         selectOnCheck:false,
 			         checkOnSelect:false,
 			         rownumbers:false,
-			         showHeader:true,showFooter:true,fit:'true',idField:'id',treeField:'name',rowStyler:function(index,row){
+			         showHeader:true,showFooter:true,fit:'true',idField:'id',treeField:'text',rowStyler:function(index,row){
 			         			return  'height:50px'
 							}
 						" style="height:90%">   
 		    <thead>   
 		        <tr>   
 		        	<th data-options="field:'cid'"   checkbox=true></th>   
-		            <th data-options="field:'name'"  formatter="showName"  width="15">项目名称</th>   
+		            <th data-options="field:'text'"  formatter="showName"  width="15">项目名称</th>   
 		            <th data-options="field:'remark'" formatter="showRemark"   width="30">项目说明</th>
 		            <th data-options="field:'totalScore'" formatter="showScore"   width="30">项目分数</th>
 		            <th data-options="field:'handle'" formatter="handlerstr" width="10">操作</th>

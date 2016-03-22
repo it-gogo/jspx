@@ -122,6 +122,7 @@
 	<select id="listBySuperviseId" parameterType="map" resultType="map">
 		select  t2.pid parentId,
 				t2.totalScore ,
+				t1.name as text,
 				(case when t1.remark is null then '' else t1.remark end) remark,
 				t1.*  from  project t1 join supervise_project t2 on t1.id=t2.projectId 
 		<if test="superviseId!=null and superviseId!=''">

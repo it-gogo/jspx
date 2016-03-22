@@ -213,10 +213,20 @@ public class SuperviseService extends BaseService {
 			Map<String,Object> projectMap=null;
 			Map<String,Object> supervisePro=null;
 			Map<String,Object> params=null;
+			String parentid="";
+			String remarks="";
+			String pscore="";
 			for (int i = 0,len=projectId.length; i < len; i++) {
 				String pid=projectId[i];
-				String pscore=score[i];
-				String parentid=parentId[i];
+				if(score!=null&&score.length>0){
+					 pscore=score[i];
+				}
+				if(parentId!=null&&parentId.length>0){
+					 parentid=parentId[i];
+				}
+				if(remark!=null&&remark.length>0){
+					remarks=remark[i];
+				}
 				if(StringUtils.isBlank(pid)){
 					continue;
 				}
@@ -229,7 +239,7 @@ public class SuperviseService extends BaseService {
 					pid=SqlUtil.uuid();//获取ID 
 					projectMap.put("id", pid);
 					projectMap.put("name", projectName[i]);
-					projectMap.put("remark", remark[i]);
+					projectMap.put("remark", remarks);
 					
 					projectMap.put("type", "游离");
 					projectMap.put("creator", parameter.get("creator"));
@@ -356,10 +366,22 @@ public class SuperviseService extends BaseService {
 			List<Map<String,Object>> superviseProjectList=new ArrayList<Map<String,Object>>();//保存督导项目关联集合
 			Map<String,Object> projectMap=null;
 			Map<String,Object> supervisePro=null;
+			String parentid="";
+			String remarks="";
+			String pscore="";
 			for (int i = 0,len=projectId.length; i < len; i++) {
 				String pid=projectId[i];
-				String pscore=score[i];
-				String parentid=parentId[i];
+				if(score!=null&&score.length>0){
+					 pscore=score[i];
+				}
+				if(parentId!=null&&parentId.length>0){
+					parentid=parentId[i];
+				}
+				
+				if(remark!=null&&remark.length>0){
+					remarks=remark[i];
+				}
+				
 				if(StringUtils.isBlank(pid)){
 					continue;
 				}
@@ -372,7 +394,7 @@ public class SuperviseService extends BaseService {
 					pid=SqlUtil.uuid();//获取ID 
 					projectMap.put("id", pid);
 					projectMap.put("name", projectName[i]);
-					projectMap.put("remark", remark[i]);
+					projectMap.put("remark", remarks);
 					
 					projectMap.put("type", "游离");
 					projectMap.put("creator", parameter.get("creator"));

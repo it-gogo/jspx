@@ -101,10 +101,10 @@ public class CustomizeController extends BaseController {
 	   * @throws Exception
 	   */
 	  @RequestMapping("save.do")
-	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] name,String[] remark,String[] parentId,String[] totalScore) {
+	  public  void save(HttpServletRequest request, HttpServletResponse response,String[] projectId,String[] text,String[] remark,String[] parentId,String[] totalScore) {
 		  //获取请求参数
 		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
-		  if(projectId==null||name==null){
+		  if(projectId==null||text==null){
 			  this.ajaxMessage(response, Syscontants.ERROE,"至少选择一个督导项目");
 			  return;
 		  }
@@ -154,14 +154,14 @@ public class CustomizeController extends BaseController {
 				  parameter.put("createdate", ExtendDate.getYMD_h_m_s(new Date()));
 				  //设置ID
 				  parameter.put("aid", SqlUtil.uuid());
-				 String msg= this.superviseService.addData(parameter,projectId,name,remark,unitId,parentId,totalScore);
+				 String msg= this.superviseService.addData(parameter,projectId,text,remark,unitId,parentId,totalScore);
 				 if(StringUtils.isBlank(msg)){
 					 this.ajaxMessage(response, Syscontants.MESSAGE,"添加成功");
 				 }else{
 					 this.ajaxMessage(response, Syscontants.ERROE,msg);
 				 }
 			  }else{
-				  String msg= this.superviseService.updateData(parameter,projectId,name,remark,unitId,parentId,totalScore);
+				  String msg= this.superviseService.updateData(parameter,projectId,text,remark,unitId,parentId,totalScore);
 				  if(StringUtils.isBlank(msg)){
 					  this.ajaxMessage(response, Syscontants.MESSAGE,"修改成功");
 					 }else{
