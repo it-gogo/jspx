@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jxl.Cell;
+import jxl.Sheet;
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
@@ -328,6 +330,27 @@ public class Util {
 			}
 		}
 
+		/**
+		 * 获取视频缩略图
+		 * @author zhangjf
+		 * @create_time 2016-3-25 上午10:57:31
+		 * @param videoUrl 视频地址
+		 * @param batUrl ffmpeg.bat Url
+		 * @return
+		 */
+		public  static String getVideoImg(String videoUrl,String batUrl){
+			if(videoUrl==null|| "".equals(videoUrl)){
+				return "";
+			}
+			String imgUrl="";
+			imgUrl=videoUrl.substring(0, videoUrl.lastIndexOf("."))+".jpg";
+			try {
+				Runtime.getRuntime().exec("cmd /c start "+batUrl+" "+ videoUrl + " " + imgUrl);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}  
+			return imgUrl;
+		}
 		
 		
 		/**
@@ -352,4 +375,34 @@ public class Util {
 			}
 			return false;
 		}
+		
+		/**
+		 * excel内容转换为list集合
+		 * @author zhangjf
+		 * @create_time 2016-3-25 上午11:15:17
+		 * @param is
+		 * @return
+		 * @throws Exception
+		 */
+		 public static   List<String[]>  ExcelToList(InputStream is) throws Exception{
+				Workbook  workbook = Workbook.getWorkbook(is);   
+				Sheet  sheet = workbook.getSheet(0);
+				int row = sheet.getRows();
+				int col = sheet.getColumns();
+		        Cell cell = null;
+		        String[]  rdata = null;
+		        List<String[]>  list = new ArrayList<String[]>();
+		        for(int i=0;i<row;i++){
+		        	rdata = new String[col];
+		        	for(int j=0;j<col;j++){
+		        		cell = sheet.getCell(j,i);
+		        		rdata[j] = cell.getContents();
+		        	}
+		        	 list.add(rdata);
+		        }
+		        workbook.close();
+		        return list;
+			}
+		
+		
 }

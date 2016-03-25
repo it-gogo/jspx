@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sectionManagement">
+	
+	<select id="roleSection" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	    select a.*,a.name text,(case when exists(select 1 from role_section r where r.roleId=#{roleId} and r.sectionId=a.id) then true else false end) checked
+	   From  section_management  a
+	   Where status='启用' 
+	</select>
+	<select id="findByListId" resultType="java.util.HashMap" parameterType = "java.util.Map">
+	    select *,name text,case when (select count(1) from section_management where parentId=a.id)>0 then 'closed' else 'open' end state
+	   From  section_management  a
+	   Where a.status='启用' 
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+     </select>
+	
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,name text From  section_management a  
+	   Where status='启用'
+	   <if test="type!=null and type!=''">
+	   	and a.type =#{type}
+	   </if>
+	    <if test="notCode!=null and notCode!=''">
+	   	and a.code not like '${notCode}%'
+	   </if>
+	   <if test="code!=null and code!=''">
+	   	and  a.code  like '${code}%'  
+	   </if>
+	   <if test="isRoot!=null and isRoot!=''">
+	   	  and a.parentId is null
+	   </if>
+	   <if test="isNavShow!=null and isNavShow!=''">
+	   	  and a.isNavShow=#{isNavShow}
+	   </if>
+	   <if test="parentId!=null and parentId!=''">
+	   	  and a.parentId =#{parentId}
+	   </if>
+	    <if test="rootNav!=null and rootNav!=''">
+	   	  and a.parentCode is null
+	   </if>
+	   <!-- <if test="authLoginId!=null and authLoginId!=''">控制权限用户Id
+	   	and a.id in  (select sectionId from role_section where roleId in (select roleId from role_login where loginId=#{authLoginId}))
+	   </if> -->
+	   <!-- 自定义sql语句 -->
+	   <if test="customSql!=null and customSql!=''">
+	   	${customSql}
+	   </if>
+	   order by seq asc
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  section_management a 
+	   Where status in ('启用','禁用')
+	   <if test="branchId!=null and branchId!=''">
+	   	and a.branchId =#{branchId}
+	   </if>
+	   <if test="name!=null and name!=''">
+	   	and a.name  like '%${name}%'  
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type =#{type}
+	   </if>
+	    <if test="code!=null and code!=''">
+	   	and  a.code  like '${code}%'  
+	   </if>
+	   order by type,seq asc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  section_management a 
+	    Where status in ('启用','禁用')
+	   <if test="name!=null and name!=''">
+	   	and a.name  like '%${name}%'  
+	   </if>
+	   <if test="type!=null and type!=''">
+	   	and a.type =#{type}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into section_management(id,name,picUrl,seq,status,createdate,creator,type,parentId,code,parentCode,isNavShow,absoluteUrl)
+	   values(#{id},#{name},#{picUrl},#{seq},'启用',#{createdate},#{creator},#{type},#{parentId},#{code},#{parentCode},#{isNavShow},#{absoluteUrl})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update section_management set name = #{name},
+	                    picUrl = #{picUrl},
+	                    seq = #{seq},
+	                    type=#{type},
+	                    parentId=#{parentId},
+	                    code=#{code},
+	                    parentCode=#{parentCode},
+	                    isNavShow=#{isNavShow},
+	                    absoluteUrl=#{absoluteUrl}
+        where  id=#{id} 
+	</update>
+	
+	<!-- 修改状态 -->
+	<update id="updateStatus" parameterType="map">
+		update section_management set status=#{status}
+		where id=#{id}
+	</update>
+	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From section_management a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   section_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<!-- 查询最大标示 -->
+	<select id="findCode" resultType="java.lang.String" parameterType="java.util.HashMap" >
+	   select max(code)
+	   From  section_management
+	   Where 0=0
+	   ${parameter}
+	</select> 
+	<!-- 更新数据标示 -->
+	<update id="updateCode"  parameterType="java.util.HashMap">
+	   update section_management set code = concat(SUBSTRING(code ,1,position(#{code} in code )-1),#{code_new},substring(code ,position(#{code} in code )+length(#{code}))),
+	   parentCode = concat(SUBSTRING(parentCode ,1,position(#{code} in parentCode )-1),#{code_new},substring(parentCode ,position(#{code} in parentCode )+length(#{code})))
+	   Where code like '${code}%'  and parentCode  is not null
+	</update>	
+</mapper>

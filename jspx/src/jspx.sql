@@ -3094,3 +3094,241 @@ CREATE TABLE notice_teacher(
 ;
 
 ALTER table supervise_project add pid varchar(100);
+
+
+--
+-- ER/Studio 8.0 SQL Code Generation
+-- Project :      DATA MODEL
+--
+-- Date Created : Thursday, March 24, 2016 17:46:53
+-- Target DBMS : MySQL 5.x
+--
+
+-- 
+-- TABLE: article_content 
+--
+
+CREATE TABLE article_content(
+    id         VARCHAR(100)    NOT NULL,
+    content    TEXT,
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: article_management 
+--
+
+CREATE TABLE article_management(
+    id              VARCHAR(100)    NOT NULL,
+    sectionId       VARCHAR(100),
+    classId         VARCHAR(100),
+    title           VARCHAR(100),
+    titleColor      VARCHAR(20),
+    picUrl          VARCHAR(100),
+    content         TEXT,
+    creator         VARCHAR(100),
+    createdate      VARCHAR(23),
+    subtitle        VARCHAR(100),
+    introduction    TEXT,
+    accessoryUrl    VARCHAR(200),
+    departId        VARCHAR(100),
+    keyword         VARCHAR(200),
+    source          VARCHAR(100),
+    scope           VARCHAR(100),
+    isPubish        VARCHAR(10),
+    isTop           VARCHAR(10),
+    status          VARCHAR(10),
+    titleHref       VARCHAR(300),
+    videoUrl        VARCHAR(255),
+    pubishDate      VARCHAR(23),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: article_section 
+--
+
+CREATE TABLE article_section(
+    id           VARCHAR(100)    NOT NULL,
+    articleId    VARCHAR(100),
+    sectionId    VARCHAR(100),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: article_title_color 
+--
+
+CREATE TABLE article_title_color(
+    id            VARCHAR(100)    NOT NULL,
+    name          VARCHAR(20),
+    color         VARCHAR(100),
+    seq           INT,
+    creator       VARCHAR(100),
+    createdate    VARCHAR(23),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: carousel_management 
+--
+
+CREATE TABLE carousel_management(
+    id            VARCHAR(100)    NOT NULL,
+    name          VARCHAR(30),
+    picUrl        VARCHAR(200),
+    type          VARCHAR(10),
+    status        VARCHAR(10),
+    creator       VARCHAR(100),
+    createdate    VARCHAR(23),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: pic_link 
+--
+
+CREATE TABLE pic_link(
+    id            VARCHAR(100)    NOT NULL,
+    picUrl        VARCHAR(255),
+    linkAddr      VARCHAR(255),
+    type          VARCHAR(30),
+    openType      VARCHAR(30),
+    status        VARCHAR(30),
+    createTime    VARCHAR(30),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: role_section 
+--
+
+CREATE TABLE role_section(
+    id           VARCHAR(100)    NOT NULL,
+    roleId       VARCHAR(100),
+    sectionId    VARCHAR(100),
+    PRIMARY KEY (id)
+)ENGINE=MYISAM
+;
+
+
+
+-- 
+-- TABLE: section_management 
+--
+
+CREATE TABLE section_management(
+    id             VARCHAR(100)    NOT NULL,
+    parentId       VARCHAR(100),
+    code           VARCHAR(50),
+    parentCode     VARCHAR(50),
+    type           VARCHAR(10),
+    name           VARCHAR(20),
+    picUrl         VARCHAR(100),
+    seq            INT,
+    status         VARCHAR(10),
+    creator        VARCHAR(100),
+    createdate     VARCHAR(23),
+    isNavShow      VARCHAR(10),
+    absoluteUrl    VARCHAR(200),
+    isModify       VARCHAR(10),
+    classId        VARCHAR(100),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: section_position 
+--
+
+CREATE TABLE section_position(
+    id           VARCHAR(100)    NOT NULL,
+    sectionId    VARCHAR(100),
+    name         VARCHAR(50),
+    number       INT,
+    seq          INT,
+    PRIMARY KEY (id)
+)
+;
+
+
+
+-- 
+-- TABLE: visit_log 
+--
+
+CREATE TABLE visit_log(
+    id           VARCHAR(100)    NOT NULL,
+    ip           VARCHAR(30),
+    visitTime    VARCHAR(30),
+    PRIMARY KEY (id)
+)
+;
+/**添加文章阅读数字段**/
+ALTER table article_management add readCount integer default 0;
+
+alter table pic_link add name varchar(100);
+
+ALTER table pic_link add seq INTEGER;
+
+ALTER table section_position add type varchar(30);
+
+ALTER table section_position add classId varchar(100);
+
+--
+-- ER/Studio 8.0 SQL Code Generation
+-- Project :      DATA MODEL
+--
+-- Date Created : Friday, March 25, 2016 15:58:01
+-- Target DBMS : MySQL 5.x
+--
+
+-- 
+-- TABLE: web_management 
+--
+
+CREATE TABLE web_management(
+    id                     VARCHAR(100)    NOT NULL,
+    hTitle                 VARCHAR(100),
+    hLogo                  VARCHAR(200),
+    bLogo                  VARCHAR(200),
+    wTitle                 VARCHAR(100),
+    qLogo                  VARCHAR(200),
+    qTitle                 VARCHAR(200),
+    showLoginTab           VARCHAR(2),
+    iconUrl                VARCHAR(200),
+    oaVersion							  VARCHAR(20),
+    isShow                 VARCHAR(100),
+    adPic                  VARCHAR(200),
+    adUrl  VARCHAR(200),
+    PRIMARY KEY (id)
+)
+;
+
+
+
+
+
+
+
+

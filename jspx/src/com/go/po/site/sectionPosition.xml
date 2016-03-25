@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sectionPosition">
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select b.*,a.sectionId positionName,a.number articleNumber From  section_position a  left join section_management b on a.sectionId=b.id
+	   Where 0=0
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   <if test="classId!=null and classId!=''">
+	   	and b.classId=#{classId}
+	   </if>
+	   order by a.seq asc
+	   <if test="limit!=null and limit!=''">
+	   	${limit}
+	   </if>
+	</select> 
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.id id,a.seq seq,b.name name,b.type type,a.sectionId positionName From  section_position a left join section_management b on a.sectionId=b.id
+	   Where 0=0
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	    <if test="yearId!=null and yearId!=''">
+	   		and b.classId in (select id from class_info where yearId=#{yearId})
+	   	</if>
+	    <if test="classId!=null and classId!=''">
+	   		and  b.classId= #{classId}  
+	   </if>
+	   <if test="branchId!=null and branchId!=''">
+	   	and b.branchId =#{branchId}
+	   </if>
+	   order by a.seq asc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  section_position a left join section_management b on a.sectionId=b.id
+	   Where 0=0
+	   <if test="type!=null and type!=''">
+	   	and a.type=#{type}
+	   </if>
+	   <if test="yearId!=null and yearId!=''">
+	   		and b.classId in (select id from class_info where yearId=#{yearId})
+	   	</if>
+	    <if test="classId!=null and classId!=''">
+	   		and  b.classId= #{classId}  
+	   </if>
+	   <if test="branchId!=null and branchId!=''">
+	   	and b.branchId =#{branchId}
+	   </if>
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into section_position(id,sectionId,seq,name,number,type,classId)
+	   values(#{id},#{sectionId},#{seq},#{name},#{number},#{type},#{classId})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update section_position set sectionId = #{sectionId},
+	   				name=#{name},
+	   				<if test="classId!=null and classId!=''">
+	   					classId=#{classId},
+	   				</if>
+	   				number=#{number}
+        where  id=#{id} 
+	</update>
+	
+	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.* From section_position a  Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   section_position    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<!-- 查询最大标示 -->
+	<select id="findMaxSeq" resultType="java.lang.String" parameterType="java.util.HashMap" >
+	   select max(seq)
+	   From  section_position
+	   Where 0=0
+	</select> 
+</mapper>
