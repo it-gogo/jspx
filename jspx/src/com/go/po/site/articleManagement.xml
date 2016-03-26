@@ -40,7 +40,7 @@
 	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select
 	   	<if test="distinct!=null and distinct!=''">DISTINCT</if>
-	    a.*,(select userName from user_info where id=a.creator) userName From  article_management a   join article_section b on a.id=b.articleId  join section_management c on b.sectionId=c.id
+	    a.*,(select text from user_info where id=a.creator) userName From  article_management a   join article_section b on a.id=b.articleId  join section_management c on b.sectionId=c.id
 	   <if test="front!=null and front!=''">
 	   		and c.isNavShow='是'
 	   </if>

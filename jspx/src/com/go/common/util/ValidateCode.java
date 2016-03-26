@@ -60,6 +60,58 @@ public class ValidateCode {
 		return validateCode;
 	}
 	
+	/**
+	 * 生成验证码
+	 * @author zhangjf
+	 * @create_time 2016-3-26 下午2:50:44
+	 * @param WIDTH
+	 * @param HEIGHT
+	 * @param LINE_SIZE
+	 * @param SIZE
+	 * @return
+	 */
+	public static Map<String,BufferedImage> CreateValidateCode(int WIDTH,int HEIGHT,int LINE_SIZE,int SIZE){
+		if(WIDTH==0){
+			WIDTH=ValidateCode.WIDTH;
+		}
+		if(HEIGHT==0){
+			HEIGHT=ValidateCode.HEIGHT;
+		}
+		if(LINE_SIZE==0){
+			LINE_SIZE=ValidateCode.LINE_SIZE;
+		}
+		if(SIZE==0){
+			SIZE=ValidateCode.SIZE;
+		}
+		Map<String,BufferedImage> validateCode=new HashMap<String,BufferedImage>();
+		BufferedImage image=new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
+		Graphics g=image.getGraphics();
+		Random r=new Random();
+		g.setColor(new Color(r.nextInt(120)+135,r.nextInt(120)+135,r.nextInt(120)+135));
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.setColor(Color.WHITE);
+		g.drawRect(0, 0, WIDTH-1, HEIGHT-1);
+		String str="";
+		for(int i=0;i<SIZE;i++){
+			g.setColor(new Color(r.nextInt(120),r.nextInt(120),r.nextInt(120)));
+			char c=0;
+			do{
+				c=(char)(r.nextInt(75)+48);
+				
+			}while(c>57&&c<65 || c>90&&c<122);
+			int size=(int)(HEIGHT*0.5+HEIGHT*0.5*r.nextDouble());
+			g.setFont(new Font("",Font.BOLD|Font.ITALIC,size));
+			g.drawString(c+"",i*(WIDTH/SIZE), 25);
+			str+=c+"";
+		}
+		for(int i=0;i<LINE_SIZE;i++){
+			g.drawLine(r.nextInt(WIDTH), r.nextInt(HEIGHT), 
+					r.nextInt(WIDTH), r.nextInt(HEIGHT));
+		}
+		validateCode.put(str, image);
+		return validateCode;
+	}
+	
 	public static InputStream getInputStream(BufferedImage image) throws IOException{
 		ByteArrayOutputStream out=new ByteArrayOutputStream();
 		JPEGImageEncoder encoder=JPEGCodec.createJPEGEncoder(out);
