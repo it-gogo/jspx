@@ -7,8 +7,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -114,4 +116,20 @@ public class BaseController extends MultiActionController {
 			}
 		}
 	}
+	
+	/**
+	 * 获取请求地址.do前地址
+	 * @author zhangjf
+	 * @create_time 2016-3-28 下午5:08:29
+	 * @param request
+	 * @return
+	 */
+	public String getRequestUrlSubBeforeDo(HttpServletRequest request){
+		String beforeDoUrl=request.getRequestURL()==null?"":request.getRequestURL().toString();
+		if(StringUtils.isNotBlank(beforeDoUrl)){
+			beforeDoUrl=beforeDoUrl.substring(0, beforeDoUrl.lastIndexOf("/"));
+		}
+		return beforeDoUrl;
+	}
+	
 }
