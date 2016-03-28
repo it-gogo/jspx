@@ -36,7 +36,7 @@ function countKuangke(value,row,index){
 		<div class="easyui-layout" data-options="fit:true">
 			<div data-options="region:'north'" style="height:35px;">
 				<div style="width:100%;height:100%">
-					<form id="qform">
+					<form class="bjaa" id="qform">
 						<input type="hidden"   id="studentName"   value="${vo.studentName }"> 
 						<input type="hidden"   id="classId"   value="${vo.classId }">
 						<input type="hidden"  id="classTimeId"   value="${vo.classTimeId }">
