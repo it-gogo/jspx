@@ -5,7 +5,7 @@ body{
 	background-color: #ffffff;
 }
 .top_1{
-	background: url("../css/images/maintop_01.png");
+	background: url("../cssTemplate1/images/bt_bj.png");
 	background-attachment:fixed;
 }
 .sy_bdl{
@@ -18,8 +18,8 @@ body{
 	text-align: center;
 }
 .top_nr{
-	height: 100px;
-	line-height: 100px;
+	height: 89px;
+	line-height: 89px;
 }
 .top_tis{
 	width: 40%;
@@ -53,8 +53,8 @@ body{
 .top_hydr{
 	width: 100%;
 	float: left;
-	background: url("../css/images/dr_bj_06.png") no-repeat center 32px;
-	height: 100px;
+	background: url("../css/images/dr_bj_06.png") no-repeat center 23px;
+	height: 89px;
 	text-align: center;
 }
 
@@ -67,7 +67,7 @@ body{
 .top_hydr ul li{
 	float: left;
 	width: 100%;
-	line-height: 100px;
+	line-height: 89px;
 }
 
 .top_hydr ul li a{
@@ -111,10 +111,12 @@ body{
 
 .sy_an{
 	padding: 5px 15px 5px 15px;
+ 	overflow: hidden;
 /* 	border-bottom:1px solid #cbccd0; */
 	}
 .an_t{
 	width: 100%;
+	 overflow: hidden;
 }
 .an_t ul{
 	list-style: none;
@@ -123,7 +125,7 @@ body{
 .an_t ul li{
 	float: left;
 	width: 10%;
-	background: url("../css/images/dd_an_15.png") no-repeat center;
+	background:url("admin/css/images/dd_an_15.png") no-repeat center;
 	height: 53px;
 	line-height: 53px;
 	margin-top: 15px;
@@ -222,5 +224,31 @@ body{
 	    background: linear-gradient(to bottom,#FFFFFF 0,#6dc0fd 20%);
 	    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#64baf9', endColorstr='#ffffff');
 }
+
+.panel-footer{
+	    border: 1px solid #CECECE;
+}
+.table th, .table td{
+	    border: 1px solid #CECECE;
+}
+
+.table th{
+	background: #88CAFF;
+}
+
+.main_bg{
+	overflow: hidden;
+	margin: 20px 0;
+}
+
+.layout-expand{
+	    background-color: #F2F0F0;
+}
+
+
+
+
+
+
 
 

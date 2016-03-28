@@ -8,6 +8,8 @@
 <link href="<%=request.getContextPath()%>/admin/css/mytable.css" rel="stylesheet" type="text/css" />
 <link href="<%=request.getContextPath()%>/admin/css/color.css" rel="stylesheet" type="text/css" />
 
+<link href="<%=request.getContextPath()%>/admin/new-css/liabiao.css" rel="stylesheet" type="text/css" />
+
 <script src="<%=request.getContextPath()%>/admin/script/jquery.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/admin/script/jquery.easyui.min1.4.2.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/admin/script/easyui-lang-zh_CN.js" type="text/javascript"></script>

@@ -5,21 +5,38 @@
   <head>
   	<%@include file="/WEB-INF/admin/common/head.jsp" %>
   	<link href="<%=request.getContextPath()%>/admin/menu_tree/css/default.css" rel="stylesheet" type="text/css" />
+   	<link href="<%=request.getContextPath()%>/admin/new-css/shouye.css" rel="stylesheet" type="text/css" /> 	
   </head>
   
   <body class="easyui-layout">
       <!-- 模板一 -->
       <div data-options="region:'north'" style="height:89px;border:0px;">
-	       <div style="width:100%;height:100%;position:relative;background:url(<%=request.getContextPath()%>/cssTemplate1/images/top_b.jpg)" >
-	          <div id="sessionInfoDiv" style="margin-top:0px; float:left;right:150px;">
+	       <div class="top_1" style="width:100%;height:100%;position:relative;<%-- background:url(<%=request.getContextPath()%>/cssTemplate1/images/top_b.jpg) --%>" >
+	          <div id="sessionInfoDiv" style="margin-top:0px; float:left;right:150px;width: 40%;">
 		        <img  src="<%=request.getContextPath()%>/cssTemplate1/images/logo.png">
-	          </div>
-	          <div id="sessionInfoDiv" style=" float:right;margin-right:25px;font-size: 20px;margin-top: 60px;">
+	          </div>	          
+	          
+<%-- 	          <div id="sessionInfoDiv" style=" float:right;margin-right:25px;font-size: 20px;margin-top: 60px;">
 		         &nbsp;&nbsp;名称:<strong>${user.name }</strong>，
 		         欢迎登录！
 		         &nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="modifyInfo()">[修改信息]</a>
 		         &nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="loginOUT()">[退出系统]</a>
-	          </div>
+	          </div> --%>
+	       	  <div class="top_nr">
+	       	  		<div class="top_tis">
+							<ul>
+								<li>上午好！ ${user.userName }  <span id="showDate" style="font-size: 18px;"></span> 星期六  14：50</li>
+							</ul>	       	  		
+	       	  		</div>
+	       	  		<div class="top_xinx">
+	       	  			<div class="top_hydr">
+	       	  				<ul>
+	       	  					<li><a href="#"   id="welcome" style="display: inline-block;height: 35px;line-height: 35px;" >欢迎您，${user.userName }！<span class="top_img"><img alt="" src="<%=request.getContextPath()%>../css/images/dr_xsj_03.png"></a></li>
+	       	  				</ul>
+	       	  			</div>	       	  			
+	       	  		</div>
+	       	  </div>	          
+	          
 	       </div>
       </div>
        <!-- 模板一 -->
