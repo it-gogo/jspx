@@ -4,6 +4,7 @@
 <html>
   <head>
 	<%@include file="/WEB-INF/admin/common/head.jsp" %>
+
     <script type="text/javascript" src="<%=request.getContextPath() %>/admin/script/train/noticeSMS.js"></script>
     <script >
 		window.UEDITOR_HOME_URL = "<%=request.getContextPath()%>/ueditor/";
