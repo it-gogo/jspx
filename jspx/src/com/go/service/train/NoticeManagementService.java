@@ -54,7 +54,9 @@ public class NoticeManagementService extends BaseService {
 	 */
 	public  void  add(Map<String,Object> parameter){
 	    this.getBaseDao().insert("noticeManagement.add", parameter);
-	    this.getBaseDao().insert("noticeTeacher.batchAdd", parameter);
+	    if(parameter.containsKey("list")){
+	    	this.getBaseDao().insert("noticeTeacher.batchAdd", parameter);
+	    }
 	}
 	
 	/**
@@ -66,7 +68,9 @@ public class NoticeManagementService extends BaseService {
 		 delList.add(parameter.get("id").toString());
 		 this.getBaseDao().delete("noticeTeacher.delete", delList);
 		this.getBaseDao().update("noticeManagement.update", parameter);
-		this.getBaseDao().insert("noticeTeacher.batchAdd", parameter);
+		if (parameter.containsKey("list")) {
+			this.getBaseDao().insert("noticeTeacher.batchAdd", parameter);
+		}
 	}
 	
 	/**

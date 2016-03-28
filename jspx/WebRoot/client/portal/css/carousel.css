@@ -1,0 +1,16 @@
+*{margin:0;padding:0;list-style-type:none;}
+a,img{border:0;}
+body{font:12px/180% Arial, Helvetica, sans-serif, "ÐÂËÎÌå";}
+/* case */
+.case_box{position:relative;/* width:1025px;height:345px; */overflow:hidden}
+.case_box p{z-index:2;position:absolute;text-indent:-9999px;width:28px;height:51px;top:40%;cursor:pointer}
+.case_box ul{position:absolute;overflow:hidden;top:0px;left:0px;/* width: 1025px;height:345px; */}
+.case_box ul li{/* width:1025px;height:345px; */float:left;margin-bottom: 1px;}
+
+
+
+.case_info_add dd{line-height:22px}
+
+.case_box ol{position:absolute;bottom:0;left:50%;margin:0 0 0 -65px;height:12px;z-index:99;}
+.case_box ol li{float:left;margin:0 4px;display:inline;width:12px;height:12px;line-height:999em;background:url(../images/pagination.png) no-repeat;overflow:hidden;cursor:pointer;}
+.case_box ol li.active{background-position:0 -12px;}

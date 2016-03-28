@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="visitLog">
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select * From  visit_log 
+	   Where 0=0
+	  
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(1) From  visit_log 
+	    Where 0=0
+	   
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into visit_log(id,ip,visitTime)
+	   values(#{id},#{ip},#{visitTime})
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update visit_log set ip = #{ip},
+	                    visitTime = #{visitTime}
+        where  id=#{id} 
+	</update>
+	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From visit_log  Where 0=0  And  id=#{id}
+	</select>
+	<!-- 查询一个数据 -->
+	<select id="findOne"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select * From visit_log  Where 0=0  
+	   <if test="ip!=null and ip!=''">
+	   	And  ip=#{ip}
+	   </if>
+	   order by visitTime desc 
+	   limit 0,1
+	</select>
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete   visit_log   Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<!-- zhangjf 2015-10-20 门户网站统计数据start -->
+	<select id="countMap" resultType="map" parameterType="map">
+		select 
+			(select count(*) from article_management) as totalCount,
+			(select count(*) from article_management where createdate like '%{today}%') as todayCount,
+			(select count(*) from visit_log where visitTime like '${lastDay}%')as lastDayVisit,
+			(select count(*) from visit_log where visitTime like '${lastMonth}%')as lastMonthVisit,
+			(select count(*) from visit_log where visitTime like '${month}%')as MonthVisit
+	
+	</select>
+	
+	<!-- zhangjf 2015-10-20 门户网站统计数据end -->
+	
+</mapper>

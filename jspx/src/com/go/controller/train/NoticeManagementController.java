@@ -370,4 +370,88 @@ public class NoticeManagementController extends BaseController {
 		  List<Map<String,Object>> list=unitInfoService.findTeacherTree(parameter);
 		  this.ajaxData(response, JSONUtil.listToArrayStr(list));
 	  }
+	  
+	  /**
+	   * 站外通知公告
+	   * @author zhangjf
+	   * @create_time 2016-3-25 下午3:31:43
+	   * @return
+	   */
+	  @RequestMapping("redirectOA.do")
+	  public String redirectOA(){
+		  return  "admin/train/notify/list";
+	  }
+	  
+	  /**
+	   * 添加数据页面（oa站外）
+	   * @return
+	   */
+	  @RequestMapping("addOA.do")
+	  public  String addOA(HttpServletRequest request,HttpServletResponse response,Model  model){
+		  return  "admin/train/notify/edit";
+	  } 
+	  
+	  /**
+	   * 导出数据（oa站外）
+	   * @param request
+	   * @param response
+	   * @return
+	   */
+	  @RequestMapping("loadOA.do")
+	  public  String loadOA(HttpServletRequest request, HttpServletResponse response,Model  model){
+		  Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
+		  Map<String,Object>  res = this.noticeManagementService.load(parameter);
+		  model.addAttribute("vo", res);
+		  return  "admin/train/notify/edit";
+	  }
+	  
+	  /**
+	   * 保存（oa站外）
+	   * @param request
+	   * @param response
+	 * @throws Exception 
+	   */
+	  @RequestMapping("saveOA.do")
+	  public  void saveOA(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		  //获取请求参数
+		  Map<String,Object> parameter = sqlUtil.setParameterInfo(request);
+		  
+		  MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;  
+		   /**得到图片保存目录的真实路径**/      
+	        String logoRealPathDir = request.getSession().getServletContext().getRealPath("admin/notice");     
+	        /**根据真实路径创建目录**/      
+	        File logoSaveFile = new File(logoRealPathDir);       
+	        if(!logoSaveFile.exists())       
+	            logoSaveFile.mkdirs();             
+	         /**页面控件的文件流**/      
+	        /**页面控件的文件流**/
+	       MultipartFile multipartFile = multipartRequest.getFile("accessoryFile");   
+	       //文件后缀
+	       String suffix=StringUtils.isNotBlank(multipartFile.getOriginalFilename())?multipartFile.getOriginalFilename():"";
+	       if(suffix!=null && !"".equals(suffix)){
+	    	   String[] suff = suffix.split("\\.");
+	    	   String fileName=new SimpleDateFormat("yyyy-MM-dd HH_mm_ss_SSS").format(new Date())+"";
+	    	   if(suff.length>1){
+	    		   fileName +="."+suff[suff.length-1];
+	    	   }
+	    	   Util.saveFileFromInputStream(multipartFile.getInputStream(), logoRealPathDir, fileName);
+	    	   parameter.put("accessoryUrl", "admin/notice/"+fileName);
+	       }
+	       
+		  boolean  isIDNull = sqlUtil.isIDNull(parameter,"id");
+		  if(isIDNull){
+			  parameter.put("createdate", ExtendDate.getYMD_h_m_s(new Date()));
+			  Map<String,Object> user=SysUtil.getSessionUsr(request, Syscontants.USER_SESSION_KEY);//当前用户
+			  parameter.put("creator", user.get("id"));
+			  //设置ID
+			  Map<String,Object> n_parameter = sqlUtil.setTableID(parameter);
+			  //添加菜单
+			  this.noticeManagementService.add(n_parameter);
+			  this.ajaxMessage(response, Syscontants.MESSAGE,"添加成功");
+		  }else{
+			  this.noticeManagementService.update(parameter);
+			  this.ajaxMessage(response, Syscontants.MESSAGE,"修改成功");
+		  }
+	  }
+	  
 }

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="articleManagement">
+	<!-- 查询所有 -->
+	<select id="findAll1" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.* From  article_management a 
+	   Where 0=0
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and a.id in (select articleId from article_section t1 where t1.sectionId=#{sectionId})
+	   </if>
+	    <if test="classId!=null and classId!=''">
+	   	and a.classId=#{classId}
+	   </if>
+	   <if test="sectionName!=null and sectionName!=''">
+	   	and a.id in (select articleId from article_section t1 join section_management t2 on t1.sectionId=t2.id where t2.name like '%${sectionName}%')
+	   </if>
+	    <if test="nextCreatedate!=null and nextCreatedate!=''"><!-- nextCreatedate的下一个文章 -->
+	   	and a.createdate &lt; #{nextCreatedate}
+	   </if>
+	   <if test="sectionType!=null and sectionType!=''">
+	   		and a.id in (select t1.articleId from article_section t1   join section_management t2 on t1.sectionId=t2.id and t2.type=#{sectionType})
+	   </if>
+	   <choose>
+	   	<when test="orderRule!=null and orderRule!=''">
+	   		 order by ${orderRule} desc
+	   	</when>
+	   	<otherwise>
+	   		order by  pubishDate desc,a.createdate desc
+	   	</otherwise>
+	   </choose>
+	   
+	   <if test="limit!=null and limit!=''">
+	   	${limit}
+	   </if>
+	</select> 
+	
+	
+	
+	<!-- zhangjf 2015-11-05 优化调整 start -->
+	<select id="findAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select
+	   	<if test="distinct!=null and distinct!=''">DISTINCT</if>
+	    a.*,(select text from user_info where id=a.creator) userName From  article_management a   join article_section b on a.id=b.articleId  join section_management c on b.sectionId=c.id
+	   <if test="front!=null and front!=''">
+	   		and c.isNavShow='是'
+	   </if>
+	   Where 0=0
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and c.id=#{sectionId}
+	   </if>
+	   <!-- zhangjf 2015-11-17 客户端首页加载文章条件 start -->
+	   <if test="sectionIds!=null and sectionIds!=''">
+	   	and c.id=#{sectionIds} or c.parentId=#{sectionIds}
+	   </if>
+	    <!-- zhangjf 2015-11-17 客户端首页加载文章条件 end -->
+	    <if test="classId!=null and classId!=''">
+	   	and a.classId=#{classId}
+	   </if>
+	   <if test="sectionName!=null and sectionName!=''">
+	   	and c.name like '%${sectionName}%'
+	   </if>
+	   <if test="sectionType!=null and sectionType!=''">
+	   	and c.type = #{sectionType}
+	   </if>
+	   <if test="departId!=null and departId!=''">
+	   	and a.departId=#{departId}
+	   </if>
+	    <if test="nextCreatedate!=null and nextCreatedate!=''"><!-- nextCreatedate的下一个文章 -->
+	   	and a.createdate &lt; #{nextCreatedate}
+	   </if>
+	   <choose>
+	   	<when test="orderRule!=null and orderRule!=''">
+	   		 order by ${orderRule} desc
+	   	</when>
+	   	<otherwise>
+	   		order by  pubishDate desc,a.createdate desc
+	   	</otherwise>
+	   </choose>
+	   
+	   <if test="limit!=null and limit!=''">
+	   	${limit}
+	   </if>
+	</select> 
+	
+	
+	<!-- zhangjf 2015-11-05 优化调整 end -->
+    <!-- 查询数据 -->
+	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select distinct a.*,c.name sectionName
+	   From  article_management a   join article_section b on a.id=b.articleId join section_management c on b.sectionId=c.id
+	   <if test="front!=null and front!=''">
+	   		and c.isNavShow='是'
+	   </if>
+	   <!-- zhangjf 2015-12-31 修改权限控制start -->
+	    <!-- <if test="authLoginId!=null and authLoginId!=''">
+	   	  join role_section d on a.sectionId=d.sectionId and roleId in (select roleId from role_user where userId=#{authLoginId})
+	   </if> -->
+	   <!-- zhangjf 2015-12-31 修改权限控制end -->
+	   Where 0=0
+	   <if test="title!=null and title!=''">
+	   	and a.title  like '%${title}%'  
+	   </if>
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and c.id=#{sectionId}
+	   </if>
+	   <if test="code!=null and code!=''">
+	   	and c.code like '${code}%'
+	   </if>
+	   <if test="sectionType!=null and sectionType!=''">
+	   	and c.type=#{sectionType}
+	   </if>
+	   <!-- zhangjf 2015-12-18 添加内容模糊查询start -->
+	   <if test="content!=null and content!=''">
+	   		and a.id in(select id from article_content where content like '%${content}%') 
+	   </if>
+	   <!-- zhangjf 2015-12-18 添加内容模糊查询end -->
+	   order by  pubishDate desc,a.createdate desc
+	   limit  #{pageBean.startRowNum},#{pageBean.rows}
+	</select> 
+	<!-- 查询记录数 -->
+	<select id="findCount" resultType="java.lang.Object" parameterType="java.util.HashMap" >
+	    Select count(distinct a.id) From  article_management a   join article_section b on a.id=b.articleId join section_management c on b.sectionId=c.id
+	  	 <if test="front!=null and front!=''">
+	   		and c.isNavShow='是'
+	   </if>
+	     <!-- zhangjf 2015-12-31 修改权限控制start -->
+	    <!-- <if test="authLoginId!=null and authLoginId!=''">
+	   	 left join role_section d on a.id=d.sectionId and roleId in (select roleId from role_user where userId=#{authLoginId})
+	   </if> -->
+	   <!-- zhangjf 2015-12-31 修改权限控制end -->
+	   Where 0=0
+	   <if test="title!=null and title!=''">
+	   	and a.title  like '%${title}%'  
+	   </if>
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and c.id=#{sectionId}
+	   </if>
+	   <if test="code!=null and code!=''">
+	   	and c.code like '${code}%'
+	   </if>
+	   <if test="sectionType!=null and sectionType!=''">
+	   	and c.type=#{sectionType}
+	   </if>
+	   <!-- zhangjf 2015-12-18 添加内容模糊查询start -->
+	    <if test="content!=null and content!=''">
+	   		and a.id in(select id from article_content where content like '%${content}%') 
+	   </if>
+	   <!-- zhangjf 2015-12-18 添加内容模糊查询end -->
+	   
+	</select>
+	<!-- 添加后台数据 -->
+	<insert id="add" parameterType="java.util.HashMap" >
+	   insert into article_management(id,sectionId,title,titleColor,picUrl,createdate,creator,classId,readCount,subtitle,introduction,accessoryUrl,departId,keyword,source,scope,isPubish,isTop,status,titleHref,videoUrl,pubishDate)
+	   values(#{id},#{sectionId},#{title},#{titleColor},#{picUrl},#{createdate},#{creator},#{classId},#{readCount},#{subtitle},#{introduction},#{accessoryUrl},#{departId},#{keyword},#{source},#{scope},#{isPubish},#{isTop},#{status},#{titleHref},#{videoUrl},#{pubishDate});
+	   insert into article_content(id,content)
+	   values(#{id},#{content});
+	</insert>
+	
+	<!-- 添加后台数据 -->
+	<update id="update" parameterType="java.util.HashMap" >
+	   update article_management set sectionId = #{sectionId},
+	                    picUrl = #{picUrl},
+	                    title = #{title},
+	                    titleColor = #{titleColor},
+	                    classId=#{classId},
+	                    subtitle=#{subtitle},
+	                    introduction=#{introduction},
+	                    accessoryUrl=#{accessoryUrl},
+	                    departId=#{departId},
+	                    keyword=#{keyword},
+	                    source=#{source},
+	                    scope=#{scope},
+	                    isPubish=#{isPubish},
+	                    isTop=#{isTop},
+	                    titleHref=#{titleHref},
+	                    videoUrl=#{videoUrl},
+	                    status=#{status},
+	                    pubishDate=#{pubishDate}
+        where  id=#{id} ;
+        update article_content set content=#{content}
+        where  id=#{id} ;
+	</update>
+	<!-- 变更阅读量 -->
+	<update id="addCount" parameterType="map">
+		update article_management set readCount = #{readCount}
+		where id=#{id}
+	</update>
+	
+	
+	<!-- 导出数据 -->
+	<select id="load"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select b.content content,a.*,
+	   (select text from user_info where id=a.creator) userName,
+	   (select group_concat(sectionId) from article_section where articleId=a.id) sectionIds,
+	   (select name from section_management where id=a.sectionId) sectionName
+	   From article_management a join article_content b on a.id=b.id Where 0=0  And  a.id=#{id}
+	</select>
+	<!-- 导出数据 -->
+	<select id="pre"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	   Select a.id,a.title,a.sectionId From article_management a   join article_section b on a.id=b.articleId
+	   Where 0=0  
+	   <if test="createdate!=null and createdate!=''">
+		   And  a.createdate > #{createdate}
+	   </if>
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and b.sectionId=#{sectionId}
+	   </if>
+	   order by  pubishDate asc,createdate asc
+	   limit 0,1
+	</select>
+	<!-- 导出数据 -->
+	<select id="next"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    Select a.id,a.title,a.sectionId From article_management a join article_section b on a.id=b.articleId
+	     Where 0=0  
+	   <if test="createdate!=null and createdate!=''">
+		   And  a.createdate &lt; #{createdate}
+	   </if>
+	   <if test="sectionId!=null and sectionId!=''">
+	   	and b.sectionId=#{sectionId}
+	   </if>
+	   order by pubishDate desc,createdate desc
+	   limit 0,1
+	</select>
+	
+	<!-- zhangjf 2015-11-06 根据id集合获取列表start  -->
+	<select id="listByIds" parameterType = "java.util.List" resultType="map">
+		select * from article_management Where 1 = 1
+		 And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</select>
+	<!-- zhangjf 2015-11-06 根据id集合获取列表end  -->
+	<!-- 删除数据 -->
+	<delete id="delete"  parameterType = "java.util.List">
+	    delete from   article_management    Where 1 = 1
+	    And id in 
+	    <foreach collection="list" item="id"  open="(" separator="," close=")">   
+           #{id}  
+        </foreach> ;
+	</delete>
+	
+	<delete id="deleteOther"  parameterType = "map">
+	    delete from   article_content    Where 1 = 1
+	   	and id=#{id};
+	   	
+	   	delete from article_section where 1=1
+	   		and articleId=#{id}
+	   		<if test="sectionId!=null and sectionId!=''">
+	   		and sectionId=#{sectionId}
+	   	</if>;
+	   	
+	</delete>
+	
+</mapper>

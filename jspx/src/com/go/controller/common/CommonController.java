@@ -3,17 +3,21 @@ package com.go.controller.common;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.go.common.util.Util;
+import com.go.common.util.Word2Html;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
 
@@ -106,4 +110,57 @@ public class CommonController extends BaseController {
 	         /**页面控件的文件流**/
 	        MultipartFile multipartFile = multipartRequest.getFile("fileId");   
 	  }
+	  
+	  
+	 /**
+	  * 导入excel和word处理
+	  * @author zhangjf
+	  * @create_time 2016-3-25 上午11:14:24
+	  * @param request
+	  * @param response
+	  * @throws IOException
+	  * @throws Exception
+	  */
+	  @RequestMapping("xlsAnddocToStr.do")
+	  public  void  excelToTable(HttpServletRequest request, HttpServletResponse response) throws IOException, Exception{
+			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request; 
+	         /**页面控件的文件流**/
+	        MultipartFile multipartFile = multipartRequest.getFile("excel"); 
+	        //文件后缀
+	        String suffix=StringUtils.isNotBlank(multipartFile.getOriginalFilename())?multipartFile.getOriginalFilename():"";
+	        String[] suff = suffix.split("\\.");
+	        if(suff.length>1){
+	        	if("xls".equals(suff[suff.length-1])){
+	        		List<String[]> list=Util.ExcelToList(multipartFile.getInputStream());
+	        		StringBuffer sb=new StringBuffer("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"border-collapse: collapse;\">");
+	        		for(String[] arr:list){
+	        			sb.append("<tr>");
+	        			for(String str:arr){
+	        				sb.append("<td>"+str+"</td>");
+	        			}
+	        			sb.append("</tr>");
+	        		}
+	        		sb.append("</table>");
+	        		 this.ajaxData(response, sb.toString());
+	        	}else if("doc".equals(suff[suff.length-1])){
+	        		  /**得到图片保存目录的真实路径**/      
+	                String logoRealPathDir = request.getSession().getServletContext().getRealPath("admin/doc");     
+	                /**根据真实路径创建目录**/      
+	                File logoSaveFile = new File(logoRealPathDir);       
+	                if(!logoSaveFile.exists())       
+	                   logoSaveFile.mkdirs();             
+	        		
+	                String fileName=System.currentTimeMillis()+".doc";
+	                Util.saveFileFromInputStream(multipartFile.getInputStream(), logoRealPathDir, fileName);
+	                File file=new File(logoRealPathDir+"/"+fileName);
+	        		String str=Word2Html.toHtmlString(file, logoRealPathDir, request.getContextPath()+"/admin/doc");
+	        		file.delete();
+	        		 this.ajaxData(response, str);
+	        	}else{
+	        		this.ajaxData(response, "上传文件类型不对，请上传.xls,.doc格式文件");
+	        	}
+			}
+	  }
+	  
+	  
 }

@@ -12,11 +12,18 @@
   <listener>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
-  <listener>
+ <!-- <listener>
     <listener-class>
         org.springframework.web.context.ContextLoaderListener
       </listener-class>
-  </listener>
+  </listener> -->
+  <!-- zhangjf 2015-10-10添加自定义监听器start -->
+  	<listener>
+		<listener-class>com.go.common.listener.InItListener</listener-class>
+	</listener>
+  
+  
+    <!-- zhangjf 2015-10-10添加自定义监听器end -->
   <servlet>
     <servlet-name>springMvc</servlet-name>
     <servlet-class> 
