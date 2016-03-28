@@ -46,7 +46,8 @@ img{
 .nav{
 	background:url(../images/nav_bj_02.png) repeat-x;
 	height:43px;
-	position: relative;}
+	position: relative;
+	z-index: 1;}
 .nav_kd{
 	width:1012px;
 	margin:0 auto;
