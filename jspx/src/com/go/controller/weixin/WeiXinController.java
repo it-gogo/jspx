@@ -72,8 +72,8 @@ public class WeiXinController extends BaseController {
 	 */
 	@RequestMapping("getOauth.do")
 	public void getOauth(HttpServletRequest request,HttpServletResponse response){
-		 String url="http://"+request.getServerName()+request.getContextPath();
-		 String rendUrl=url+"/weixin/getOpenId.do";
+		// String url="http://"+request.getServerName()+request.getContextPath();
+		 String rendUrl=getRequestUrlSubBeforeDo(request)+"/getOpenId.do";
 			try {
 				String codeUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="
 						+WeiXin_ConfigUtil.getInstance().getAppId()
@@ -101,8 +101,8 @@ public class WeiXinController extends BaseController {
 			String getOpenIdUrl="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+WeiXin_ConfigUtil.getInstance().getAppId()+"&secret="+WeiXin_ConfigUtil.getInstance().getAppsecret()+"&code="+code+"&grant_type=authorization_code";
 			JSONObject json=WeiXin_Util.httpRequest(getOpenIdUrl, "GET", null);
 			if(json.containsKey("openid")){
-				String url="http://"+request.getServerName()+request.getContextPath();
-				String rendUrl=url+"/weixin/main.do?openid="+json.getString("openid");
+				//String url="http://"+request.getServerName()+request.getContextPath();
+				String rendUrl=getRequestUrlSubBeforeDo(request)+"/main.do?openid="+json.getString("openid");
 				try {
 					response.sendRedirect(rendUrl);
 				} catch (IOException e) {
@@ -151,8 +151,8 @@ public class WeiXinController extends BaseController {
 			model.addAttribute("msg", "哎哟喂！非法操作！");
 			return "error";
 		}
-		String url="http://"+request.getServerName()+request.getContextPath();
-		String rendUrl=url+"/weixin/main.do?openid="+openid;
+	//	String url="http://"+request.getServerName()+request.getContextPath();
+		String rendUrl=getRequestUrlSubBeforeDo(request)+"/main.do?openid="+openid;
 		model.put("rendUrl", rendUrl);
 		return "weixin/bind_info";
 	}
