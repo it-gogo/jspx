@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/tld/c.tld" prefix="c"%>
 <div id="pageBarWarpper">
-	<form name="pageBarForm" id="pageBarForm" action="list.do?sectionId=${section.id}" method="post">
+	<form name="pageBarForm" id="pageBarForm" action="${url }?sectionId=${section.id}" method="post">
 		<div id="pageBarLine">
 			<div class="left">
 				第<span>${pageBean.page }</span>页 / 共<span>${pageBean.totalPage }</span>页&nbsp;每页
