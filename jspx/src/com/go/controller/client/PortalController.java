@@ -113,6 +113,7 @@ public class PortalController extends BaseController {
 		Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);//获取请求参数
 		model.addAttribute("vo", parameter);
 		WebBase.listContent(model, parameter, sectionManagementService, articleManagementService);//列表内容初始化
+		 model.addAttribute("url","list.do");//存储分页地址
 		return "client/portal/list";
 	}
 	
@@ -180,6 +181,7 @@ public class PortalController extends BaseController {
 		 parameter.put("isInstation", "oa通知");
 		 PageBean<Map<String,Object>>  pageBean= this.noticeManagementService.pageBean(parameter);
 		 model.addAttribute("pageBean", pageBean);
+		 model.addAttribute("url","notify_list.do");//存储分页地址
 		 return "client/portal/notify_list";
 	}
 	
@@ -195,6 +197,7 @@ public class PortalController extends BaseController {
 	@RequestMapping("notify_detail.do")
 	public String notify_detail(HttpServletRequest request, HttpServletResponse response,ModelMap model){
 		WebBase.nav(model, sectionManagementService);//导航初始化
+		initLeft(model);//左边初始化
 		 Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);
 		 Map<String,Object> noticeMap=noticeManagementService.load(parameter);
 		 model.addAttribute("notice", noticeMap);
