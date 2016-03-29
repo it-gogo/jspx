@@ -37,7 +37,7 @@ function showType(value,row,index){
 		<div class="easyui-layout" data-options="fit:true">
 			<div data-options="region:'north'" style="height:35px;">
 				<div style="width:100%;height:100%">
-					<form id="qform">
+					<form class="bjaa" id="qform">
 						<input type="hidden" class="easyui-validatebox" id="classTimeId"   value="${vo.classTimeId }">
 						<input type="hidden" class="easyui-validatebox" id="index"   value="${vo.index }">    
 						<table>
