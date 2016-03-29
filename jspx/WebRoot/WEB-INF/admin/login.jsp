@@ -72,15 +72,15 @@ setInterval(function bg() {
     <div class="loginbody">
     <span class="systemlogo"></span> 
     <div class="loginbox">
-    <ul>
-    <li><input name="text" type="text" class="loginuser" value="${vo.TEXT }" /></li>
-    <li><input name="password" type="password" class="loginpwd" value="${vo.PASSWORD}"  /></li>
-    <li>
-    	<input name="" type="submit" class="loginbtn" value="登 录"    />
-    	<label><input name="" type="checkbox" value="" checked="checked" />记住密码</label>
-    	<label style="color:red;">${msg }</label>
-    </li>
-    </ul>
+	    <ul>
+		    <li><input name="text" type="text" class="loginuser" value="${vo.TEXT }" /></li>
+		    <li><input name="password" type="password" class="loginpwd" value="${vo.PASSWORD}"  /></li>
+		    <li>
+		    	<input name="" type="submit" class="loginbtn" value="登 录"    />
+		    	<label><input name="" type="checkbox" value="" checked="checked" />记住密码</label>
+		    	<label style="color:red;">${msg }</label>
+		    </li>
+	    </ul>
     </div>
     </div>
     </form>
