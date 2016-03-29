@@ -5,9 +5,8 @@ body{
 	background-color: #ffffff;
 }
 .top_1{
-	background: url("../cssTemplate1/images/bt_bj.png");
+	background: url("../../cssTemplate1/images/bt_bj.png");
 	background-attachment:fixed;
-	background-color: #3D97DC;
 }
 .sy_bdl{
 	margin-top:0px;
