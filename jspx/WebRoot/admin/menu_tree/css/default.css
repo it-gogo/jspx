@@ -21,7 +21,7 @@ a:hover{ color:Red; text-decoration:underline;}
 
 
 
-.icon{padding:1px 11px; background:url(../images/tabicons.png) no-repeat; }
+.icon{padding:2px 11px; background:url(../images/tabicons.png) no-repeat; }
 .icon-sys{ background:url(../images/directory.png) no-repeat;}
 .icon-add{background-position: -19px 0px;}
 .icon-nav{background-position: -100px -18px;}
