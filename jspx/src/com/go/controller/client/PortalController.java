@@ -3,25 +3,18 @@ package com.go.controller.client;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.go.common.util.ExtendDate;
-import com.go.common.util.SqlUtil;
 import com.go.common.util.SysUtil;
-import com.go.common.util.SystemConfigUtil;
 import com.go.common.util.Util;
 import com.go.common.util.ValidateCode;
 import com.go.common.util.WebBase;
@@ -133,9 +126,6 @@ public class PortalController extends BaseController {
 		WebBase.nav(model, sectionManagementService);//导航初始化
 		initLeft(model);//左边初始化
 		Map<String,Object>  parameter = sqlUtil.setParameterInfo(request);//获取请求参数
-//		WebBase.listContent(model, parameter, sectionManagementService, articleManagementService);//列表内容初始化
-		
-		
 		if(parameter.containsKey("type")){
 			parameter.put(parameter.get("type").toString(), parameter.get("content"));
 		}
@@ -262,7 +252,6 @@ public class PortalController extends BaseController {
 			return;
 		}
 		String clientCode=code.toString();
-		
 		Object serverCode=request.getSession().getAttribute("validateCode");
 		if(clientCode.toLowerCase().equals(serverCode.toString().toLowerCase())){
 			String username=parameter.containsKey("text")?parameter.get("text").toString():"";
@@ -271,7 +260,6 @@ public class PortalController extends BaseController {
 				this.ajaxMessage(response, Syscontants.ERROE, "账号或密码错误");
 				return;
 			}
-			
 			password=Util.Encryption(password);
 			parameter.put("password", password);
 			Map<String,Object> userMap=loginService.login(parameter);
@@ -283,7 +271,6 @@ public class PortalController extends BaseController {
 				this.ajaxMessage(response, Syscontants.MESSAGE, "200");
 				return;
 			}
-			
 		}else{
 			this.ajaxMessage(response, Syscontants.ERROE, "验证码错误");
 			return;
