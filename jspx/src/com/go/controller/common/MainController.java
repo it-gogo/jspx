@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,10 @@ import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
 import com.go.service.baseinfo.ClassInfoService;
 import com.go.service.baseinfo.ClassStudentService;
+import com.go.service.site.ArticleManagementService;
+import com.go.service.supervise.SchoolSuperviseService;
+import com.go.service.train.NoticeInfoService;
+import com.go.service.train.NoticeManagementService;
 
 @Controller
 @RequestMapping("/main")
@@ -25,6 +30,16 @@ public class MainController extends BaseController {
 	  private  ClassInfoService  classInfoService;
 	  @Resource
 	  private  ClassStudentService  classStudentService;
+	  @Autowired
+	  private ArticleManagementService articleManagementService;
+	  @Autowired
+	  private NoticeInfoService noticeInfoService;
+	  @Autowired
+	  private NoticeManagementService noticeManagementService;
+	  @Autowired
+	  private SchoolSuperviseService schoolSuperviseService;
+	  
+	  
 	/**
 	 * 首页
 	 * @author chenhb
@@ -45,6 +60,27 @@ public class MainController extends BaseController {
 			  list=classInfoService.findAll(null);
 		  }
 		  model.addAttribute("classList", list);//跟该账户有关系的班级
+		  	//zhangjf 2016-04-07 加载最新导读文章
+		  	Map<String,Object> params=new HashMap<String, Object>();
+		  	params.put("sectionType", "oa栏目");
+		  	params.put("limit", " limit 0,8 ");
+			model.addAttribute("newest", articleManagementService.findAll1(params));//最新文章
+			//查询老师通知信息
+		    params=new HashMap<String, Object>();
+		    params.put("isRead", "未阅读");
+		    params.put("loginId", userMap.get("id"));
+		    params.put("isInstation", "站内短信");
+		    params.put("limit", " limit 0,8");
+		    model.addAttribute("noticeList", noticeManagementService.findAll(params));
+		    //zhangjf 2016-04-10查看状态为待提交的督学项目
+		      params=new HashMap<String, Object>();
+		      String type=userMap.get("type").toString();
+			  if("老师账号".equals(type) || "单位账号".equals(type)){
+				  params.put("flag", userMap.get("flag"));
+			  }
+			  params.put("flowStatus", "待学校上传材料");
+			  model.addAttribute("todoProjects", schoolSuperviseService.findAll(params));
+		    
 		return  "admin/index";
 	}
 	

@@ -169,7 +169,7 @@ public class ArticleManagementController extends BaseController {
 			  }
 			  articleManagementService.addCount(countMap);
 		  }
-		  return  "admin/oa/articleManagement/look";
+		  return  "admin/site/articleManagement/look";
 	  }
 	  /**
 	   * 保存

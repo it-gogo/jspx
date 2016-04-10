@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="superviseUnit">
+	<!-- zhangjf 2016-04-10根据当前帐号加载代办督学项目start -->
+	<select id="findAll" resultType="map" parameterType="map">
+		select a.*,b.name superviseName,b.type superviseType,b.superviseDate superviseDate 
+	   From  supervise_unit a join supervise b on a.superviseId=b.id  and b.status='启用'
+	   join unit_info c on a.unitId=c.id
+	   Where 0=0
+	     <if test="beginDate!=null and beginDate!=''">
+	   	and b.superviseDate >= #{beginDate}
+	   </if>
+	    <if test="endDate!=null and endDate!=''">
+	   	and b.superviseDate &lt;= #{endDate}
+	   </if>
+	   <if test="flag!=null and flag!=''">
+	   	and c.flag=#{flag}
+	   </if>
+	   <if test="flowStatus!=null and flowStatus!=''">
+	   	and a.flowStatus=#{flowStatus}
+	   </if>
+	   order by b.superviseDate desc
+	</select>
+	<!-- zhangjf 2016-04-10根据当前帐号加载代办督学项目end -->
 	<!-- 查询数据 -->
 	<select id="findList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select a.*,b.name superviseName,b.type superviseType,b.superviseDate superviseDate 

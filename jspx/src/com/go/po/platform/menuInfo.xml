@@ -21,7 +21,7 @@
 	</select>
 	<!-- 查询权限 -->
 	<select id="findAuthority" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
-		select *,name text,picUrl iconImg,case when (select count(1) from menu_info where pid=a.id)>0 then 'closed' else 'open' end state
+		select a.urls url,a.*,name text,picUrl iconImg,case when (select count(1) from menu_info where pid=a.id)>0 then 'closed' else 'open' end state
 	   From  menu_info  a
 	   Where isDeleted=0
 	   and id in (select menuId from role_menu where roleId in (select roleId from role_user where userId=#{userId}))

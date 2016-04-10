@@ -37,6 +37,18 @@ public class SchoolSuperviseService extends BaseService {
 	public  JSONObject  findPageBean(Map<String,Object> parameter){
 		return this.getBaseDao().findListPage("superviseUnit.findCount", "superviseUnit.findList", parameter);
 	}
+	
+	/**
+	 * 根据帐号及督学状态进行数据查询
+	 * @author zhangjf
+	 * @create_date 2016-4-10 下午12:58:45
+	 * @param parameter
+	 * @return
+	 */
+	public List<Map<String,Object>> findAll(Map<String,Object> parameter){
+		return this.getBaseDao().findList("superviseUnit.findAll",parameter);
+	}
+ 	
 
 	/**
 	 * 查询关联项目

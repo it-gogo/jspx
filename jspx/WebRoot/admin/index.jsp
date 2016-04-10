@@ -5,6 +5,6 @@
   <head>
 	</head>
 	<script type="text/javascript">
-	document.location.href = "client/portal/index.do";
+	document.location.href = "../common/loginPage.do";
 </script>
 </html>
