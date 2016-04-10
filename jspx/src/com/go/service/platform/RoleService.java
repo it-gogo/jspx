@@ -43,6 +43,9 @@ public class RoleService extends BaseService {
 	public  Map<String,Object>  load(Map<String,Object> parameter){
 		return this.getBaseDao().loadEntity("role.load", parameter);
 	}
+	public  Map<String,Object>  findOne(Map<String,Object> parameter){
+		return this.getBaseDao().loadEntity("role.findOne", parameter);
+	}
 	/**
 	 * 添加数据
 	 * @param parameter

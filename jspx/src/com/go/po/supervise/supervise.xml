@@ -88,6 +88,36 @@
         </foreach> ;
 	</delete>
 	<!-- 查询督学记录 -->
+	<select id="findInspectorApprovalAll" parameterType="map" resultType="map">
+		select a.*,c.name schoolName,b.flowStatus,b.unitId unitId,b.step step 
+		from supervise a 
+		join supervise_unit b on a.id=b.superviseId and a.status='启用' 
+		join unit_info c on c.id=b.unitId
+		<if test="userId!=null and userId!=''">
+			join inspector_unit d on d.unitId=c.id 
+			join inspector e on e.id=d.inspectorId and e.userId=#{userId}
+		</if>
+		where 1=1
+		<if test="flag!=null and flag!=''">
+	   	and  c.flag  like '${flag}%'  
+	   </if>
+	   <if test="typeId!=null and typeId!=''">
+	   	and  c.typeId=#{typeId}
+	   </if>
+	   <if test="categoryId!=null and categoryId!=''">
+	   	and  c.categoryId=#{categoryId}
+	   </if>
+	   <if test="schoolId!=null and schoolId!=''">
+	   	and  a.id=#{schoolId}
+	   </if>
+	   <if test="superviseId!=null and superviseId!=''">
+	   	and a.id=#{superviseId}
+	   </if>
+	   <if test="steps!=null and steps!=''">
+	   	and b.step in (${steps})
+	   </if>
+	   order by a.superviseDate desc
+	</select>
 	<select id="findInspectorApprovalList" parameterType="map" resultType="map">
 		select a.*,c.name schoolName,b.flowStatus,b.unitId unitId,b.step step 
 		from supervise a 

@@ -52,9 +52,11 @@ public class SubmitTeacherService extends BaseService {
 	public void updateSubmit(Map<String,Object> parameter){
 		if(parameter.containsKey("fileMap")){
 			Map<String,Object> vo=this.getBaseDao().loadEntity("submitTeacher.findOne", parameter);
-			List<String> dList=new ArrayList<String>();
-			dList.add(vo.get("fileId").toString());
-			this.getBaseDao().delete("fileManagement.delete", dList);//删除旧数据
+			if(vo!=null && vo.get("fileId")!=null){
+				List<String> dList=new ArrayList<String>();
+				dList.add(vo.get("fileId").toString());
+				this.getBaseDao().delete("fileManagement.delete", dList);//删除旧数据
+			}
 			this.getBaseDao().insert("fileManagement.add", parameter.get("fileMap"));
 		}
 		this.getBaseDao().update("submitTeacher.updateSubmit", parameter);

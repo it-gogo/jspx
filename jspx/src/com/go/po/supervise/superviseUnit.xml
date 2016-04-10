@@ -19,6 +19,9 @@
 	   <if test="flowStatus!=null and flowStatus!=''">
 	   	and a.flowStatus=#{flowStatus}
 	   </if>
+	   <if test="steps!=null and steps!=''">
+	   	and a.step in (${steps})
+	   </if>
 	   order by b.superviseDate desc
 	</select>
 	<!-- zhangjf 2016-04-10根据当前帐号加载代办督学项目end -->

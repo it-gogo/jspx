@@ -13,12 +13,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.alibaba.fastjson.JSONObject;
 import com.go.common.util.SysUtil;
 import com.go.controller.base.BaseController;
 import com.go.po.common.Syscontants;
 import com.go.service.baseinfo.ClassInfoService;
 import com.go.service.baseinfo.ClassStudentService;
+import com.go.service.platform.RoleService;
+import com.go.service.resources.FileSubmitService;
 import com.go.service.site.ArticleManagementService;
+import com.go.service.supervise.InspectorApprovalService;
 import com.go.service.supervise.SchoolSuperviseService;
 import com.go.service.train.NoticeInfoService;
 import com.go.service.train.NoticeManagementService;
@@ -38,8 +42,12 @@ public class MainController extends BaseController {
 	  private NoticeManagementService noticeManagementService;
 	  @Autowired
 	  private SchoolSuperviseService schoolSuperviseService;
-	  
-	  
+	  @Resource
+	  private  FileSubmitService  fileSubmitService;
+	  @Autowired
+		private InspectorApprovalService inspectorApprovalService;
+	  @Autowired
+		private RoleService roleService;
 	/**
 	 * 首页
 	 * @author chenhb
@@ -73,14 +81,47 @@ public class MainController extends BaseController {
 		    params.put("limit", " limit 0,8");
 		    model.addAttribute("noticeList", noticeManagementService.findAll(params));
 		    //zhangjf 2016-04-10查看状态为待提交的督学项目
-		      params=new HashMap<String, Object>();
+		     /* params=new HashMap<String, Object>();
 		      String type=userMap.get("type").toString();
 			  if("老师账号".equals(type) || "单位账号".equals(type)){
 				  params.put("flag", userMap.get("flag"));
 			  }
 			  params.put("flowStatus", "待学校上传材料");
-			  model.addAttribute("todoProjects", schoolSuperviseService.findAll(params));
+			  model.addAttribute("todoProjects", schoolSuperviseService.findAll(params));*/
 		    
+			  
+			  /**
+			   * 文件提交
+			   */
+			  parameter.put("userId", userMap.get("id"));
+			  parameter.put("isSubmit", "未提交");
+			  model.addAttribute("operateList", this.fileSubmitService.findOperateAll(parameter));
+			  
+			  /**
+			   * 督导
+			   */
+			  String type=userMap.get("type").toString();
+			  if("督学账号".equals(type)){
+				  parameter.put("userId", userMap.get("id"));
+				  parameter.put("steps", "4,7,11,8,9,12,13");
+				  model.addAttribute("inspectorApprovalList", this.inspectorApprovalService.findAll(parameter));
+			  }else if("老师账号".equals(type) || "单位账号".equals(type)){
+				  Map<String,Object> parame=new HashMap<String, Object>();
+				  parame.put("userId", userMap.get("id"));
+				  parame.put("roleType", "督学助手");
+				  parame=roleService.findOne(parame);
+				  if(parame==null || parame.size()==0){
+					  parame=new HashMap<String, Object>();
+					  parame.put("userId", userMap.get("id"));
+					  parame.put("roleType", "校长室");
+					  parame=roleService.findOne(parame);
+				  }
+				  if(parame!=null && parame.size()>0){
+					  parameter.put("flag", userMap.get("flag"));
+					  parameter.put("steps", "3,6,10,5,9");
+					  model.addAttribute("schoolSuperviseList", this.schoolSuperviseService.findAll(parameter));
+				  }
+			  }
 		return  "admin/index";
 	}
 	

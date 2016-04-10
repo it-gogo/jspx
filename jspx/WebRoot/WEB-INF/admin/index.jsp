@@ -81,6 +81,57 @@ function openNav(sectionId,parentSectionId){
 	url="<%=request.getContextPath()%>/"+url;
 	parent.bxunTabs.addTab("",className+"首页","../main/classIndex.do?classId="+classId,url);
 }
+
+/**
+ * 查看文件操作
+ * @param row
+ */
+function  lookOperate(id){
+	var dbuttons = [{ 
+		text:'保 存',
+		iconCls:'icon-ok',
+		id:'sbutton'
+	},{
+		text:'关 闭',
+		iconCls:'icon-cancel',
+		id:'cbutton'
+	}];
+	var options = {id:"d3",title:"文件上传",width:"600px;",height:"500px;",buttons:dbuttons};
+	var urls = "../resources/fileOperate/load.do?submitId="+id;
+	options.urls = urls;
+	parent.$.createDialog(options);
+}
+function  lookInspectorApproval(id,unitId,step){
+	var dbuttons = [{ 
+		text:'保 存',
+		iconCls:'icon-ok',
+		id:'sbutton'
+	},{
+		text:'关 闭',
+		iconCls:'icon-cancel',
+		id:'cbutton'
+	}];
+	var options = {id:"d3",title:"督学操作",width:"1500px",height:"800px;"};
+	var urls = "../supervise/inspectorApproval/load.do?id="+id+"&unitId="+unitId+"&step="+step;
+	options.urls = urls;
+	parent.$.createDialog(options);
+}
+function  lookSchoolSupervise(superviseId,unitId,step){
+	var dbuttons = [{ 
+		text:'保 存',
+		iconCls:'icon-ok',
+		id:'sbutton'
+	},{
+		text:'关 闭',
+		iconCls:'icon-cancel',
+		id:'cbutton'
+	}];
+	var options = {id:"d3",title:"学校操作",width:"1500px",height:"800px;"};
+	var urls = "../supervise/schoolSupervise/load.do?id="+superviseId+"&unitId="+unitId+"&step="+step;
+	options.urls = urls;
+	parent.$.createDialog(options);
+}
+
 </script>
 
 <link rel="stylesheet" href="<%=request.getContextPath()%>/admin/new-css/shouye.css" type="text/css"></link>
@@ -184,26 +235,33 @@ function openNav(sectionId,parentSectionId){
 					<span class="title">&nbsp;您参与的培训班级</span>
 					<c:if test="${classList!=null }">
 						<c:forEach items="${classList }" var="classInfo">
-							&nbsp;&nbsp;<input type="button"  onclick="enterClassIndex('${classInfo.id}','${classInfo.name }')" value="${classInfo.name }"/>&nbsp;&nbsp;
+							<%-- &nbsp;&nbsp;<input type="button"  onclick="enterClassIndex('${classInfo.id}','${classInfo.name }')" value="${classInfo.name }"/>&nbsp;&nbsp; --%>
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="enterClassIndex('${classInfo.id}','${classInfo.name }')">${classInfo.name }</a>
 						</c:forEach>
 					</c:if>
 					</li>
 					<li  >
 					<span class="title">您参与资源提交项目</span>
 					<c:choose>
-					<c:when test="${!empty todoProjects }">
-						<c:forEach items="${todoProjects }" var="project">
-							&nbsp;&nbsp;<input type="button"  onclick="" value="${project.superviseName }"/>&nbsp;&nbsp;
+					<c:when test="${!empty operateList }">
+						<c:forEach items="${operateList }" var="operate">
+							<%-- &nbsp;&nbsp;<input type="button"  onclick="" value="${operate.title }"/>&nbsp;&nbsp; --%>
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="lookOperate('${operate.id }');">${operate.title }</a>
 						</c:forEach>
 					</c:when>
-					<c:otherwise>&nbsp;&nbsp;<input type="button"  onclick="" value="暂无相关提交项目"/>&nbsp;&nbsp;</c:otherwise>
+					<c:otherwise>&nbsp;&nbsp;<!-- 暂无相关提交项目 -->&nbsp;&nbsp;</c:otherwise>
 					</c:choose>
 					</li>
 					<li >
 					<span class="title">您参与督导检查项目</span>
-					<c:if test="${classList!=null }">
-						<c:forEach items="${classList }" var="classInfo">
-							&nbsp;&nbsp;<input type="button"  onclick="enterClassIndex('${classInfo.id}','${classInfo.name }')" value="${classInfo.name }"/>&nbsp;&nbsp;
+					<c:if test="${inspectorApprovalList!=null }">
+						<c:forEach items="${inspectorApprovalList }" var="inspectorApproval">
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="lookInspectorApproval('${inspectorApproval.id }','${inspectorApproval.unitId }',${inspectorApproval.step });">${inspectorApproval.schoolName }${inspectorApproval.name }</a>
+						</c:forEach>
+					</c:if>
+					<c:if test="${schoolSuperviseList!=null }">
+						<c:forEach items="${schoolSuperviseList }" var="schoolSupervise">
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="lookSchoolSupervise('${schoolSupervise.superviseId }','${schoolSupervise.unitId }',${schoolSupervise.step });">${schoolSupervise.schoolName }${schoolSupervise.superviseName }</a>
 						</c:forEach>
 					</c:if>
 					</li>

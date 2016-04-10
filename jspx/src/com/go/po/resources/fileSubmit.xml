@@ -13,6 +13,18 @@
 	   </if>
 	   order by createdate desc
 	</select> 
+	<select id="findOperateAll" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	   select a.*,(select name from view_user where id=a.creator) creatorName,b.isSubmit isSubmit
+	   From  file_submit a   join submit_teacher b on a.id=b.submitId join teacher_info c on b.teacherId=c.id
+	   Where 0=0
+	  <if test="isSubmit!=null and isSubmit!=''">
+	   	and b.isSubmit = #{isSubmit}
+	   </if>
+	  <if test="userId!=null and userId!=''">
+	   	and c.userId=#{userId}
+	   </if>
+	    order by createdate desc
+	</select> 
     <!-- 查询数据 -->
 	<select id="findOperateList" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
 	   select a.*,(select name from view_user where id=a.creator) creatorName,b.isSubmit isSubmit

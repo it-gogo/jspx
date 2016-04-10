@@ -24,7 +24,9 @@ public class FileSubmitService extends BaseService {
 	public  JSONObject  findOperate(Map<String,Object> parameter){
 		return this.getBaseDao().findListPage("fileSubmit.findOperateCount", "fileSubmit.findOperateList", parameter);
 	}
-	
+	public  List<Map<String,Object>>  findOperateAll(Map<String,Object> parameter){
+		return this.getBaseDao().findList("fileSubmit.findOperateAll", parameter);
+	}
 	/**
 	 * 要上传的列表
 	 * @param parameter

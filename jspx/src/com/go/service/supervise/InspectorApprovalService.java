@@ -28,7 +28,9 @@ public class InspectorApprovalService extends BaseService {
 	public  JSONObject  findPageBean(Map<String,Object> parameter){
 		return this.getBaseDao().findListPage("supervise.findInspectorApprovalCount", "supervise.findInspectorApprovalList", parameter);
 	}
-
+	public  List<Map<String,Object>>  findAll(Map<String,Object> parameter){
+		return this.getBaseDao().findList("supervise.findInspectorApprovalAll", parameter);
+	}
 	/**
 	 * 查询关联项目
 	 * @author chenhb
