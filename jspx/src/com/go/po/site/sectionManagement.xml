@@ -84,8 +84,8 @@
 	</select>
 	<!-- 添加后台数据 -->
 	<insert id="add" parameterType="java.util.HashMap" >
-	   insert into section_management(id,name,picUrl,seq,status,createdate,creator,type,parentId,code,parentCode,isNavShow,absoluteUrl)
-	   values(#{id},#{name},#{picUrl},#{seq},'启用',#{createdate},#{creator},#{type},#{parentId},#{code},#{parentCode},#{isNavShow},#{absoluteUrl})
+	   insert into section_management(id,name,picUrl,seq,status,createdate,creator,type,parentId,code,parentCode,isNavShow,absoluteUrl,isModify)
+	   values(#{id},#{name},#{picUrl},#{seq},'启用',#{createdate},#{creator},#{type},#{parentId},#{code},#{parentCode},#{isNavShow},#{absoluteUrl},'可修改')
 	</insert>
 	
 	<!-- 添加后台数据 -->

@@ -419,7 +419,7 @@ function  treeClick(node){
 			iconCls:'icon-cancel',
 			id:'cbutton'
 		}];
-   		var options = {id:"d3",urls:"../platform/loginInfo/topw.do",title:"修改密码",width:"550px;",height:"350px;",buttons:dbuttons};
+   		var options = {id:"d3",urls:"../platform/userInfo/toModifyPW.do",title:"修改密码",width:"600px;",height:"620px;",buttons:dbuttons};
 		parent.$.createDialog(options);
    }
    
@@ -433,7 +433,7 @@ function  treeClick(node){
 			iconCls:'icon-cancel',
 			id:'cbutton'
 		}];
-   		var options = {id:"d3",urls:"../platform/loginInfo/topw.do",title:"首次登陆修改密码",width:"550px;",height:"350px;",buttons:dbuttons};
+   		var options = {id:"d3",urls:"../platform/userInfo/toModifyPW.do",title:"首次登陆修改密码",width:"600px;",height:"620px;",buttons:dbuttons};
 		parent.$.createDialog(options);
    }
    

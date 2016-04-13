@@ -90,14 +90,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                             			<img style="height:70px;" src="<%=path%>/client/portal/images/xw_img_05.png">
                                             		</c:when>
                                             		<c:otherwise>
-                                            			<img style="height:70px;" src="<%=path%>/${newArticle.picUrl}">
+                                            			<img style="height:70px;" src="<%=path%>/${contentSections[0].articles[0].picUrl}">
                                             		</c:otherwise>
                                             	</c:choose>
                                             </div>
                                             <div class="img_text">
                                                 <div class="img_kd">
-                                                    <h2 class="hkd">${newArticle.title }</h2>
-                                                    <p class="p_wb">${newArticle.introduction }</p>
+                                                    <h2 class="hkd">${contentSections[0].articles[0].title }</h2>
+                                                    <p class="p_wb">${contentSections[0].articles[0].introduction }</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -108,10 +108,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                         <div class="xw_text">
                                             <ul>
                                             	<c:if test="${!empty contentSections[0].articles }">
-                                            		<c:forEach items="${contentSections[0].articles }" var="article">
-                                            			<li >
-                                            				<a href="detail.do?id=${article.id }">${article.title }</a><span class="xw_rq">${fn:substring(article.createdate, 5, 10)}</span>
-                                            			</li>
+                                            		<c:forEach items="${contentSections[0].articles }" var="article" varStatus="i">
+                                            			<c:if test="${i.index!=0 }">
+	                                            			<li >
+	                                            				<a href="detail.do?id=${article.id }">${article.title }</a><span class="xw_rq">${fn:substring(article.createdate, 5, 10)}</span>
+	                                            			</li>
+                                            			</c:if>
                                             		</c:forEach>
                                             	</c:if>
                                             </ul>
@@ -136,7 +138,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             </table> 
                             <div style="margin:8px 0 0 0">
                                 <div class="dr_yzm">
-                                    <span class="ys">验证码:</span><input name="code" style="width:80px; border:#308dce solid 1px; height:20px" type="text">
+                                    <span class="ys" style="display: inline-block;margin-left: 5px;">验证码:</span><input name="code" style="width:80px; border:#308dce solid 1px; height:20px" type="text">
                                 </div>    
                                 <div class="dr_img"><img id="validateCodeImg" style="float: left;" class="yanzhengma-img" src="validateCode.do?HEIGHT=25&WIDTH=67" alt="验证码" title="点击更换"></div>
                             </div>
@@ -311,15 +313,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                             			<img style="height:70px;" src="<%=path%>/client/portal/images/xw_img_05.png">
                                             		</c:when>
                                             		<c:otherwise>
-                                            			<img style="height:70px;" src="<%=path%>/${newArticle.picUrl}">
+                                            			<img style="height:70px;" src="<%=path%>/${contentSections[4].articles[0].picUrl}">
                                             		</c:otherwise>
                                             	</c:choose>
                                            
                                             </div>
                                             <div class="jimg_text">
                                                 <div class="jimg_kd">
-                                                    <h2 class="jhkd">${newArticle.title }</h2>
-                                                    <p class="jp_wb">${newArticle.introduction }</p>
+                                                    <h2 class="jhkd">${contentSections[4].articles[0].title }</h2>
+                                                    <p class="jp_wb">${contentSections[4].articles[0].introduction }</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -329,11 +331,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                                                             
                                         <div class="jy_text">
                                             <ul>
-                                                 <c:if test="${!empty contentSections[4].articles }">
-	                                		<c:forEach items="${contentSections[4].articles }" var="article">
-	                                		<li><a href="detail.do?id=${article.id }">${article.title }</a><span class="jy_rq">${fn:substring(article.createdate, 5, 10)}</span></li>
-	                                		</c:forEach>
-	                                	</c:if>
+                                            	<c:if test="${!empty contentSections[4].articles }">
+			                                		<c:forEach items="${contentSections[4].articles }" var="article" varStatus="i">
+			                                		<c:if test="${i.index!=0 }">
+				                                		<li><a href="detail.do?id=${article.id }">${article.title }</a><span class="jy_rq">${fn:substring(article.createdate, 5, 10)}</span></li>
+			                                		</c:if>
+			                                		</c:forEach>
+			                                	</c:if>
                                             </ul>
                                         </div>
                                     </div>
@@ -392,14 +396,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                             			<img style="height:70px;" src="<%=path%>/client/portal/images/xw_img_05.png">
                                             		</c:when>
                                             		<c:otherwise>
-                                            			<img style="height:70px;" src="<%=path%>/${newArticle.picUrl}">
+                                            			<img style="height:70px;" src="<%=path%>/${contentSections[6].articles[0].picUrl}">
                                             		</c:otherwise>
                                             	</c:choose>
                                             </div>
                                             <div class="jimg_text">
                                                 <div class="jimg_kd">
-                                                    <h2 class="jhkd">${newArticle.title }</h2>
-                                                    <p class="jp_wb">${newArticle.introduction }</p>
+                                                    <h2 class="jhkd">${contentSections[6].articles[0].title }</h2>
+                                                    <p class="jp_wb">${contentSections[6].articles[0].introduction }</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -410,8 +414,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                         <div class="jy_text">
                                             <ul>
                                                 <c:if test="${!empty contentSections[6].articles }">
-	                                			<c:forEach items="${contentSections[6].articles }" var="article">
+	                                			<c:forEach items="${contentSections[6].articles }" var="article" varStatus="i">
+	                                			<c:if test="${i.index!=0 }">
 	                                			<li><a href="detail.do?id=${article.id }">${article.title }</a><span class="jy_rq">${fn:substring(article.createdate, 5, 10)}</span></li>
+	                                			</c:if>
 	                                			</c:forEach>
 	                                			</c:if>
                                             </ul>
